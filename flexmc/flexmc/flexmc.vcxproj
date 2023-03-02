@@ -128,6 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="flexmc.cpp" />
+    <ClCompile Include="lexer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="language_constants.h" />
+    <ClInclude Include="lexer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
