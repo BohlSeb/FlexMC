@@ -36,7 +36,7 @@ namespace flexMC {
 	std::string Token::toString() {
 		std::string out;
 		if ((type == Type::wsp) || (type == Type::eol) || (type == Type::tab) || (type == Type::eof)) {
-			out = this->type2String();
+			out = type2String();
 		}
 		else {
 			out = value;
