@@ -4,6 +4,7 @@
 #include <iostream>
 #include <regex>
 #include <unordered_map>
+#include <stdexcept>
 
 #include "lexer.h"
 #include "language_constants.h"
@@ -17,9 +18,9 @@ int main() {
 	int position = 12;
 	int line = 1;
 
-	Token token = Token(tokenType, value, position, line);
+	Token token = Token(tokenType, value);
 
-	Token token2 = Token(Token::Type::eol, "this", position, line);
+	Token token2 = Token(Token::Type::eol, "this");
 
 	std::string tokenDes = token2.toString();
 
@@ -113,36 +114,53 @@ int main() {
 		std::cout << "Key: " << key << "\tValue: " << value.toString() << std::endl;
 	};
 
-	std::cout << "\n" << "LEXER TEST:" << std::endl;
+	const std::string program = "_THIS userGeneratedCode will be hacked into different tokens, keywords are for example MIN ARGMIN EXP LOG LEN symbols = == < >= precedingEndOfFile";
 
-	const std::string program = "LEXER TEST PROGRAM";
+	std::cout << "\n" << "MANUAL TEST:" << std::endl;
+
+	std::regex reg(R"(^[_a-z]\w*)");
+	std::smatch match;
+	if (std::regex_search(program, match, reg)) {
+		std::cout << "match str " << match.str() << std::endl;
+	}
+	else {
+		std::cout << "No match in " << program;
+	}
+
+	std::cout << "\n" << "LEXER TEST:" << std::endl;
 
 	Lexer lexer = Lexer(program);
 
+	//lexer.reset();
+
+	const int maxIters = 50;
+
+	for (int i = 0; i < maxIters; ++i) {
+		try {
+			Token newToken = lexer.nextToken();
+			std::cout << "Iter: " << i << " New token: " << newToken.toString() << std::endl;
+		}
+		catch (const std::runtime_error& e) {
+			std::cout << "Error in Iter: " << i << std::endl;
+			std::cout << e.what() << std::endl;
+		}	
+	}
+
+	std::cout << "RESET" << std::endl;
+
 	lexer.reset();
 
-	const int iters = 3;
-
-	for (int i = 0; i < iters; ++i) {
-		Token newToken = lexer.nextToken();
-		std::cout << "Iter: " << i << " New token: " << newToken.toString() << std::endl;
+	for (int i = 0; i < maxIters; ++i) {
+		try {
+			Token newToken = lexer.nextToken();
+			std::cout << "Iter: " << i << " New token: " << newToken.toString() << std::endl;
+		}
+		catch (const std::runtime_error& e) {
+			std::cout << "Error in Iter: " << i << std::endl;
+			std::cout << e.what() << std::endl;
+		}
 	}
-	
+
 
 	return 0;
 }
-
-
-
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

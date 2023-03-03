@@ -19,19 +19,18 @@ namespace flexMC {
 			undefined
 		};
 
-		Token(Type type, const std::string& value, int position, int line)
-			: type(type), value(value), position(position), line(line) {
+		Token(Type type) : type(type), value("") {
 		}
 
-
+		Token(Type type, const std::string& value)
+			: type(type), value(value) {
+		}
 
 		std::string toString();
 		std::string type2String();
 
 		const Type type;
 		const std::string value;
-		const int position;
-		const int line;
 
 	};
 
@@ -47,17 +46,16 @@ namespace flexMC {
 
 	private:
 
-		Token::Type getType(std::string match);
+		Token::Type getType(const std::string& match);
 
 		const std::string program_;
 		std::string searchStr_;
-		const int length_;
 
 		std::regex groups_;
 		std::regex id_;
 		std::regex num_;
 		std::smatch match_;
-		
+
 	};
 
 }

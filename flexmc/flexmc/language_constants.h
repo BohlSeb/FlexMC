@@ -87,9 +87,9 @@ namespace flexMC {
 		{B_LEFT, Token::Type::sym},
 		{B_RIGHT, Token::Type::sym},
 
-		{R"(\n)", Token::Type::eol},
-		{R"(\t)", Token::Type::tab},
-		{R"( )", Token::Type::wsp}
+		{"\n", Token::Type::eol},
+		{"\t", Token::Type::tab},
+		{" ", Token::Type::wsp}
 
 	};
 
