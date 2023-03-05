@@ -2,12 +2,10 @@
 # to build and test a Visual Studio solution.
 name: Build and Test
 
-run-name: ${{ github.actor }} Ron MSBuild and VSTest
+run-name: ${{ github.actor }} Run MSBuild and VSTest
 
-on:
-  push:
-    branches:
-     - simple-lexer
+on: [pull_request]
+
 jobs:
   run-msbuild-vstest:
     runs-on: windows-latest
