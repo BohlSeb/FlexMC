@@ -26,13 +26,15 @@ namespace flexMC {
 			: type(type), value(value) {
 		}
 
-		std::string toString();
-		std::string type2String();
+		std::string toString() const;
+		std::string type2String() const;
 
 		const Type type;
 		const std::string value;
 
 	};
+
+	std::ostream& operator<<(std::ostream& output, const Token& token);
 
 	class Lexer {
 
@@ -46,7 +48,7 @@ namespace flexMC {
 
 	private:
 
-		Token::Type getType(const std::string& match);
+		Token::Type getType(const std::string& match) const;
 
 		const std::string program_;
 		std::string searchStr_;
@@ -55,6 +57,8 @@ namespace flexMC {
 		std::regex id_;
 		std::regex num_;
 		std::smatch match_;
+
+		int errors_;
 
 	};
 

@@ -8,7 +8,7 @@
 
 namespace flexMC {
 
-	std::string Token::type2String() {
+	std::string Token::type2String() const {
 		switch (type) {
 		case Type::eof:
 			return "endOfFile";
@@ -33,7 +33,7 @@ namespace flexMC {
 		}
 	}
 
-	std::string Token::toString() {
+	std::string Token::toString() const {
 		std::string out;
 		if ((type == Type::wsp) || (type == Type::eol) || (type == Type::tab) || (type == Type::eof)) {
 			out = type2String();
@@ -44,6 +44,12 @@ namespace flexMC {
 		return "Token{" + type2String() + ", " + out + "}";
 	}
 
+
+	std::ostream& operator<<(std::ostream& output, const Token& token) {
+		output << token.toString();
+		return output;
+	}
+
 	Lexer::Lexer(const std::string& program)
 		: program_(program), searchStr_(program) {
 
@@ -51,18 +57,22 @@ namespace flexMC {
 		for (const auto& s : R_GROUPS) {
 			allGroups += s + ")|(";
 		}
-
+		std::string s = allGroups.substr(0, allGroups.size() - 2);
+		std::cout << s << std::endl;
 		groups_ = std::regex(allGroups.substr(0, allGroups.size() - 2));
 		id_ = std::regex(R_ID);
 		num_ = std::regex(R_NUM);
+
+		errors_ = 0;
 
 	}
 
 	void Lexer::reset() {
 		searchStr_ = program_;
+		errors_ = 0;
 	}
 
-	Token::Type Lexer::getType(const std::string& match) {
+	Token::Type Lexer::getType(const std::string& match) const {
 		std::unordered_map<std::string, Token::Type>::const_iterator lookUp = TYPES.find(match);
 		if (lookUp == TYPES.end()) {
 			return Token::Type::undefined;
@@ -75,7 +85,7 @@ namespace flexMC {
 
 	Token Lexer::nextToken() {
 
-		if (searchStr_.empty()) {
+		if ((searchStr_.empty()) || (errors_)) {
 			return Token(Token::Type::eof);
 		}
 
@@ -96,7 +106,8 @@ namespace flexMC {
 			searchStr_ = match_.suffix();
 			Token::Type type = getType(value);
 			if (type == Token::Type::undefined) {
-				throw std::runtime_error("undexptected match " + value + "preceding " + searchStr_);
+				errors_ = 1;
+				return Token(Token::Type::undefined, "Match " + value + "preceding " + searchStr_);
 			}
 			else if (type == Token::Type::eol || type == Token::Type::wsp || type == Token::Type::tab) {
 				return Token(type);
@@ -105,6 +116,7 @@ namespace flexMC {
 				return Token(type, value);
 			}
 		}
-		throw std::runtime_error("No match found at the beginning of " + searchStr_);
+		errors_ = 1;
+		return Token(Token::Type::undefined, "No valid program part at " + searchStr_);
 	}
 }

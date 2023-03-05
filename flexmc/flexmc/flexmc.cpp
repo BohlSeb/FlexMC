@@ -54,7 +54,7 @@ int main() {
 	//std::regex expression(R"((\+)|(IF)|(ELSE))");
 	std::regex expression(combined);
 
-	std::regex_search(testString, matchObj, expression);
+	std::regex_search(testString, matchObj, expression, std::regex_constants::match_default);
 
 	bool isEmpty = matchObj.empty();
 
@@ -114,36 +114,23 @@ int main() {
 		std::cout << "Key: " << key << "\tValue: " << value.toString() << std::endl;
 	};
 
-	const std::string program = "_THIS userGeneratedCode will be hacked into different tokens, keywords are for example MIN ARGMIN EXP LOG LEN symbols = == < >= precedingEndOfFile";
-
-	std::cout << "\n" << "MANUAL TEST:" << std::endl;
-
-	std::regex reg(R"(^[_a-z]\w*)");
-	std::smatch match;
-	if (std::regex_search(program, match, reg)) {
-		std::cout << "match str " << match.str() << std::endl;
-	}
-	else {
-		std::cout << "No match in " << program;
-	}
-
-	std::cout << "\n" << "LEXER TEST:" << std::endl;
+	const std::string program = "<< ERROR notReached";
 
 	Lexer lexer = Lexer(program);
 
 	//lexer.reset();
 
-	const int maxIters = 50;
+	const int maxIters = 20;
 
 	for (int i = 0; i < maxIters; ++i) {
 		try {
 			Token newToken = lexer.nextToken();
-			std::cout << "Iter: " << i << " New token: " << newToken.toString() << std::endl;
+			std::cout << "Iter: " << i << " New token: " << newToken << std::endl;
 		}
 		catch (const std::runtime_error& e) {
 			std::cout << "Error in Iter: " << i << std::endl;
 			std::cout << e.what() << std::endl;
-		}	
+		}
 	}
 
 	std::cout << "RESET" << std::endl;

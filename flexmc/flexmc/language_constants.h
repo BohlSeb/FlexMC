@@ -34,6 +34,11 @@ namespace flexMC {
 	const std::string MUL = "*";
 	const std::string DIV = "/";
 	const std::string POW = "^";
+	const std::string PLUS_ASSIGN = "+=";
+	const std::string MINUS_ASSIGN = "-=";
+	const std::string MUL_ASSIGN = "*=";
+	const std::string DIV_ASSIGN = "/=";
+	const std::string POW_ASSIGN = "^=";
 	const std::string LT = "<";
 	const std::string GT = ">";
 	const std::string LE = "<=";
@@ -75,6 +80,11 @@ namespace flexMC {
 		{MUL, Token::Type::sym},
 		{DIV, Token::Type::sym},
 		{POW, Token::Type::sym},
+		{PLUS_ASSIGN, Token::Type::sym},
+		{MINUS_ASSIGN, Token::Type::sym},
+		{MUL_ASSIGN, Token::Type::sym},
+		{DIV_ASSIGN, Token::Type::sym},
+		{POW_ASSIGN, Token::Type::sym},
 		{LT, Token::Type::sym},
 		{GT, Token::Type::sym},
 		{LE, Token::Type::sym},
@@ -124,10 +134,8 @@ namespace flexMC {
 		R"(^\*(=?))",
 		R"(^\/(=?))",
 		R"(^\^(=?))",
-		R"(^\<(=?))",
-		R"(^\>(=?))",
-		R"(^\<(\<?))",
-		R"(^\>(\>?))",
+		R"(^\<[\<=]?)",
+		R"(^\>[\>=]?)",
 		R"(^\,)",
 		R"(^\()",
 		R"(^\))",
