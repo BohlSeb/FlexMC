@@ -57,8 +57,7 @@ namespace flexMC {
 		for (const auto& s : R_GROUPS) {
 			allGroups += s + ")|(";
 		}
-		std::string s = allGroups.substr(0, allGroups.size() - 2);
-		std::cout << s << std::endl;
+
 		groups_ = std::regex(allGroups.substr(0, allGroups.size() - 2));
 		id_ = std::regex(R_ID);
 		num_ = std::regex(R_NUM);
