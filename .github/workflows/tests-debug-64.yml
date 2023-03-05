@@ -24,7 +24,7 @@ jobs:
 
       - name: Run MSBuild
         id: run_msbuild
-        working-directory: $flexmc
+        working-directory: flexmc
         run: msbuild .\flexmc.sln
 
       - name: Setup VSTest and add to PATH
@@ -33,5 +33,5 @@ jobs:
 
       - name: Run VSTest
         id: run_vstest
-        working-directory: $flexmc\x64\Debug\
+        working-directory: flexmc\x64\Debug\
         run: vstest.console.exe /Platform:x64 .\tests.dll
