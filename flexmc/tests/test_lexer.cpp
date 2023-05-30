@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../flexmc/lexer.h"
-#include "../flexmc/lexer.cpp"
+
 
 using namespace flexMC;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
