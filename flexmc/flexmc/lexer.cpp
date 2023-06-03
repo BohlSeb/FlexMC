@@ -41,7 +41,7 @@ namespace flexMC {
 		else {
 			out = value;
 		}
-		return "Token{" + type2String() + ", " + out + "}";
+		return "Token(type=" + type2String() + ", value=" + out + ")";
 	}
 
 
@@ -72,7 +72,7 @@ namespace flexMC {
 	}
 
 	Token::Type Lexer::getType(const std::string& match) const {
-		std::unordered_map<std::string, Token::Type>::const_iterator lookUp = TYPES.find(match);
+		auto lookUp = TYPES.find(match);
 		if (lookUp == TYPES.end()) {
 			return Token::Type::undefined;
 		}
