@@ -113,7 +113,6 @@ public:
 
 
 		Lexer lexer = Lexer(testStr);
-		int i = 0;
 		for (auto it = std::begin(expected); it != std::end(expected); ++it) {
 			Token token = lexer.nextToken();
 			Token expected = *it;
