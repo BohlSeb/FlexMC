@@ -65,13 +65,13 @@ namespace flexMC {
 	}
 
 	Token Tokens::makeCall(short int& numArgs) {
-		Token call = Token(Token::Type::op, CALL_, ParsingContext(6));
+		Token call = Token(Token::Type::op, CALL_);
 		call.context.numArgs = numArgs;
 		return call;
 	}
 
 	Token Tokens::makeAppend(short int& numArgs) {
-		Token call = Token(Token::Type::op, APPEND_, ParsingContext(6));
+		Token call = Token(Token::Type::op, APPEND_);
 		call.context.numArgs = numArgs;
 		return call;
 	}
