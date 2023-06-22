@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "../flexmc/lexer.h"
+#include "../flexmc/lexer.cpp"
+#include "../flexmc/tokens.cpp"
 
 
 using namespace flexMC;
@@ -17,61 +19,66 @@ public:
 
 	TEST_METHOD(TestValidKeywordsAndSymbols) {
 
-		Token::Type kW = Token::Type::keyWord;
-		Token::Type sym = Token::Type::sym;
+		Token::Type kW = Token::Type::keyW;
+		Token::Type op = Token::Type::op;
+		Token::Type fun = Token::Type::fun;
 
 		std::vector<Token> expected = {
 			Token(kW, "IF"),
 			Token(kW, "THEN"),
 			Token(kW, "ELSE"),
-			Token(kW, "AND"),
-			Token(kW, "OR"),
 			Token(kW, "PAY"),
 			Token(kW, "STOP"),
-			Token(kW, "EXP"),
-			Token(kW, "LOG"),
-			Token(kW, "ABS"),
-			Token(kW, "MIN"),
-			Token(kW, "MAX"),
-			Token(kW, "SUM"),
-			Token(kW, "AMEAN"),
-			Token(kW, "GMEAN"),
-			Token(kW, "ARGMIN"),
-			Token(kW, "ARGMAX"),
-			Token(kW, "LEN"),
-			Token(kW, "APPEND"),
-			Token(sym, "=="),
-			Token(sym, "="),
-			Token(sym, "+"),
-			Token(sym, "-"),
-			Token(sym, "*"),
-			Token(sym, "/"),
-			Token(sym, "^"),
-			Token(sym, "+="),
-			Token(sym, "-="),
-			Token(sym, "*="),
-			Token(sym, "/="),
-			Token(sym, "^="),
-			Token(sym, "<<"),
-			Token(sym, ">>"),
-			Token(sym, "<"),
-			Token(sym, ">"),
-			Token(sym, ","),
-			Token(sym, "("),
-			Token(sym, ")"),
-			Token(sym, "<="),
-			Token(sym, ">="),
-			Token(sym, "["),
-			Token(sym, "]"),
+			Token(kW, ":="),
+			Token(kW, "+="),
+			Token(kW, "-="),
+			Token(kW, "*="),
+			Token(kW, "/="),
+			Token(kW, "^="),
+			Token(fun, "EXP"),
+			Token(fun, "LOG"),
+			Token(fun, "ABS"),
+			Token(fun, "MIN"),
+			Token(fun, "MAX"),
+			Token(fun, "SUM"),
+			Token(fun, "AMEAN"),
+			Token(fun, "GMEAN"),
+			Token(fun, "ARGMIN"),
+			Token(fun, "ARGMAX"),
+			Token(fun, "LEN"),
+			Token(op, "AND"),
+			Token(op, "OR"),
+			Token(op, "NOT"),
+			Token(op, "=="),
+			Token(op, "+"),
+			Token(op, "-"),
+			Token(op, "*"),
+			Token(op, "/"),
+			Token(op, "^"),
+			Token(op, "<<"),
+			Token(op, ">>"),
+			Token(op, "<"),
+			Token(op, ">"),
+			Token(op, ","),
+			Token(op, "("),
+			Token(op, ")"),
+			Token(op, "<="),
+			Token(op, ">="),
+			Token(op, "["),
+			Token(op, "]"),
 		};
 
 		std::string testStr = "IF";
 		testStr += "THEN";
 		testStr += "ELSE";
-		testStr += "AND";
-		testStr += "OR";
 		testStr += "PAY";
 		testStr += "STOP";
+		testStr += ":=";
+		testStr += "+=";
+		testStr += "-=";
+		testStr += "*=";
+		testStr += "/=";
+		testStr += "^=";
 		testStr += "EXP";
 		testStr += "LOG";
 		testStr += "ABS";
@@ -83,19 +90,15 @@ public:
 		testStr += "ARGMIN";
 		testStr += "ARGMAX";
 		testStr += "LEN";
-		testStr += "APPEND";
+		testStr += "AND";
+		testStr += "OR";
+		testStr += "NOT";
 		testStr += "==";
-		testStr += "=";
 		testStr += "+";
 		testStr += "-";
 		testStr += "*";
 		testStr += "/";
 		testStr += "^";
-		testStr += "+=";
-		testStr += "-=";
-		testStr += "*=";
-		testStr += "/=";
-		testStr += "^=";
 		testStr += "<<";
 		testStr += ">>";
 		testStr += "<";
@@ -110,25 +113,23 @@ public:
 
 
 		Lexer lexer = Lexer(testStr);
-
+		int i = 0;
 		for (auto it = std::begin(expected); it != std::end(expected); ++it) {
 			Token token = lexer.nextToken();
 			Token expected = *it;
-			Assert::AreEqual(expected.type2String(), token.type2String());
-			Assert::AreEqual(expected.value, token.value);
+			Assert::AreEqual(expected.toString(), token.toString());
 		}
 		Token end = lexer.nextToken();
 		Token endExpected = Token(Token::Type::eof);
-		Assert::AreEqual(endExpected.type2String(), end.type2String());
-		Assert::AreEqual(endExpected.value, end.value);
+		Assert::AreEqual(endExpected.toString(), end.toString());
 	}
 
 	TEST_METHOD(TestValidNumbersAndIdentifiers) {
 
-		Token::Type num = Token::Type::number;
+		Token::Type num = Token::Type::num;
 		Token::Type id = Token::Type::id;
 		Token::Type wsp = Token::Type::wsp;
-		Token::Type sym = Token::Type::sym;
+		Token::Type op = Token::Type::op;
 		Token::Type tab = Token::Type::tab;
 
 		std::vector<Token> expected = {
@@ -174,49 +175,49 @@ public:
 			Token(wsp),
 			Token(num, ".555"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "0"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "0.0000"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "0.005"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "100.3"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "1e3"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "1.02E3"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "921039112"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "4e-5"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, "1."),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(num, ".555"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(wsp),
 			Token(num, ".555"),
 			Token(wsp),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(wsp),
 			Token(num, "1."),
 			Token(tab),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(tab),
 			Token(num, ".555"),
 			Token(tab),
-			Token(sym, "-"),
+			Token(op, "-"),
 			Token(tab),
 			Token(num, "1."),
 		};
@@ -298,13 +299,11 @@ public:
 		for (auto it = std::begin(expected); it != std::end(expected); ++it) {
 			Token token = lexer.nextToken();
 			Token expected = *it;
-			Assert::AreEqual(expected.type2String(), token.type2String());
-			Assert::AreEqual(expected.value, token.value);
+			Assert::AreEqual(expected.toString(), token.toString());
 		}
 		Token end = lexer.nextToken();
 		Token endExpected = Token(Token::Type::eof);
-		Assert::AreEqual(endExpected.type2String(), end.type2String());
-		Assert::AreEqual(endExpected.value, end.value);
+		Assert::AreEqual(endExpected.toString(), end.toString());
 	}
 
 };

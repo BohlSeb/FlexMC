@@ -3,38 +3,9 @@
 #include <iostream>
 #include <regex>
 
+#include "tokens.h"
+
 namespace flexMC {
-
-	struct Token {
-
-		enum class Type {
-			eof,
-			eol,
-			wsp,
-			tab,
-			sym,
-			number,
-			keyWord,
-			id,
-			undefined
-		};
-
-		Token(Type type) : type(type), value("") {
-		}
-
-		Token(Type type, const std::string& value)
-			: type(type), value(value) {
-		}
-
-		std::string toString() const;
-		std::string type2String() const;
-
-		const Type type;
-		const std::string value;
-
-	};
-
-	std::ostream& operator<<(std::ostream& output, const Token& token);
 
 	class Lexer {
 
@@ -44,11 +15,7 @@ namespace flexMC {
 
 		Token nextToken();
 
-		void reset();
-
 	private:
-
-		Token::Type getType(const std::string& match) const;
 
 		const std::string program_;
 		std::string searchStr_;
@@ -58,10 +25,5 @@ namespace flexMC {
 		std::regex num_;
 		std::smatch match_;
 
-		int errors_;
-
 	};
-
 }
-
-
