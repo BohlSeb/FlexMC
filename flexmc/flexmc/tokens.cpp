@@ -114,7 +114,7 @@ namespace flexMC {
 				return Token(type, symbol, context);
 			}
 
-			// leave gap to above for unary +/-
+			// leave precedence gap to above for unary +/-
 			if ((symbol == MUL) || (symbol == DIV)) {
 				context.precedence = 7;
 				context.maybeInfix = true;
