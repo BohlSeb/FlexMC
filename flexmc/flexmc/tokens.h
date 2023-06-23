@@ -49,7 +49,7 @@ namespace flexMC {
 			undefined
 		};
 
-		Token(Type type,const std::string value = "") : 
+		Token(Type type, const std::string value = "") : 
 			type(type),
 			value(value),
 			context(ParsingContext()) {}
