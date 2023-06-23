@@ -45,7 +45,7 @@ namespace flexMC {
 
 
 	std::ostream& operator<<(std::ostream& output, const Token& token) {
-		if (token.type == Token::Type::op && ((token.value == "call") || (token.value == "append"))) {
+		if (token.type == Token::Type::op && ((token.value == CALL_) || (token.value == APPEND_))) {
 			output << token.value << "(" << token.context.numArgs << ")";
 		}
 		else {
