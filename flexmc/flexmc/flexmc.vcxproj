@@ -130,13 +130,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="expression_parser.cpp" />
+    <ClCompile Include="flexmc.cpp" />
     <ClCompile Include="lexer.cpp">
       <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ShowIncludes>
     </ClCompile>
+    <ClCompile Include="operands.cpp" />
     <ClCompile Include="tokens.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="expression_parser.h" />
+    <ClInclude Include="operands.h" />
+    <ClInclude Include="operation.h" />
+    <ClInclude Include="operations.h" />
     <ClInclude Include="terminals.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="tokens.h" />

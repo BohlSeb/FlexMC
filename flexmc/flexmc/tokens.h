@@ -15,37 +15,40 @@ namespace flexMC {
 		bool maybeInfix = false;
 		bool isPrefix = false;
 		bool isInfix = false;
-		short int numArgs = 0;
+		unsigned int numArgs = 0;
 		bool leftAssociative = true;
 
 		ParsingContext() : precedence(1) {}
 
 		ParsingContext(unsigned short int precedence) : precedence(precedence) {}
 
-		ParsingContext(unsigned short int precedence, 
-			bool maybePrefix, 
-			bool maybeInfix, 
-			bool isPrefix, 
-			bool isInfix) : 
-			precedence(precedence),
-			maybePrefix(maybePrefix),
-			maybeInfix(maybeInfix),
-			isPrefix(isPrefix),
-			isInfix(isInfix) {}
+		//ParsingContext(unsigned short int precedence, 
+		//	bool maybePrefix, 
+		//	bool maybeInfix, 
+		//	bool isPrefix, 
+		//	bool isInfix) : 
+		//	precedence(precedence),
+		//	maybePrefix(maybePrefix),
+		//	maybeInfix(maybeInfix),
+		//	isPrefix(isPrefix),
+		//	isInfix(isInfix) {}
 	};
 
 	struct Token {
 
 		enum class Type {
-			eof,
-			eol,
-			wsp,
-			tab,
-			op,
-			fun,
-			num,
-			keyW,
-			id,
+			eof, // x
+			wsp, // x
+			tab, // x
+			op, // x
+			fun, // x
+			num, // x
+			keyW, // x
+			id, // x
+			lparen, // x
+			rparen, // x
+			lbracket,
+			rbracket,
 			undefined
 		};
 
@@ -75,9 +78,11 @@ namespace flexMC {
 
 		Token makeContextualized(const std::string& symbol);
 
-		Token makeCall(short int& numArgs);
+		Token makeCall(unsigned int numArgs);
 
-		Token makeAppend(short int& numArgs);
+		Token makeAppend(unsigned int numArgs);
+
+		Token makeIndex(unsigned int numArgs);
 
 		const std::unordered_map<std::string, Token::Type> TYPES = {
 
@@ -105,7 +110,6 @@ namespace flexMC {
 			{ARGMAX, Token::Type::fun},
 			{LEN, Token::Type::fun},
 
-			{EQ, Token::Type::op},
 			{PLUS, Token::Type::op},
 			{MINUS, Token::Type::op},
 			{MUL, Token::Type::op},
@@ -121,12 +125,12 @@ namespace flexMC {
 			{SMOOTH_LT, Token::Type::op},
 			{SMOOTH_GT, Token::Type::op},
 			{COMMA, Token::Type::op},
-			{P_LEFT, Token::Type::op},
-			{P_RIGHT, Token::Type::op},
-			{B_LEFT, Token::Type::op},
-			{B_RIGHT, Token::Type::op},
 
-			{"\n", Token::Type::eol},
+			{P_LEFT, Token::Type::lparen},
+			{P_RIGHT, Token::Type::rparen},
+			{B_LEFT, Token::Type::lbracket},
+			{B_RIGHT, Token::Type::rbracket},
+
 			{"\t", Token::Type::tab},
 			{" ", Token::Type::wsp},
 		};

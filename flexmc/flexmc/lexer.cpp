@@ -1,17 +1,17 @@
 #include <iostream>
 #include <regex>
 #include <unordered_map>
-#include <stdexcept>
 
-#include "lexer.h"
 #include "terminals.h"
 #include "tokens.h"
+
+#include "lexer.h"
 
 
 namespace flexMC {
 
-	Lexer::Lexer(const std::string& program)
-		: program_(program), searchStr_(program) {
+	Lexer::Lexer(const std::string& program) :
+		searchStr_(program) {
 
 		std::string allGroups = "(";
 		for (const auto& s : R_GROUPS) {
@@ -48,4 +48,6 @@ namespace flexMC {
 		}
 		return Token(Token::Type::undefined, "regex");
 	}
+
+
 }

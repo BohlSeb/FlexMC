@@ -17,9 +17,7 @@ namespace flexMC {
 
 	private:
 
-		const std::string program_;
 		std::string searchStr_;
-
 		std::regex groups_;
 		std::regex id_;
 		std::regex num_;

@@ -39,7 +39,6 @@ namespace flexMC {
 	const std::string MUL = "*";
 	const std::string DIV = "/";
 	const std::string POW = "^";
-	const std::string EQ = "==";
 	const std::string LT = "<";
 	const std::string GT = ">";
 	const std::string LE = "<=";
@@ -55,6 +54,7 @@ namespace flexMC {
 	// Internal function call and list append operators
 	const std::string CALL_ = "CALL_";
 	const std::string APPEND_ = "APPEND_";
+	const std::string INDEX_ = "INDEX_";
 
 	// Identifiers must start with either a lower case letter or "_"
 	const std::string R_ID = R"(^[_a-z]\w*)";
@@ -82,7 +82,6 @@ namespace flexMC {
 		R"(^LEN)",
 		R"(^APPEND)",
 		R"(^:=)",
-		R"(^==)",
 		R"(^\+(=?))",
 		R"(^\-(=?))",
 		R"(^\*(=?))",
@@ -95,7 +94,6 @@ namespace flexMC {
 		R"(^\))",
 		R"(^\[)",
 		R"(^\])",
-		R"(^\n)",
 		R"(^\t)",
 		R"(^\s)",
 	};

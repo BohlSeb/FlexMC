@@ -22,6 +22,10 @@ public:
 		Token::Type kW = Token::Type::keyW;
 		Token::Type op = Token::Type::op;
 		Token::Type fun = Token::Type::fun;
+		Token::Type lparen = Token::Type::lparen;
+		Token::Type lbracket = Token::Type::lbracket;
+		Token::Type rparen = Token::Type::rparen;
+		Token::Type rbracket = Token::Type::rbracket;
 
 		std::vector<Token> expected = {
 			Token(kW, "IF"),
@@ -49,7 +53,6 @@ public:
 			Token(op, "AND"),
 			Token(op, "OR"),
 			Token(op, "NOT"),
-			Token(op, "=="),
 			Token(op, "+"),
 			Token(op, "-"),
 			Token(op, "*"),
@@ -60,12 +63,12 @@ public:
 			Token(op, "<"),
 			Token(op, ">"),
 			Token(op, ","),
-			Token(op, "("),
-			Token(op, ")"),
+			Token(lparen, "("),
+			Token(rparen, ")"),
 			Token(op, "<="),
 			Token(op, ">="),
-			Token(op, "["),
-			Token(op, "]"),
+			Token(lbracket, "["),
+			Token(rbracket, "]"),
 		};
 
 		std::string testStr = "IF";
@@ -93,7 +96,6 @@ public:
 		testStr += "AND";
 		testStr += "OR";
 		testStr += "NOT";
-		testStr += "==";
 		testStr += "+";
 		testStr += "-";
 		testStr += "*";
