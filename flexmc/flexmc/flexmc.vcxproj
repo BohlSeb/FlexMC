@@ -130,18 +130,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="expression_compiler.cpp" />
     <ClCompile Include="expression_parser.cpp" />
+    <ClCompile Include="expression_stacks.cpp" />
     <ClCompile Include="flexmc.cpp" />
+    <ClCompile Include="operation_compiler.cpp" />
+    <ClCompile Include="operation.cpp" />
     <ClCompile Include="lexer.cpp">
       <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ShowIncludes>
     </ClCompile>
-    <ClCompile Include="operands.cpp" />
+    <ClCompile Include="functions_real.cpp" />
+    <ClCompile Include="operand.cpp" />
+    <ClCompile Include="operators_calc.cpp" />
     <ClCompile Include="tokens.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="operators_calc.h" />
+    <ClInclude Include="operator_compiler.h" />
+    <ClInclude Include="expression_compiler.h" />
     <ClInclude Include="expression_parser.h" />
-    <ClInclude Include="operands.h" />
+    <ClInclude Include="expression_stacks.h" />
+    <ClInclude Include="operation_compiler.h" />
     <ClInclude Include="operation.h" />
+    <ClInclude Include="functions_real.h" />
+    <ClInclude Include="operand.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="terminals.h" />
     <ClInclude Include="lexer.h" />

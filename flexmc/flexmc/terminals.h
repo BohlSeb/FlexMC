@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <string>
 
 namespace flexMC {
 
@@ -15,12 +15,16 @@ namespace flexMC {
 	const std::string MINUS_ASSIGN = "-=";
 	const std::string MUL_ASSIGN = "*=";
 	const std::string DIV_ASSIGN = "/=";
-	const std::string POW_ASSIGN = "^=";
+	const std::string POW_ASSIGN = "**=";
 
-	// Functions
-	const std::string EXP = "EXP";
-	const std::string LOG = "LOG";
-	const std::string ABS = "ABS";
+	// Real functions (element wise evaluation allowed)
+	static const std::string EXP = "EXP";
+	static const std::string LOG = "LOG";
+	static const std::string ABS = "ABS";
+	static const std::string SQRT = "SQRT";
+	static const std::string SQUARE = "SQUARE";
+
+	// Real functions taking a vector or positive number of reals
 	const std::string MIN = "MIN";
 	const std::string MAX = "MAX";
 	const std::string SUM = "SUM";
@@ -28,6 +32,7 @@ namespace flexMC {
 	const std::string G_MEAN = "GMEAN";
 	const std::string ARGMIN = "ARGMIN";
 	const std::string ARGMAX = "ARGMAX";
+	// Only taking a vector
 	const std::string LEN = "LEN";
 
 	// Operators
@@ -38,7 +43,7 @@ namespace flexMC {
 	const std::string MINUS = "-";
 	const std::string MUL = "*";
 	const std::string DIV = "/";
-	const std::string POW = "^";
+	const std::string POW = "**";
 	const std::string LT = "<";
 	const std::string GT = ">";
 	const std::string LE = "<=";
@@ -60,7 +65,11 @@ namespace flexMC {
 	const std::string R_ID = R"(^[_a-z]\w*)";
 	const std::string R_NUM = R"(^(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)";
 
-	const std::string R_GROUPS[] = {
+	const std::string R_GROUPS_1[ ] = {
+		R"(^\*\*(=?))",
+	};
+
+	const std::string R_GROUPS_2[ ] = {
 		R"(^IF)",
 		R"(^THEN)",
 		R"(^ELSE)",
@@ -72,6 +81,8 @@ namespace flexMC {
 		R"(^EXP)",
 		R"(^LOG)",
 		R"(^ABS)",
+		R"(^SQRT)",
+		R"(^SQUARE)",
 		R"(^MIN)",
 		R"(^MAX)",
 		R"(^SUM)",
@@ -86,7 +97,6 @@ namespace flexMC {
 		R"(^\-(=?))",
 		R"(^\*(=?))",
 		R"(^\/(=?))",
-		R"(^\^(=?))",
 		R"(^\<[\<=]?)",
 		R"(^\>[\>=]?)",
 		R"(^\,)",

@@ -69,4 +69,4 @@ cpp_space_around_ternary_operator = insert
 cpp_wrap_preserve_blocks = one_liners
 
 [*]
-guidelines = 100
+guidelines = 120

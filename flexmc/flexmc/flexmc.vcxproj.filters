@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\expression">
+      <UniqueIdentifier>{9fbfd658-8117-4337-a4e1-e92cd2e2cf5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\expression">
+      <UniqueIdentifier>{e6e6d5f0-18bc-45a3-b3e3-32fecc31a3bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="flexmc.cpp">
@@ -24,11 +30,29 @@
     <ClCompile Include="tokens.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="operands.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="expression_parser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\expression</Filter>
+    </ClCompile>
+    <ClCompile Include="operation.cpp">
+      <Filter>Source Files\expression</Filter>
+    </ClCompile>
+    <ClCompile Include="operand.cpp">
+      <Filter>Source Files\expression</Filter>
+    </ClCompile>
+    <ClCompile Include="expression_stacks.cpp">
+      <Filter>Source Files\expression</Filter>
+    </ClCompile>
+    <ClCompile Include="functions_real.cpp">
+      <Filter>Source Files\expression</Filter>
+    </ClCompile>
+    <ClCompile Include="operation_compiler.cpp">
+      <Filter>Source Files\expression</Filter>
+    </ClCompile>
+    <ClCompile Include="expression_compiler.cpp">
+      <Filter>Source Files\expression</Filter>
+    </ClCompile>
+    <ClCompile Include="operators_calc.cpp">
+      <Filter>Source Files\expression</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,17 +65,35 @@
     <ClInclude Include="tokens.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="operands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="operation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="operations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="expression_compiler.h">
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
     <ClInclude Include="expression_parser.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
+    <ClInclude Include="expression_stacks.h">
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
+    <ClInclude Include="operation.h">
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
+    <ClInclude Include="operand.h">
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
+    <ClInclude Include="functions_real.h">
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
+    <ClInclude Include="operation_compiler.h">
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
+    <ClInclude Include="operator_compiler.h">
+      <Filter>Header Files\expression</Filter>
+    </ClInclude>
+    <ClInclude Include="operators_calc.h">
+      <Filter>Header Files\expression</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

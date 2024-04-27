@@ -10,46 +10,40 @@
 namespace flexMC {
 
 	struct ParsingContext {
-		unsigned short int precedence;
-		bool maybePrefix = false;
-		bool maybeInfix = false;
-		bool isPrefix = false;
-		bool isInfix = false;
-		unsigned int numArgs = 0;
-		bool leftAssociative = true;
 
 		ParsingContext() : precedence(1) {}
 
-		ParsingContext(unsigned short int precedence) : precedence(precedence) {}
+		ParsingContext(const int& precedence) : precedence(precedence) {}
 
-		//ParsingContext(unsigned short int precedence, 
-		//	bool maybePrefix, 
-		//	bool maybeInfix, 
-		//	bool isPrefix, 
-		//	bool isInfix) : 
-		//	precedence(precedence),
-		//	maybePrefix(maybePrefix),
-		//	maybeInfix(maybeInfix),
-		//	isPrefix(isPrefix),
-		//	isInfix(isInfix) {}
+		int precedence;
+		bool maybe_prefix = false;
+		bool maybe_infix = false;
+		bool is_prefix = false;
+		bool is_infix = false;
+		int num_args = 0;
+		bool left_associative = true;
+
 	};
 
 	struct Token {
 
 		enum class Type {
-			eof, // x
-			wsp, // x
-			tab, // x
-			op, // x
-			fun, // x
-			num, // x
-			keyW, // x
-			id, // x
-			lparen, // x
-			rparen, // x
+			eof,
+			wsp,
+			tab,
+			op,
+			fun,
+			num,
+			keyW,
+			id,
+			lparen,
+			rparen,
 			lbracket,
 			rbracket,
-			undefined
+			undefined,
+			call_,
+			append_,
+			index_
 		};
 
 		Token(Type type, const std::string value = "") : 
@@ -78,11 +72,11 @@ namespace flexMC {
 
 		Token makeContextualized(const std::string& symbol);
 
-		Token makeCall(unsigned int numArgs);
+		Token makeCall(const int& num_args);
 
-		Token makeAppend(unsigned int numArgs);
+		Token makeAppend(const int& num_args);
 
-		Token makeIndex(unsigned int numArgs);
+		Token makeIndex(const int& num_args);
 
 		const std::unordered_map<std::string, Token::Type> TYPES = {
 
@@ -101,6 +95,8 @@ namespace flexMC {
 			{EXP, Token::Type::fun},
 			{LOG, Token::Type::fun},
 			{ABS, Token::Type::fun},
+			{SQRT, Token::Type::fun},
+			{SQUARE, Token::Type::fun},
 			{MIN, Token::Type::fun},
 			{MAX, Token::Type::fun},
 			{SUM, Token::Type::fun},

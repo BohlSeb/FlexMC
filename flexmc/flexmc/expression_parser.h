@@ -24,15 +24,21 @@ namespace flexMC {
 	private:
 
 		Lexer& lexer_;
+
 		std::deque<Token> output_;
+
 		std::vector<Token> operators_;
+
 		unsigned int numOperands_;
 
+		Token getNext();
+
 		void wantOperand();
+
 		void haveOperand();
+
 		// todo: custom exceptions?
 		void exprLineParseError(const std::string& message);
-		Token getNext(); // private
 
 	};
 

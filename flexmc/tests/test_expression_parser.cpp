@@ -36,12 +36,12 @@ public:
 			{"((a + b) * c - d) / e", "a b + c * d - e /"},
 			{"a + b * c", "a b c * +"},
 			{"a * b + c", "a b * c +"},
-			{"a^2 + b^3", "a 2 ^ b 3 ^ +"},
-			{"x^(y+1)", "x y 1 + ^"},
-			{"a + b^2 * c", "a b 2 ^ c * +"},
-			{"2 * x^3 - 5", "2 x 3 ^ * 5 -"},
-			{"(a + b)^2", "a b + 2 ^"},
-			{"x^(y + z) / 2", "x y z + ^ 2 /"},
+			{"a**2 + b ** 3", "a 2 ** b 3 ** +"},
+			{"x**(y+1)", "x y 1 + **"},
+			{"a + b ** 2  * c", "a b 2 ** c * +"},
+			{"2 * x ** 3 - 5", "2 x 3 ** * 5 -"},
+			{"(a + b)**2", "a b + 2 **"},
+			{"x **(y + z) / 2", "x y z + ** 2 /"},
 		};
 
 		for (auto& c : TestData) {
@@ -52,7 +52,7 @@ public:
 			std::stringstream res;
 			using riter = std::deque<Token>::reverse_iterator;
 			int i = 0;
-			int size = parsed.size();
+			auto size = parsed.size();
 			for (riter it = parsed.rbegin(); it != parsed.rend(); ++it) {
 				res << *it;
 				if (i < size - 1) {

@@ -3,25 +3,60 @@
 #include <vector>
 #include <cmath>
 #include <functional>
+#include <algorithm>
 
 
 namespace flexMC {
 
 	namespace binary {
 
-		inline double plus(const double& left, const double& right) {
-			return left + right;
+		const double plus(const double& left, const double& right) { return left + right; }
+
+		const std::vector<double> plus(const std::vector<double>& left, const double& right) {
+			std::vector<double> res;
+			std::transform(left.cbegin(), left.cend(), res.begin(), [&right](const double& l) {return l + right; });
+			return res;
 		}
 
-		inline std::vector<double> vecScalar(
+		const std::vector<double> plus(const double& left, const std::vector<double>& right) {
+			std::vector<double> res;
+			std::transform(right.cbegin(), right.cend(), res.begin(), [&left](const double& r) {return left + r; });
+			return res;
+		}
+
+		const std::vector<double> plus(const std::vector<double>& left, const std::vector<double>& right) {
+			std::vector<double> res;
+			std::transform(left.cbegin(), left.cend(), right.cbegin(), res.begin(), std::plus<double>());
+			return res;
+		}
+
+		const double minus(const double& left, const double& right) { return left - right; }
+
+		const std::vector<double> minus(const std::vector<double>& left, const double& right) {
+			std::vector<double> res;
+			std::transform(left.cbegin(), left.cend(), res.begin(), [&right](const double& l) {return l - right; });
+			return res;
+		}
+
+		const std::vector<double> minus(const double& left, const std::vector<double>& right) {
+			std::vector<double> res;
+			std::transform(right.cbegin(), right.cend(), res.begin(), [&left](const double& r) {return left - r; });
+			return res;
+		}
+
+		const std::vector<double> minus(const std::vector<double>& left, const std::vector<double>& right) {
+			std::vector<double> res;
+			std::transform(left.cbegin(), left.cend(), right.cbegin(), res.begin(), std::minus<double>());
+			return res;
+		}
+
+
+		std::function<std::vector<double>(const std::vector<double>&, const double&)> vecScalar(
 			const std::vector<double>& left,
 			const double& right,
 			double (*func)(const double&, const double&)) {
 			std::vector<double> res;
-			res.reserve(left.size());
-			for (auto it = std::begin(left); it != std::end(left); ++it) {
-				res.emplace_back(func(*it, right));
-			}
+			std::transform(left.cbegin(), left.cend(), res.begin(), [=](const double& l) {return func(l, right); });
 			return res;
 		}
 
