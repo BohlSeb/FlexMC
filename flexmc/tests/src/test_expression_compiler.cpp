@@ -5,39 +5,20 @@
 #include <vector>
 #include <algorithm>
 
-#include "../flexmc/operand.h"
-#include "../flexmc/operand.cpp"
+#include "lexer.h"
+#include "expression_parser.h"
+#include "expression_compiler.h"
 
-#include "../flexmc/expression_parser.h"
-//#include "../flexmc/expression_parser.cpp"
-
-#include "../flexmc/operation.h"
-#include "../flexmc/operation.cpp"
-
-#include "../flexmc/functions_real.h"
-#include "../flexmc/functions_real.cpp"
-
-#include "../flexmc/operators_calc.h"
-#include "../flexmc/operators_calc.cpp"
-
-#include "../flexmc/operation_compiler.h"
-#include "../flexmc/operation_compiler.cpp"
-
-#include "../flexmc/expression_stacks.h"
-#include "../flexmc/expression_stacks.cpp"
-
-#include "../flexmc/expression_compiler.h"
-#include "../flexmc/expression_compiler.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
+using namespace flexMC;
 
 
 TEST_CLASS(TestExpressionCompiler) {
 public:
 
 	TEST_METHOD(TestCalcOperatorsScalar) {
-		using namespace flexMC;
+
 		struct TestCase {
 			std::string infix;
 			const double result;
