@@ -31,5 +31,5 @@ jobs:
 
       - name: Run VSTest
         id: run_vstest
-        working-directory: flexmc\tests\x64\Debug\
+        working-directory: flexmc\bin\tests\x64\Debug\
         run: vstest.console.exe /Platform:x64 .\tests.dll
