@@ -13,11 +13,11 @@ namespace flexMC {
 
 	public:
 
-		ExpressionParser(Lexer& lexer) : lexer_(lexer), numOperands_(0), parsed("") {}
+		ExpressionParser(Lexer& lexer) : lexer_(lexer), parsed(""), numOperands_(0) {}
 
 		std::deque<Token> parseLine();
 
-		inline const int numOperands() { return numOperands_; }
+		inline const int numOperands() const { return numOperands_; }
 
 		std::stringstream parsed;
 

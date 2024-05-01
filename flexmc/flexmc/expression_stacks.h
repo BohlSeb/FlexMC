@@ -18,11 +18,15 @@ namespace flexMC {
 
 		const bool haveCompiled() const { return ((types_.size() == 1) && (function_symbols_.size() == 0)); }
 
-		void pushType(Type type) { types_.push_back(type); }
+		void pushType(const Type& type);
+
+		void popType();
+
+		void pushArray(const Type& type, const int& size);
 
 		const Type typesBack() const { return types_.back(); }
 
-		void popType() { types_.pop_back(); }
+		const int sizesBack() const { return sizes_.back(); }
 
 		void pushFunc(const std::string& symbol) { function_symbols_.push_back(symbol); }
 
@@ -39,6 +43,8 @@ namespace flexMC {
 		std::vector<Type> types_;
 
 		std::vector<std::string> function_symbols_;
+
+		std::vector<int> sizes_;
 
 	};
 
@@ -57,6 +63,8 @@ namespace flexMC {
 		const double& scalarsBack() const { return scalars_.back(); }
 
 		std::vector<double>& vectorsBack() { return vectors_.back(); }
+
+		std::vector<double>& vectorsBeforeBack() { return vectors_.end()[ -2 ]; }
 
 		const int& datesBack() const { return dates_.back(); }
 

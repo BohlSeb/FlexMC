@@ -4,10 +4,11 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <deque>
 
+#include "../flexmc/expression_parser.h"
 #include "../flexmc/expression_parser.cpp"
 
-using namespace flexMC;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
@@ -16,6 +17,10 @@ TEST_CLASS(TestExpressionParser) {
 public:
 
 	TEST_METHOD(TestBasicOperatorsAndOperands) {
+
+		using namespace flexMC;
+
+		// using namespace flexMC;
 		struct TestCase {
 			std::string infix;
 			std::string postfix;

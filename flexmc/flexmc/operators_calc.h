@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <functional>
+#include <cmath>
 
 #include "terminals.h"
 #include "operation.h"
@@ -29,7 +30,7 @@ namespace flexMC {
 				flexMC::POW,
 			};
 
-			using namespace std::placeholders; // std::placeholders::_1
+			using namespace std::placeholders;
 			using oprnd_t = Operands::Type;
 
 			std::string compileArguments(const std::string& symbol, Operands& stacks);
@@ -40,11 +41,11 @@ namespace flexMC {
 
 			void scVec(CalcStacks&, double (*call_back) (const double&, const double&));
 
-			// void vecSc(CalcStacks&, double (*call_back) (const double&, const double&));
+			void vecSc(CalcStacks&, double (*call_back) (const double&, const double&));
 
-			// void vecVec(CalcStacks&, double (*call_back) (const double&, const double&));
+			void vecVec(CalcStacks&, double (*call_back) (const double&, const double&));
 
-			const std::unordered_map<std::string, const std::function<void(CalcStacks&)>> operators = {
+			const std::unordered_map<std::string, std::function<void(CalcStacks&)>> operators = {
 			{
 			makeKey(flexMC::MINUS, oprnd_t::scalar, oprnd_t::scalar),
 			std::bind(binary::scSc, _1, [](const double& left, const double& right) {return left - right; })
@@ -53,6 +54,78 @@ namespace flexMC {
 			makeKey(flexMC::MINUS, oprnd_t::scalar, oprnd_t::vector),
 			std::bind(binary::scVec, _1, [](const double& left, const double& right) {return left - right; })
 			},
+			{
+			makeKey(flexMC::MINUS, oprnd_t::vector, oprnd_t::scalar),
+			std::bind(binary::vecSc, _1, [](const double& left, const double& right) {return left - right; })
+			},
+			{
+			makeKey(flexMC::MINUS, oprnd_t::vector, oprnd_t::vector),
+			std::bind(binary::vecVec, _1, [](const double& left, const double& right) {return left - right; })
+			},
+			{
+			makeKey(flexMC::PLUS, oprnd_t::scalar, oprnd_t::scalar),
+			std::bind(binary::scSc, _1, [](const double& left, const double& right) {return left + right; })
+			},
+			{
+			makeKey(flexMC::PLUS, oprnd_t::scalar, oprnd_t::vector),
+			std::bind(binary::scVec, _1, [](const double& left, const double& right) {return left + right; })
+			},
+			{
+			makeKey(flexMC::PLUS, oprnd_t::vector, oprnd_t::scalar),
+			std::bind(binary::vecSc, _1, [](const double& left, const double& right) {return left + right; })
+			},
+			{
+			makeKey(flexMC::PLUS, oprnd_t::vector, oprnd_t::vector),
+			std::bind(binary::vecVec, _1, [](const double& left, const double& right) {return left + right; })
+			},
+			{
+			makeKey(flexMC::MUL, oprnd_t::scalar, oprnd_t::scalar),
+			std::bind(binary::scSc, _1, [](const double& left, const double& right) {return left * right; })
+			},
+			{
+			makeKey(flexMC::MUL, oprnd_t::scalar, oprnd_t::vector),
+			std::bind(binary::scVec, _1, [](const double& left, const double& right) {return left * right; })
+			},
+			{
+			makeKey(flexMC::MUL, oprnd_t::vector, oprnd_t::scalar),
+			std::bind(binary::vecSc, _1, [](const double& left, const double& right) {return left * right; })
+			},
+			{
+			makeKey(flexMC::MUL, oprnd_t::vector, oprnd_t::vector),
+			std::bind(binary::vecVec, _1, [](const double& left, const double& right) {return left * right; })
+			},
+			{
+			makeKey(flexMC::DIV, oprnd_t::scalar, oprnd_t::scalar),
+			std::bind(binary::scSc, _1, [](const double& left, const double& right) {return left / right; })
+			},
+			{
+			makeKey(flexMC::DIV, oprnd_t::scalar, oprnd_t::vector),
+			std::bind(binary::scVec, _1, [](const double& left, const double& right) {return left / right; })
+			},
+			{
+			makeKey(flexMC::DIV, oprnd_t::vector, oprnd_t::scalar),
+			std::bind(binary::vecSc, _1, [](const double& left, const double& right) {return left / right; })
+			},
+			{
+			makeKey(flexMC::DIV, oprnd_t::vector, oprnd_t::vector),
+			std::bind(binary::vecVec, _1, [](const double& left, const double& right) {return left / right; })
+			},
+			{
+			makeKey(flexMC::POW, oprnd_t::scalar, oprnd_t::scalar),
+			std::bind(binary::scSc, _1, [](const double& left, const double& right) {return std::pow(left, right); })
+			},
+			{
+			makeKey(flexMC::POW, oprnd_t::scalar, oprnd_t::vector),
+			std::bind(binary::scVec, _1, [](const double& left, const double& right) {return std::pow(left, right); })
+			},
+			{
+			makeKey(flexMC::POW, oprnd_t::vector, oprnd_t::scalar),
+			std::bind(binary::vecSc, _1, [](const double& left, const double& right) {return std::pow(left, right); })
+			},
+			{
+			makeKey(flexMC::POW, oprnd_t::vector, oprnd_t::vector),
+			std::bind(binary::vecVec, _1, [](const double& left, const double& right) {return std::pow(left, right); })
+			}
 			};
 
 		}

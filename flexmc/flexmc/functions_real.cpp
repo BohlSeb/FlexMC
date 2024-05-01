@@ -101,22 +101,14 @@ namespace flexMC {
 	}
 
 	void functionsScalar::detail::calculate(CalcStacks& stacks, double (*call_back) (const double&)) {
-		const std::size_t n_scalars = stacks.size(Operands::Type::scalar);
-		// Should never happen
-		if (n_scalars < 1) {
-			throw std::runtime_error("Calc: expected double on the stack");
-		}
+		assert(stacks.size(Operands::Type::scalar) > 0);
 		const double res = call_back(stacks.scalarsBack());
 		stacks.popScalar();
 		stacks.pushScalar(res);
 	}
 
 	void functionsScalar::detail::calculate_vector(CalcStacks& stacks, double (*call_back) (const double&)) {
-		const std::size_t n_vectors = stacks.size(Operands::Type::vector);
-		// Should never happen
-		if (n_vectors < 1) {
-			throw std::runtime_error("Calc: expected vector<double> on the stack");
-		}
+		assert(stacks.size(Operands::Type::vector) > 0);
 		std::vector<double>& back = stacks.vectorsBack();
 		std::transform(back.cbegin(), back.cend(), back.begin(), call_back);
 	}

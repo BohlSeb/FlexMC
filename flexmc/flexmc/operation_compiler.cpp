@@ -44,7 +44,7 @@ namespace flexMC {
 			}
 			stacks.popType();
 		}
-		stacks.pushType(Operands::Type::vector);
+		stacks.pushArray(Operands::Type::vector, num_args);
 		return last_t;
 	}
 

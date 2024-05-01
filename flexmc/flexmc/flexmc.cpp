@@ -19,18 +19,18 @@ using namespace flexMC;
 
 int main() {
 
-	const std::string program = "1 - EXP([3, 3,3,3,3,3,3,3,3])";
+	const std::string program = "1 / [2, 2, 2, 2] + 2 ** [0,0,0,0]";
 	// const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
 	std::cout << "Program to parse >>" << std::endl;
 	std::cout << program << std::endl << std::endl;
 
-	CalcStacks calc_stacks;
-	calc_stacks.pushScalar(4.0);
-	calc_stacks.pushScalar(2.0);
+	//CalcStacks calc_stacks;
+	//calc_stacks.pushScalar(4.0);
+	//calc_stacks.pushScalar(2.0);
 
-	std::string test = "-";
-	bool res = test == flexMC::MINUS;
-	std::cout << std::boolalpha << res << std::endl;
+	//std::string test = "-";
+	//bool res = test == flexMC::MINUS;
+	//std::cout << std::boolalpha << res << std::endl;
 
 	//auto look_up = operatorsCalc::operators.find("-_S_S");
 	//if (look_up != operatorsCalc::operators.end()) {

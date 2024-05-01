@@ -1,6 +1,28 @@
+#include <cassert>
 #include "expression_stacks.h"
 
 namespace flexMC {
+
+	void Operands::pushType(const Type& type) {
+		assert((type == Operands::Type::scalar) || (type == Operands::Type::date));
+		types_.push_back(type);
+	}
+
+	void Operands::pushArray(const Type& type, const int& size) {
+		assert((type == Operands::Type::vector) || (type == Operands::Type::dateList));
+		types_.push_back(type);
+		sizes_.push_back(size);
+	}
+
+	void Operands::popType() {
+		assert(types_.size() >= 0);
+		Operands::Type back = types_.back();
+		if ((back == Operands::Type::vector) || (back == Operands::Type::dateList)) {
+			assert(sizes_.size() >= 0);
+			sizes_.pop_back();
+		}
+		types_.pop_back();
+	}
 
 	const std::size_t CalcStacks::size(Operands::Type type) const {
 		switch (type) {
