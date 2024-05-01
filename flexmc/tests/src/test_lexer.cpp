@@ -4,9 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../flexmc/lexer.h"
-#include "../flexmc/lexer.cpp"
-#include "../flexmc/tokens.cpp"
+#include "lexer.h"
 
 
 using namespace flexMC;

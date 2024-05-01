@@ -1,93 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Header Files\expression">
-      <UniqueIdentifier>{9fbfd658-8117-4337-a4e1-e92cd2e2cf5c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\expression">
-      <UniqueIdentifier>{e6e6d5f0-18bc-45a3-b3e3-32fecc31a3bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="src\expression_compiler.cpp" />
+    <ClCompile Include="src\expression_parser.cpp" />
+    <ClCompile Include="src\expression_stacks.cpp" />
+    <ClCompile Include="src\functions_real.cpp" />
+    <ClCompile Include="src\lexer.cpp" />
+    <ClCompile Include="src\operand.cpp" />
+    <ClCompile Include="src\operation.cpp" />
+    <ClCompile Include="src\operation_compiler.cpp" />
+    <ClCompile Include="src\operators_calc.cpp" />
+    <ClCompile Include="src\tokens.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="flexmc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lexer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tokens.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="expression_parser.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-    <ClCompile Include="operation.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-    <ClCompile Include="operand.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-    <ClCompile Include="expression_stacks.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-    <ClCompile Include="functions_real.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-    <ClCompile Include="operation_compiler.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-    <ClCompile Include="expression_compiler.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-    <ClCompile Include="operators_calc.cpp">
-      <Filter>Source Files\expression</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="lexer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="terminals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tokens.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="expression_compiler.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="expression_parser.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="expression_stacks.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="operation.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="operand.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="functions_real.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="operation_compiler.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="operators_calc.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
+    <ClInclude Include="src\expression_compiler.h" />
+    <ClInclude Include="src\expression_parser.h" />
+    <ClInclude Include="src\expression_stacks.h" />
+    <ClInclude Include="src\functions_real.h" />
+    <ClInclude Include="src\lexer.h" />
+    <ClInclude Include="src\operand.h" />
+    <ClInclude Include="src\operation.h" />
+    <ClInclude Include="src\operation_compiler.h" />
+    <ClInclude Include="src\operators_calc.h" />
+    <ClInclude Include="src\terminals.h" />
+    <ClInclude Include="src\tokens.h" />
   </ItemGroup>
 </Project>

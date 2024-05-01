@@ -6,8 +6,7 @@
 #include <algorithm>
 #include <deque>
 
-#include "../flexmc/expression_parser.h"
-#include "../flexmc/expression_parser.cpp"
+#include "expression_parser.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
