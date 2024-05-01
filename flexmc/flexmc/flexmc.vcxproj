@@ -146,7 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators_calc.h" />
-    <ClInclude Include="operator_compiler.h" />
     <ClInclude Include="expression_compiler.h" />
     <ClInclude Include="expression_parser.h" />
     <ClInclude Include="expression_stacks.h" />
@@ -154,7 +153,6 @@
     <ClInclude Include="operation.h" />
     <ClInclude Include="functions_real.h" />
     <ClInclude Include="operand.h" />
-    <ClInclude Include="operations.h" />
     <ClInclude Include="terminals.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="tokens.h" />

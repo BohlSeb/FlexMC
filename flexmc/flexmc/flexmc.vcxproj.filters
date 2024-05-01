@@ -65,9 +65,6 @@
     <ClInclude Include="tokens.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="operations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="expression_compiler.h">
       <Filter>Header Files\expression</Filter>
     </ClInclude>
@@ -87,9 +84,6 @@
       <Filter>Header Files\expression</Filter>
     </ClInclude>
     <ClInclude Include="operation_compiler.h">
-      <Filter>Header Files\expression</Filter>
-    </ClInclude>
-    <ClInclude Include="operator_compiler.h">
       <Filter>Header Files\expression</Filter>
     </ClInclude>
     <ClInclude Include="operators_calc.h">
