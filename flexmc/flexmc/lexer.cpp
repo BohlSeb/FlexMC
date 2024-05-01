@@ -13,12 +13,18 @@ namespace flexMC {
 	Lexer::Lexer(const std::string& program) :
 		searchStr_(program) {
 
-		std::string allGroups = "(";
-		for (const auto& s : R_GROUPS) {
-			allGroups += s + ")|(";
+		std::string all_groups_1 = "(";
+		for (const auto& s : R_GROUPS_1) {
+			all_groups_1 += s + ")|(";
 		}
 
-		groups_ = std::regex(allGroups.substr(0, allGroups.size() - 2));
+		std::string all_groups_2 = "(";
+		for (const auto& s : R_GROUPS_2) {
+			all_groups_2 += s + ")|(";
+		}
+
+		groups_1_ = std::regex(all_groups_1.substr(0, all_groups_1.size() - 2));
+		groups_2_ = std::regex(all_groups_2.substr(0, all_groups_2.size() - 2));
 		id_ = std::regex(R_ID);
 		num_ = std::regex(R_NUM);
 	}
@@ -41,7 +47,13 @@ namespace flexMC {
 			return res;
 		}
 
-		if (std::regex_search(searchStr_, match_, groups_)) {
+		if (std::regex_search(searchStr_, match_, groups_1_)) {
+			const std::string& value = match_.str();
+			searchStr_ = match_.suffix();
+			return Tokens::makeContextualized(value);
+		}
+
+		if (std::regex_search(searchStr_, match_, groups_2_)) {
 			const std::string& value = match_.str();
 			searchStr_ = match_.suffix();
 			return Tokens::makeContextualized(value);

@@ -13,26 +13,32 @@ namespace flexMC {
 
 	public:
 
-		ExpressionParser(Lexer& lexer) : lexer_(lexer), numOperands_(0), parsed("") {}
+		ExpressionParser(Lexer& lexer) : lexer_(lexer), parsed(""), numOperands_(0) {}
 
 		std::deque<Token> parseLine();
 
-		inline const int numOperands() { return numOperands_; }
+		inline const int numOperands() const { return numOperands_; }
 
 		std::stringstream parsed;
 
 	private:
 
 		Lexer& lexer_;
+
 		std::deque<Token> output_;
+
 		std::vector<Token> operators_;
+
 		unsigned int numOperands_;
 
+		Token getNext();
+
 		void wantOperand();
+
 		void haveOperand();
+
 		// todo: custom exceptions?
 		void exprLineParseError(const std::string& message);
-		Token getNext(); // private
 
 	};
 

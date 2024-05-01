@@ -30,11 +30,11 @@ namespace flexMC {
 		}
 
 		// prefix operator
-		else if ((t == type::op && token.context.maybePrefix)
+		else if ((t == type::op && token.context.maybe_prefix)
 			|| (t == type::lparen) || (t == type::lbracket)) {
-			assert(!token.context.isInfix);
-			token.context.isPrefix = true;
-			token.context.isInfix = false;
+			assert(!token.context.is_infix);
+			token.context.is_prefix = true;
+			token.context.is_infix = false;
 			// jump mul/div
 			if ((token.value == PLUS) || (token.value == MINUS)) {
 				token.context.precedence += 2;
@@ -42,13 +42,20 @@ namespace flexMC {
 			operators_.push_back(token);
 			wantOperand();
 		}
+
 		// Unmatched parenthesis or "()" expected (function with 0 args)
 		else if ((t == type::rparen) || (t == type::rbracket)) {
 			if (operators_.empty()) {
-				exprLineParseError("Unmatched paranthesis: \")\"");
+				std::stringstream msg;
+				msg << "Unmatched parenthesis/bracket: ";
+				msg << std::quoted(token.value);
+				exprLineParseError(msg.str());;
+			}
+			if (operators_.back().context.num_args > 0) {
+				exprLineParseError("Badly placed comma encountered within parentheses/brackets");
 			}
 			if (operators_.back().type == type::lbracket) {
-				exprLineParseError("\"[]\" - empty list or index not supported");
+				exprLineParseError("Empty list encountered: \"[]\"");
 			}
 			if (operators_.back().type != type::lparen) {
 				std::stringstream msg;
@@ -57,15 +64,16 @@ namespace flexMC {
 				exprLineParseError(msg.str());
 			}
 			operators_.pop_back();
-			operators_.emplace_back(Tokens::makeCall(0));
+			operators_.push_back(Tokens::makeCall(0));
 			haveOperand();
 		}
-		// Unexpted token
+
+		// Unexpected token
 		else {
 			std::stringstream msg;
-			msg << "Expected an operand (Variable/Value/Function name) or an infix operator";
-			msg << " (" << std::quoted("+, -, *, /, ',' etc") << ")";
-			msg << ", got: " << std::quoted(token.value) << "; type: " << token.type2String();
+			msg << "Expected an operand (Variable/Value/Function name) or a prefix operator";
+			msg << " (" << std::quoted("+, -") << ")";
+			msg << ", got: " << std::quoted(token.value);
 			if (t == type::eof) {
 				msg << " (end of line)";
 			}
@@ -82,7 +90,6 @@ namespace flexMC {
 			while (!operators_.empty()) {
 				Token op = operators_.back();
 				if ((op.type == type::lparen) || (op.type == type::lbracket)) {
-
 					std::stringstream msg;
 					msg << "Unmatched parenthesis/bracket: ";
 					msg << std::quoted(op.value);
@@ -96,8 +103,8 @@ namespace flexMC {
 
 		// wiki page shunting yard
 		if ((token.type == type::lparen) || (token.type == type::lbracket)) {
-			assert(!token.context.isPrefix);
-			token.context.isInfix = true;
+			assert(!token.context.is_prefix);
+			token.context.is_infix = true;
 			operators_.push_back(token);
 			wantOperand();
 		}
@@ -119,12 +126,7 @@ namespace flexMC {
 				}
 				opType = operators_.back().type;
 			}
-			Token leftClose = operators_.back();
-
-			// exclude standard left parenthesis (not a function call)
-			if (!(leftClose.type == type::lparen && leftClose.context.isPrefix)) {
-				leftClose.context.numArgs += 1;
-			}
+			operators_.back().context.num_args += 1;
 			wantOperand();
 		}
 
@@ -146,27 +148,27 @@ namespace flexMC {
 				opType = operators_.back().type;
 			}
 			Token leftClose = operators_.back();
-			unsigned int numArgs = leftClose.context.numArgs + 1;
-			if ((leftClose.type == type::lparen && leftClose.context.isInfix)) {
-				output_.emplace_front(Tokens::makeCall(numArgs));
+			unsigned int num_args = leftClose.context.num_args + 1;
+			if ((leftClose.type == type::lparen && leftClose.context.is_infix)) {
+				output_.push_front(Tokens::makeCall(num_args));
 			}
-			else if (leftClose.type == type::lbracket && leftClose.context.isPrefix) {
-				output_.emplace_front(Tokens::makeAppend(numArgs));
+			else if (leftClose.type == type::lbracket && leftClose.context.is_prefix) {
+				output_.push_front(Tokens::makeAppend(num_args));
 			}
-			else if (leftClose.type == type::lbracket && leftClose.context.isInfix) {
-				output_.emplace_front(Tokens::makeIndex(numArgs));
+			else if (leftClose.type == type::lbracket && leftClose.context.is_infix) {
+				output_.push_front(Tokens::makeIndex(num_args));
 			}
 			operators_.pop_back();
 			haveOperand();
 		}
 
-		else if ((token.type == type::op) && (token.context.maybeInfix)) {
+		else if ((token.type == type::op) && (token.context.maybe_infix)) {
 			// while ((!operators_.empty()) && (operators_.back().type != type::lparen))
 			while (!operators_.empty()) {
 				ParsingContext opC = operators_.back().context;
 				ParsingContext inputC = token.context;
 				bool higher = opC.precedence > inputC.precedence;
-				bool barelyHigher = (opC.precedence == inputC.precedence) && inputC.leftAssociative;
+				bool barelyHigher = (opC.precedence == inputC.precedence) && inputC.left_associative;
 				if (higher || barelyHigher) {
 					output_.push_front(operators_.back());
 					operators_.pop_back();
@@ -175,8 +177,8 @@ namespace flexMC {
 					break;
 				}
 			}
-			assert(!token.context.isPrefix);
-			token.context.isInfix = true;
+			assert(!token.context.is_prefix);
+			token.context.is_infix = true;
 			operators_.push_back(token);
 			wantOperand();
 
@@ -211,8 +213,10 @@ namespace flexMC {
 	void ExpressionParser::exprLineParseError(const std::string& message) {
 		std::stringstream msg;
 		msg << "Parsed: ";
-		msg << std::quoted(parsed.str());
-		msg << ", Problem: ";
+		msg << ">> ";
+		msg << parsed.str();
+		msg << " << ";
+		msg << "Problem: ";
 		msg << message;
 		throw std::runtime_error(msg.str());
 	}

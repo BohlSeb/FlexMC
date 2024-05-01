@@ -37,6 +37,12 @@ namespace flexMC {
 			return "rbracket";
 		case Type::undefined:
 			return "undefined";
+		case Type::call_:
+			return "call_";
+		case Type::append_:
+			return "append_";
+		case Type::index_:
+			return "index_";
 		default:
 			return "undefinedType";
 		}
@@ -57,8 +63,9 @@ namespace flexMC {
 
 
 	std::ostream& operator<<(std::ostream& output, const Token& token) {
-		if (token.type == Token::Type::op && ((token.value == CALL_) || (token.value == APPEND_))) {
-			output << token.value << "(" << token.context.numArgs << ")";
+		using t = Token::Type;
+		if ((token.type == t::call_) || (token.type == t::append_) || (token.type == t::index_)) {
+			output << token.value << "(" << token.context.num_args << ")";
 		}
 		else {
 			output << token.value;
@@ -76,23 +83,23 @@ namespace flexMC {
 		}
 	}
 
-	Token Tokens::makeCall(unsigned int numArgs) {
-		Token call = Token(Token::Type::op, CALL_);
-		call.context.numArgs = numArgs;
+	Token Tokens::makeCall(const int& num_args) {
+		Token call = Token(Token::Type::call_, CALL_);
+		call.context.num_args = num_args;
 		call.context.precedence = 10;
 		return call;
 	}
 
-	Token Tokens::makeAppend(unsigned int numArgs) {
-		Token call = Token(Token::Type::op, APPEND_);
-		call.context.numArgs = numArgs;
+	Token Tokens::makeAppend(const int& num_args) {
+		Token call = Token(Token::Type::append_, APPEND_);
+		call.context.num_args = num_args;
 		call.context.precedence = 10;
 		return call;
 	}
 
-	Token Tokens::makeIndex(unsigned int numArgs) {
-		Token call = Token(Token::Type::op, INDEX_);
-		call.context.numArgs = numArgs;
+	Token Tokens::makeIndex(const int& num_args) {
+		Token call = Token(Token::Type::index_, INDEX_);
+		call.context.num_args = num_args;
 		call.context.precedence = 10;
 		return call;
 	}
@@ -112,22 +119,22 @@ namespace flexMC {
 			if (t == type::op) {
 				if (tokenValue == POW) {
 					context.precedence = 9;
-					context.leftAssociative = false;
-					context.maybeInfix = true;
-					context.isInfix = true;
+					context.left_associative = false;
+					context.maybe_infix = true;
+					context.is_infix = true;
 					return Token(t, tokenValue, context);
 				}
 				// leave precedence gap to above for unary +/-
 				if ((tokenValue == MUL) || (tokenValue == DIV)) {
 					context.precedence = 7;
-					context.maybeInfix = true;
-					context.isInfix = true;
+					context.maybe_infix = true;
+					context.is_infix = true;
 					return Token(t, tokenValue, context);
 				}
 				if ((tokenValue == PLUS) || (tokenValue == MINUS)) {
 					context.precedence = 6;
-					context.maybeInfix = true;
-					context.maybePrefix = true;
+					context.maybe_infix = true;
+					context.maybe_prefix = true;
 					return Token(t, tokenValue, context);
 				}
 				if ((tokenValue == LT) ||
@@ -137,48 +144,48 @@ namespace flexMC {
 					(tokenValue == SMOOTH_LT) ||
 					(tokenValue == SMOOTH_GT)) {
 					context.precedence = 5;
-					context.leftAssociative = false;
-					context.maybeInfix = true;
-					context.isInfix = true;
+					context.left_associative = false;
+					context.maybe_infix = true;
+					context.is_infix = true;
 					return Token(t, tokenValue, context);
 				}
 				if (tokenValue == NOT) {
 					context.precedence = 4;
-					context.leftAssociative = false;
-					context.maybeInfix = true;
-					context.isInfix = true;
+					context.left_associative = false;
+					context.maybe_infix = true;
+					context.is_infix = true;
 					return Token(t, tokenValue, context);
 				}
 				if (tokenValue == AND) {
 					context.precedence = 3;
-					context.leftAssociative = false;
-					context.maybeInfix = true;
-					context.isInfix = true;
+					context.left_associative = false;
+					context.maybe_infix = true;
+					context.is_infix = true;
 					return Token(t, tokenValue, context);
 				}
 				if (tokenValue == OR) {
 					context.precedence = 2;
-					context.leftAssociative = false;
-					context.maybeInfix = true;
-					context.isInfix = true;
+					context.left_associative = false;
+					context.maybe_infix = true;
+					context.is_infix = true;
 					return Token(t, tokenValue, context);
 				}
 				if (tokenValue == COMMA) {
-					context.maybeInfix = true;
-					context.isInfix = true;
+					context.maybe_infix = true;
+					context.is_infix = true;
 					return Token(t, tokenValue, context);
 				}
 				return Token(type::undefined, tokenValue);
 			}
 			if (t == type::lparen) {
 				context.precedence = 0;
-				context.maybeInfix = true;
-				context.maybePrefix = true;
+				context.maybe_infix = true;
+				context.maybe_prefix = true;
 				return Token(t, tokenValue, context);
 			}
 			if (t == type::lbracket) {
 				context.precedence = 0;
-				context.maybePrefix = true;
+				context.maybe_prefix = true;
 				return Token(t, tokenValue, context);
 			}
 		}

@@ -38,10 +38,12 @@ public:
 			Token(kW, "-="),
 			Token(kW, "*="),
 			Token(kW, "/="),
-			Token(kW, "^="),
+			Token(kW, "**="),
 			Token(fun, "EXP"),
 			Token(fun, "LOG"),
 			Token(fun, "ABS"),
+			Token(fun, "SQRT"),
+			Token(fun, "SQUARE"),
 			Token(fun, "MIN"),
 			Token(fun, "MAX"),
 			Token(fun, "SUM"),
@@ -57,7 +59,7 @@ public:
 			Token(op, "-"),
 			Token(op, "*"),
 			Token(op, "/"),
-			Token(op, "^"),
+			Token(op, "**"),
 			Token(op, "<<"),
 			Token(op, ">>"),
 			Token(op, "<"),
@@ -81,10 +83,12 @@ public:
 		testStr += "-=";
 		testStr += "*=";
 		testStr += "/=";
-		testStr += "^=";
+		testStr += "**=";
 		testStr += "EXP";
 		testStr += "LOG";
 		testStr += "ABS";
+		testStr += "SQRT";
+		testStr += "SQUARE";
 		testStr += "MIN";
 		testStr += "MAX";
 		testStr += "SUM";
@@ -100,7 +104,7 @@ public:
 		testStr += "-";
 		testStr += "*";
 		testStr += "/";
-		testStr += "^";
+		testStr += "**";
 		testStr += "<<";
 		testStr += ">>";
 		testStr += "<";

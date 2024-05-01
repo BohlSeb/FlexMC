@@ -1,32 +1,28 @@
 #pragma once
 
-#include <vector>
-
-#include "terminals.h"
-#include "tokens.h"
-#include "operands.h"
-
-
-// Todo: We implement one big class now to experiment with 
-// allocating it to the heap during calc (this might be bad)
-
+#include <string>
+#include <functional>
+#include "expression_stacks.h"
 
 namespace flexMC {
 
+	namespace functions {
 
-	class Operation {
+		void assertNumberOfArgs(const int& min_args, const int& max_args, const std::size_t& num_args);
+
+	}
+
+	class Operation : public PostFixItem {
 
 	public:
 
-		void applyOperator(Operands& stack, const Token& op);
+		Operation(const std::function<void(CalcStacks& stacks)>& call_back) : call_back_(call_back) {}
 
-		void applyFunc(Operands& stack, const Token& func);
+		inline void evaluate(CalcStacks& stacks) override { call_back_(stacks); }
 
 	private:
 
-		void applyUnary(Operands& stack, const std::string& symbol);
-
-		void applyBinary(Operands& stack, const std::string& symbol);
+		const std::function<void(CalcStacks& stacks)> call_back_;
 
 	};
 
