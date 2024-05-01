@@ -82,7 +82,7 @@ public:
 			average = 0.0;
 			for (int i = 0; i < trys; ++i) {
 				for (auto iter = main_l.cbegin(); iter != main_l.cend(); ++iter) {
-					(*iter)->evaluate(c_stacks);
+					(*iter)->evaluate(c_stacks); 
 				}
 				average += c_stacks.scalarsBack() / trys;
 				c_stacks.popScalar();
