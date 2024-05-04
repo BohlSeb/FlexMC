@@ -53,6 +53,15 @@ namespace flexMC {
 			const std::function<void(CalcStacks&)> call_back = operatorsCalc::compileBinary(token.value, stacks);
 			return Operation(call_back);
 		}
+		if (token.context.is_prefix && operatorsCalc::isBinarySymbol(token.value)) {
+			// raises, including if symbol != MINUS, expression compiler ignores PLUS before
+			const Operands::Type t = operatorsCalc::unary::compileArgument(token.value, stacks);
+			assert(t == Operands::Type::scalar || t == Operands::Type::vector);
+			if (t == Operands::Type::scalar) {
+				return Operation(std::function<void(CalcStacks&)>(operatorsCalc::unary::scMinus));
+			}
+			return Operation(std::function<void(CalcStacks&)>(operatorsCalc::unary::vecMinus));
+		}
 		throw std::runtime_error("Unknown operator");
 	}
 

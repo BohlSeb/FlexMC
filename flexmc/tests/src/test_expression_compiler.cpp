@@ -46,13 +46,23 @@ public:
 			{"(3 + 4)**2", 49.0},
 			{"5**(2 + 3) / 6", 520.8333333333334},
 			{"3 + 4 * 5 / (2 - 1)", 23.0},
-			{"(5 * (3 + 4)) ** 2 - 8 / 4", 1223.0},
+			{"+(5 * (3 + 4)) ** 2 - 8 / 4", 1223.0},
 			{"((9 - 3) * (4 + 7) / 2) ** 2 + 10", 1099.0},
 			{"(12 / 3) * (7 - (4 + 1)) ** 2 + 10 / 2", 21.0},
 			{"2 + (5 * 4) / (3 - 1) ** 2", 7.0},
 			{"(6 * 3) / (5 - 2) ** 2 + (8 - 2) * 3", 20.0},
 			{"(2 * 3 ** (4 - 2)) / (5 - 2) + 10", 16.0},
-			{"(8 ** 2) / ((5 - 2) * (3 + 1)) - 7 + 2", 0.33333333333333304},
+			{"(8 ** +2) / ((5 - +2) * (3 + 1)) - 7 + 2", 0.33333333333333304},
+			{"-(3 + 4) * (5 - 2) / 2**3", -2.625},
+			{"10 * -((5 - 2)**2 - 4) / 3", -16.666666666666668},
+			{"2**-3 - -5 * (4 - 2) + 8 / 4", 12.125},
+			{"-(7 - 3)**2 / (5 - 2) + 4 * (9 - 2)", 22.666666666666668},
+			{"2 + -(5 * 4) / (3 - 1)**2", -3.0},
+			{"(6 * 3) / (5 - 2)**-2 + -(8 - 2) * 3", 144.0},
+			{"(2 * +3**-2) / -(5 - 2) + +10", 9.925925925925926},
+			{"(8**2) / -((5 - 2) * (3 + 1)) - 7 + 2", -10.333333333333332},
+			{"((9 - 3) * (4 + 7) / 2)**2 + -10", 1079.0},
+			{"(12 / 3) * -(7 - (4 + 1))**2 + 10 / 2", -11.0},
 		};
 
 		for (auto& c : TestData) {
@@ -66,28 +76,25 @@ public:
 			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
 			CalcStacks c_stacks;
 
-			int trys = 1;
-			double average = 0.0;
+			for (auto iter = main_l.cbegin(); iter != main_l.cend(); ++iter) {
+				(*iter)->evaluate(c_stacks);
+			}
+			double result = c_stacks.scalarsBack();
+			c_stacks.popScalar();
+			Assert::IsTrue(c_stacks.ready());
+			Assert::AreEqual(c.result, result, 1e-14);
+
+			int trys = 10000;
+			result = 0.0;
 			for (int i = 0; i < trys; ++i) {
 				for (auto iter = main_l.cbegin(); iter != main_l.cend(); ++iter) {
 					(*iter)->evaluate(c_stacks);
 				}
-				average += c_stacks.scalarsBack() / trys;
+				result += c_stacks.scalarsBack();
 				c_stacks.popScalar();
 				Assert::IsTrue(c_stacks.ready());
 			}
-			Assert::AreEqual(c.result, average, 1e-14);
-
-			trys = 10000;
-			average = 0.0;
-			for (int i = 0; i < trys; ++i) {
-				for (auto iter = main_l.cbegin(); iter != main_l.cend(); ++iter) {
-					(*iter)->evaluate(c_stacks); 
-				}
-				average += c_stacks.scalarsBack() / trys;
-				c_stacks.popScalar();
-				Assert::IsTrue(c_stacks.ready());
-			}
+			double average = result / trys;
 			Assert::AreEqual(c.result, average, 1e-10);
 		}
 

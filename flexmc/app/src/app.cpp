@@ -27,7 +27,7 @@ int main() {
 
 	if (run_main) {
 
-		const std::string program = "1 / [2, 2, 2, 2] + 2 ** [0,0,0,0]";
+		const std::string program = "(2 * 3) ** *[+1, 2] * - 1";
 		// const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
 		std::cout << "Program to parse >>" << std::endl;
 		std::cout << program << std::endl << std::endl;
