@@ -13,7 +13,10 @@ namespace flexMC {
 
 		namespace detail {
 
-			Operation compileScalar(const int& num_args, Operands& stacks);
+			Operation compileScalar(const std::string& symbol, const int& num_args, Operands& stacks);
+
+			Operation compileReduce(const std::string& symbol, const int& num_args, Operands& stacks);
+
 		}
 		
 	}

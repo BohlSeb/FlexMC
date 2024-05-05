@@ -17,7 +17,7 @@ using namespace flexMC;
 TEST_CLASS(TestExpressionCompiler) {
 public:
 
-	TEST_METHOD(TestCalcOperatorsScalar) {
+	TEST_METHOD(TestRealOperatorsScalar) {
 
 		struct TestCase {
 			std::string infix;
@@ -108,7 +108,7 @@ public:
 		}
 	}
 
-	TEST_METHOD(TestCalcOperatorsVector) {
+	TEST_METHOD(TestRealOperatorsVector) {
 		using vec = std::vector<double>;
 		struct TestCase {
 			std::string infix;
@@ -164,4 +164,65 @@ public:
 		}
 
 	}
+
+	TEST_METHOD(TestRealOperatorsReduce) {
+
+		struct TestCase {
+			std::string infix;
+			const double result;
+		};
+
+		// Test cases against python console
+
+		TestCase TestData[] = {
+			{"2 * MAX(-2, 3, 4) + 1", 9},
+			{"2 * MAX([-2, 4, 3]) + 1", 9},
+			{"2 * MIN(-2, 3, 4) + 1", -3},
+			{"2 * MIN([-2, 3, 4]) + 1", -3},
+			{"2 * ARGMAX(2, 3, 4, 3, 4) + 1", 5},
+			{"2 * ARGMAX(ABS([-2, -3, -4, -3, 4])) + 1", 5},
+			{"2 * SUM(2, 3, 4, 3, 4) + 1", 33},
+			{"2 * SUM(ABS([-2, -3, -4, -3, 4])) + 1", 33},
+			{"2 * PROD(2, 3, 4, 3, 4) + 1", 577},
+			{"2 * PROD([-2, -3, 4, -3, 4]) + 1", -575},
+			{"2 * LEN([1,1,1,1]) + 1", 9},
+			{"2 * LEN([2]) + 1", 3},
+		};
+
+		for (auto& c : TestData) {
+
+			Lexer lexer = Lexer(c.infix);
+			ExpressionParser parser = ExpressionParser(lexer);
+			std::deque<Token> parsed = parser.parseLine();
+			ExpressionCompiler compiler = ExpressionCompiler(parsed);
+			// Assert::AreEqual(compiler.resultType(), Operands::Type::scalar);
+
+			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
+			CalcStacks c_stacks;
+
+			for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
+				(*it)->evaluate(c_stacks);
+			}
+			double result = c_stacks.scalarsBack();
+			c_stacks.popScalar();
+			Assert::IsTrue(c_stacks.ready());
+			Assert::AreEqual(c.result, result, 1e-14);
+
+			int trys = 10000;
+			result = 0.0;
+			for (int i = 0; i < trys; ++i) {
+				for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
+					(*it)->evaluate(c_stacks);
+				}
+				result += c_stacks.scalarsBack();
+				c_stacks.popScalar();
+				Assert::IsTrue(c_stacks.ready());
+			}
+			double average = result / trys;
+			Assert::AreEqual(c.result, average, 1e-10);
+		}
+
+	}
+
+
 };

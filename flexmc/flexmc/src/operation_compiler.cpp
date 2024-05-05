@@ -10,19 +10,55 @@ namespace flexMC {
 		if (stacks.fSize() <= 0) {
 			throw std::runtime_error("Function call compiler expected a function symbol operand in the stack");
 		}
-		return functionCompiler::detail::compileScalar(num_args, stacks);
+		const std::string symbol = stacks.funcsBack();
+		stacks.popFunc();
+		using namespace functionsReal;
+		if (std::find(symbols_scalar.cbegin(), symbols_scalar.cend(), symbol) != symbols_scalar.cend()) {
+			return functionCompiler::detail::compileScalar(symbol, num_args, stacks);
+		}
+		if (std::find(symbols_reduce.cbegin(), symbols_reduce.cend(), symbol) != symbols_reduce.cend()) {
+			return functionCompiler::detail::compileReduce(symbol, num_args, stacks);
+		}
+		else {
+			throw std::runtime_error("Unknown function symbol");
+		}
 	}
 
-	Operation functionCompiler::detail::compileScalar(const int& num_args, Operands& stacks) {
+	Operation functionCompiler::detail::compileScalar(const std::string& symbol, const int& num_args, Operands& stacks) {
 		if (stacks.tSize() < num_args) {
 			throw std::runtime_error("Function call compiler did not find enough argument operands in the stack");
 		}
-		functionsScalar::assertNumberOfArgs(num_args);
-		const std::string symbol = stacks.funcsBack();
-		stacks.popFunc();
-		const Operands::Type return_type = functionsScalar::compileReturnType(stacks.typesBack());
-		const std::function<void(CalcStacks&)> call_back = functionsScalar::getCallback(symbol, return_type);
+		functions::assertNumberOfArgs(1, 1, num_args);
+		const Operands::Type return_type = functionsReal::compileArgType(stacks.typesBack());
+		const std::function<void(CalcStacks&)> call_back = functionsReal::scalarFunc(symbol, return_type);
 		return Operation(call_back);
+	}
+
+	Operation functionCompiler::detail::compileReduce(const std::string& symbol, const int& num_args, Operands& stacks) {
+		std::cout << "Compile reduce" << std::endl;
+		if (stacks.tSize() < num_args) {
+			throw std::runtime_error("Function call compiler did not find enough argument operands in the stack");
+		}
+		const Operands::Type arg_type = functionsReal::compileArgType(stacks.typesBack());
+		stacks.popType();
+		if (arg_type == Operands::Type::scalar) {
+			functions::assertNumberOfArgs(2, -1, num_args);
+			for (int i = 2; i <= num_args; ++i) {
+				auto t = stacks.typesBack();
+				if (t != Operands::Type::scalar) {
+					throw std::runtime_error("Function cannot take both list and scalar arguments at the same time");
+				}
+				stacks.popType();
+			}
+		}
+		else { 
+			functions::assertNumberOfArgs(1, 1, num_args);
+		}
+		stacks.pushType(Operands::Type::scalar);
+		if (arg_type == Operands::Type::scalar) {
+			return Operation(functionsReal::reduceArgs(symbol, num_args));
+		}
+		return Operation(functionsReal::reduceVec(symbol));
 	}
 
 	const Operands::Type arrayCompiler::compile(const int& num_args, Operands& stacks) {

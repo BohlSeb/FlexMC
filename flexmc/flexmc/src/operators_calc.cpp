@@ -125,21 +125,21 @@ namespace flexMC {
 		std::vector<double>& right = stacks.vectorsBack();
 		const double left = stacks.scalarsBack();
 		stacks.popScalar();
-		std::transform(right.begin(), right.end(), right.begin(), std::bind(call_back, left, _1));
+		std::transform(right.cbegin(), right.cend(), right.begin(), std::bind(call_back, left, _1));
 	}
 
 	void operatorsCalc::binary::vecSc(CalcStacks& stacks, double (*call_back) (const double&, const double&)) {
 		const double right = stacks.scalarsBack();
 		std::vector<double>& left = stacks.vectorsBack();
 		stacks.popScalar();
-		std::transform(left.begin(), left.end(), left.begin(), std::bind(call_back, _1, right));
+		std::transform(left.cbegin(), left.cend(), left.begin(), std::bind(call_back, _1, right));
 	};
 
 	void operatorsCalc::binary::vecVec(CalcStacks& stacks, double (*call_back) (const double&, const double&)) {
 		assert(stacks.size(oprnd_t::vector) >= 2);
 		const std::vector<double>& right = stacks.vectorsBack();
 		std::vector<double>& left = stacks.vectorsBeforeBack();
-		std::transform(left.begin(), left.end(), right.begin(), left.begin(), std::bind(call_back, _1, _2));
+		std::transform(left.cbegin(), left.cend(), right.cbegin(), left.begin(), std::bind(call_back, _1, _2));
 		stacks.popVector();
 	};
 

@@ -17,7 +17,7 @@ namespace flexMC {
 	const std::string DIV_ASSIGN = "/=";
 	const std::string POW_ASSIGN = "**=";
 
-	// Real functions (element wise evaluation allowed)
+	// Real functions a scalar or vector
 	static const std::string EXP = "EXP";
 	static const std::string LOG = "LOG";
 	static const std::string ABS = "ABS";
@@ -28,11 +28,11 @@ namespace flexMC {
 	const std::string MIN = "MIN";
 	const std::string MAX = "MAX";
 	const std::string SUM = "SUM";
-	const std::string A_MEAN = "AMEAN";
-	const std::string G_MEAN = "GMEAN";
+	const std::string PROD = "PROD";
 	const std::string ARGMIN = "ARGMIN";
 	const std::string ARGMAX = "ARGMAX";
-	// Only taking a vector
+
+	// Real functions taking a vector
 	const std::string LEN = "LEN";
 
 	// Operators
@@ -86,8 +86,7 @@ namespace flexMC {
 		R"(^MIN)",
 		R"(^MAX)",
 		R"(^SUM)",
-		R"(^AMEAN)",
-		R"(^GMEAN)",
+		R"(^PROD)",
 		R"(^ARGMIN)",
 		R"(^ARGMAX)",
 		R"(^LEN)",

@@ -14,7 +14,7 @@ namespace flexMC {
 		std::string wrongArgsEx = "takes exactly {} argument(s), got {}";
 		std::string noArgs = "Function {}(...) takes no argument, got {}";
 
-		if ((min_args > 0) && (num_args == 0)) {
+		if ((min_args > 0) && (num_args < min_args)) {
 			if (min_args == max_args) {
 				std::string problem = wrongArgsEx;
 				throw std::runtime_error(problem);
