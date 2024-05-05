@@ -45,8 +45,7 @@ public:
 			Token(fun, "MIN"),
 			Token(fun, "MAX"),
 			Token(fun, "SUM"),
-			Token(fun, "AMEAN"),
-			Token(fun, "GMEAN"),
+			Token(fun, "PROD"),
 			Token(fun, "ARGMIN"),
 			Token(fun, "ARGMAX"),
 			Token(fun, "LEN"),
@@ -90,8 +89,7 @@ public:
 		testStr += "MIN";
 		testStr += "MAX";
 		testStr += "SUM";
-		testStr += "AMEAN";
-		testStr += "GMEAN";
+		testStr += "PROD";
 		testStr += "ARGMIN";
 		testStr += "ARGMAX";
 		testStr += "LEN";

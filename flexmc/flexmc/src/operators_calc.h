@@ -11,16 +11,24 @@ namespace flexMC {
 
 	namespace operatorsCalc {
 
-		const std::vector<std::string> un_symbols{
-			flexMC::PLUS,
-			flexMC::MINUS,
-		};
-
 		const bool isBinarySymbol(const std::string& symbol);
 
 		std::function<void(CalcStacks&)> compileBinary(const std::string& symbol, Operands& stacks);
 
+		namespace unary {
+
+			const Operands::Type compileArgument(const std::string& symbol, Operands& stacks);
+
+			void scMinus(CalcStacks& stacks);
+
+			void vecMinus(CalcStacks& stacks);
+
+		}
+
 		namespace binary {
+
+			using namespace std::placeholders;
+			using oprnd_t = Operands::Type;
 
 			const std::vector<std::string> symbols{
 				flexMC::PLUS,
@@ -30,8 +38,6 @@ namespace flexMC {
 				flexMC::POW,
 			};
 
-			using namespace std::placeholders;
-			using oprnd_t = Operands::Type;
 
 			std::string compileArguments(const std::string& symbol, Operands& stacks);
 

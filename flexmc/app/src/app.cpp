@@ -25,9 +25,34 @@ int main() {
 
 	const bool run_main = 1;
 
+	//std::vector<int> v({ 1, 2, 3, 4 });
+	//int i = 0;
+	//const int size = v.size();
+	//while (i++ < size) {
+	//	std::cout << i << std::endl;
+	//	std::cout << v.back() << std::endl;
+	//	v.pop_back();
+	//}
+	//std::cout << "Size: " << v.size() << std::endl;
+
+	//CalcStacks stacks;
+	//std::vector<double> values;
+	//values.push_back(-1.0);
+	//values.push_back(1.0);
+	//values.push_back(2.0);
+	//values.push_back(4.0);
+	//
+	//stacks.pushVector(values);
+
+	//std::function<void(CalcStacks&)> fun = functionsReal::reduceVec("LEN");
+	//fun(stacks);
+	//std::cout << "Result: " << stacks.scalarsBack() << std::endl;
+	//stacks.popScalar();
+	//std::cout << "Ready: " << std::boolalpha << stacks.ready() << std::endl;
+
 	if (run_main) {
 
-		const std::string program = "1 / [2, 2, 2, 2] + 2 ** [0,0,0,0]";
+		const std::string program = "2 * SUM(ABS([-2, -3, -4, -3, 4])) + 1";
 		// const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
 		std::cout << "Program to parse >>" << std::endl;
 		std::cout << program << std::endl << std::endl;

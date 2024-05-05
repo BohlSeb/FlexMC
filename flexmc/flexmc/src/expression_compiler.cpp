@@ -33,8 +33,10 @@ namespace flexMC {
 				continue;
 			}
 			if (t == Token::Type::op) {
-				Operation op = operatorCompiler::compile(*tok, operands);
-				result_.push_back(std::make_shared<Operation>(std::move(op)));
+				if (!((tok->value == flexMC::PLUS) && (tok->context.is_prefix))) {
+					Operation op = operatorCompiler::compile(*tok, operands);
+					result_.push_back(std::make_shared<Operation>(std::move(op)));
+				}
 			}
 		}
 		if (!operands.haveCompiled()) {

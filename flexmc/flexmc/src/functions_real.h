@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <functional>
 #include "operation.h"
@@ -7,49 +8,59 @@
 
 namespace flexMC {
 
-	namespace functionsScalar {
+	namespace functionsReal {
 
-		const std::vector<std::string> bin_symbols{
-			flexMC::EXP,
-			flexMC::LOG,
-			flexMC::ABS,
-			flexMC::SQRT,
-			flexMC::SQUARE,
+		const std::vector<std::string> symbols_scalar{
+			EXP,
+			LOG,
+			ABS,
+			SQRT,
+			SQUARE,
 		};
 
-		void assertNumberOfArgs(const int& num_args);
+		const std::vector<std::string> symbols_reduce{
+			SUM,
+			PROD,
+			MAX,
+			MIN,
+			ARGMAX,
+			ARGMIN,
+			LEN,
+		};
 
-		const Operands::Type compileReturnType(const Operands::Type& arg_type);
+		const Operands::Type compileArgType(const Operands::Type& arg_type);
 
-		const std::function<void(CalcStacks&)> getCallback(
-			const std::string& symbol, 
-			const Operands::Type& return_type);
+		const std::function<void(CalcStacks&)> scalarFunc(const std::string& symbol, const Operands::Type& return_type);
+
+		const std::function<void(CalcStacks&)> reduceVec(const std::string& symbol);
+
+		const std::function<void(CalcStacks&)> reduceArgs(const std::string& symbol, const int& num_args);
 
 		namespace detail {
 
-			void calculate(CalcStacks& stacks, double (*call_back) (const double&));
+			void calculateScalar(CalcStacks& stacks, double (*call_back) (const double&));
 
-			void calculate_vector(CalcStacks& stacks, double (*call_back) (const double&));
+			void calculateVector(CalcStacks& stacks, double (*call_back) (const double&));
 
-			void exp(CalcStacks& stacks);
+			void accumulateScalars(CalcStacks& stacks, double (*call_back) (const double&, const double&), const double& init, const int& size);
 
-			void expVec(CalcStacks& stacks);
+			void accumulateVector(CalcStacks& stacks, double (*call_back) (const double&, const double&), const double& init);
 
-			void log(CalcStacks& stacks);
+			void minMaxScalars(CalcStacks& stacks, bool (*call_back) (const double&, const double&), const int& size);
 
-			void logVec(CalcStacks& stacks);
+			void argMaxScalars(CalcStacks& stacks, const int& size);
 
-			void abs(CalcStacks& stacks);
+			void argMinScalars(CalcStacks& stacks, const int& size);
 
-			void absVec(CalcStacks& stacks);
+			void maxVector(CalcStacks& stacks);
 
-			void sqrt(CalcStacks& stacks);
+			void minVector(CalcStacks& stacks);
 
-			void sqrtVec(CalcStacks& stacks);
+			void argMaxVector(CalcStacks& stacks);
 
-			void square(CalcStacks& stacks);
+			void argMinVector(CalcStacks& stacks);
 
-			void squareVec(CalcStacks& stacks);
+			void lenVector(CalcStacks& stacks);
 
 		}
 
