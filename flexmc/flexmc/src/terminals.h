@@ -17,7 +17,7 @@ namespace flexMC {
 	const std::string DIV_ASSIGN = "/=";
 	const std::string POW_ASSIGN = "**=";
 
-	// Real functions a scalar or vector
+	// Real functions taking a scalar or vector
 	static const std::string EXP = "EXP";
 	static const std::string LOG = "LOG";
 	static const std::string ABS = "ABS";

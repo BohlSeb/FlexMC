@@ -35,7 +35,6 @@ namespace flexMC {
 	}
 
 	Operation functionCompiler::detail::compileReduce(const std::string& symbol, const int& num_args, Operands& stacks) {
-		std::cout << "Compile reduce" << std::endl;
 		if (stacks.tSize() < num_args) {
 			throw std::runtime_error("Function call compiler did not find enough argument operands in the stack");
 		}
