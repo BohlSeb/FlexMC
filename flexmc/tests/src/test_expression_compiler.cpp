@@ -65,20 +65,18 @@ public:
 			{"(12 / 3) * -(7 - (4 + 1))**2 + 10 / 2", -11.0},
 		};
 
+		ExpressionCompiler compiler;
+
 		for (auto& c : TestData) {
 
 			Lexer lexer = Lexer(c.infix);
 			ExpressionParser parser = ExpressionParser(lexer);
 			std::deque<Token> parsed = parser.parseLine();
-			ExpressionCompiler compiler = ExpressionCompiler(parsed);
-			// Assert::AreEqual(compiler.resultType(), Operands::Type::scalar);
 
-			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
+			Expression expression;
+			compiler.compile(parsed, expression);
 			CalcStacks c_stacks;
-
-			for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-				(*it)->evaluate(c_stacks);
-			}
+			expression.evaluate(c_stacks);
 			double result = c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			Assert::IsTrue(c_stacks.ready());
@@ -87,9 +85,7 @@ public:
 			int trys = 10000;
 			result = 0.0;
 			for (int i = 0; i < trys; ++i) {
-				for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-					(*it)->evaluate(c_stacks);
-				}
+				expression.evaluate(c_stacks);
 				result += c_stacks.scalarsBack();
 				c_stacks.popScalar();
 				Assert::IsTrue(c_stacks.ready());
@@ -131,19 +127,18 @@ public:
 			{"3 + 4 * 5 / (EXP(LOG([2, 2] - [1, 1])))", vec({23.0, 23.0})},
 		};
 
+		ExpressionCompiler compiler;
+
 		for (auto& c : TestData) {
 
 			Lexer lexer = Lexer(c.infix);
 			ExpressionParser parser = ExpressionParser(lexer);
 			std::deque<Token> parsed = parser.parseLine();
-			ExpressionCompiler compiler = ExpressionCompiler(parsed);
-
-			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
+			
+			Expression expression;
+			compiler.compile(parsed, expression);
 			CalcStacks c_stacks;
-
-			for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-				(*it)->evaluate(c_stacks);
-			}
+			expression.evaluate(c_stacks);
 			vec result = c_stacks.vectorsBack();
 			c_stacks.popVector();
 			Assert::IsTrue(c_stacks.ready());
@@ -152,9 +147,7 @@ public:
 			int trys = 10000;
 			vec result_2 = vec(result.size(), 0.0);
 			for (int i = 0; i < trys; ++i) {
-				for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-					(*it)->evaluate(c_stacks);
-				}
+				expression.evaluate(c_stacks);
 				std::transform(result_2.cbegin(), result_2.cend(), c.result.cbegin(), result_2.begin(), std::plus<double>());
 				c_stacks.popVector();
 				Assert::IsTrue(c_stacks.ready());
@@ -172,8 +165,6 @@ public:
 			const double result;
 		};
 
-		// Test cases against python console
-
 		TestCase TestData[] = {
 			{"2 * MAX(-2, 3, 4) + 1", 9},
 			{"2 * MAX([-2, 4, 3]) + 1", 9},
@@ -189,20 +180,19 @@ public:
 			{"2 * LEN([2]) + 1", 3},
 		};
 
+		ExpressionCompiler compiler;
+
 		for (auto& c : TestData) {
 
 			Lexer lexer = Lexer(c.infix);
 			ExpressionParser parser = ExpressionParser(lexer);
 			std::deque<Token> parsed = parser.parseLine();
-			ExpressionCompiler compiler = ExpressionCompiler(parsed);
-			// Assert::AreEqual(compiler.resultType(), Operands::Type::scalar);
 
-			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
+			Expression expression;
+			compiler.compile(parsed, expression);
 			CalcStacks c_stacks;
+			expression.evaluate(c_stacks);
 
-			for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-				(*it)->evaluate(c_stacks);
-			}
 			double result = c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			Assert::IsTrue(c_stacks.ready());
@@ -211,9 +201,7 @@ public:
 			int trys = 10000;
 			result = 0.0;
 			for (int i = 0; i < trys; ++i) {
-				for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-					(*it)->evaluate(c_stacks);
-				}
+				expression.evaluate(c_stacks);
 				result += c_stacks.scalarsBack();
 				c_stacks.popScalar();
 				Assert::IsTrue(c_stacks.ready());

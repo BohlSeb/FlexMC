@@ -25,4 +25,7 @@
     <ClInclude Include="src\terminals.h" />
     <ClInclude Include="src\tokens.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
+  </ItemGroup>
 </Project>

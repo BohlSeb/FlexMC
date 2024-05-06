@@ -9,27 +9,25 @@
 
 namespace flexMC {
 
-	class ExpressionCompiler {
+	class Expression {
 
 	public:
 
-		ExpressionCompiler(const std::deque<Token>& post_fix) : post_fix_(post_fix) { compile(); }
+		template <class T>
+		inline void addItem(T item) { items_.emplace_back(std::make_unique<T>(std::move(item))); }
 
-		const Operands::Type resultType() const { return return_type_; }
-
-		// change to unique ptr and perform calculation within this class?
-		std::vector<std::shared_ptr<PostFixItem>> compiled() { return result_; }
+		void evaluate(CalcStacks& stacks);
 
 	private:
 
-		void compile();
+		std::vector<std::unique_ptr<PostFixItem>> items_;
 
-		const std::deque<Token>& post_fix_;
+	};
 
-		Operands::Type return_type_;
+	struct ExpressionCompiler {
 
-		std::vector<std::shared_ptr<PostFixItem>> result_;
-	
+		const Operands::CompileReport compile(const std::deque<Token>& post_fix, Expression& expression);
+
 	};
 
 }

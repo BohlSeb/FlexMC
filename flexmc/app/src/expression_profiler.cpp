@@ -44,23 +44,22 @@ void scalarOperations() {
 		{"(8 ** 2) / ((5 - 2) * (3 + 1)) - 7 + 2", 0.33333333333333304},
 	};
 
+	ExpressionCompiler compiler;
+
 	for (auto& c : TestData) {
 
 		Lexer lexer = Lexer(c.infix);
 		ExpressionParser parser = ExpressionParser(lexer);
 		std::deque<Token> parsed = parser.parseLine();
-		ExpressionCompiler compiler = ExpressionCompiler(parsed);
-		// Assert::AreEqual(compiler.resultType(), Operands::Type::scalar);
-
-		std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
+		
+		Expression expression;
+		compiler.compile(parsed, expression);
 		CalcStacks c_stacks;
 
-		int trys = 1;
+		int trys = 100000;
 		double average = 0.0;
 		for (int i = 0; i < trys; ++i) {
-			for (auto iter = main_l.cbegin(); iter != main_l.cend(); ++iter) {
-				(*iter)->evaluate(c_stacks);
-			}
+			expression.evaluate(c_stacks);
 			average += c_stacks.scalarsBack() / trys;
 			c_stacks.popScalar();
 		}
@@ -68,9 +67,7 @@ void scalarOperations() {
 		trys = 10000;
 		average = 0.0;
 		for (int i = 0; i < trys; ++i) {
-			for (auto iter = main_l.cbegin(); iter != main_l.cend(); ++iter) {
-				(*iter)->evaluate(c_stacks);
-			}
+			expression.evaluate(c_stacks);
 			average += c_stacks.scalarsBack() / trys;
 			c_stacks.popScalar();
 		}
