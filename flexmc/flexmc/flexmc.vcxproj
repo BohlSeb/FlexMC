@@ -43,6 +43,9 @@
     <ClInclude Include="src\terminals.h" />
     <ClInclude Include="src\tokens.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

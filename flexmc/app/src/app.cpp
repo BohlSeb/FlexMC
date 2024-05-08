@@ -21,9 +21,17 @@ using namespace flexMC;
 
 int main() {
 
-	// scalarOperations();
+	scalarOperations();
 
-	const bool run_main = 1;
+	const bool run_main = 0;
+
+	//struct Test {
+	//	Test(int x, int y) : x(x), y(y) {}
+	//	int x;
+	//	int y;
+	//};
+
+	//Test e();
 
 	//std::vector<int> v({ 1, 2, 3, 4 });
 	//int i = 0;
@@ -68,18 +76,17 @@ int main() {
 				std::cout << (*iter).value << " ";
 			}
 			std::cout << std::endl;
-			ExpressionCompiler compiler = ExpressionCompiler(parsed);
+			ExpressionCompiler compiler;
+			Expression expression;
+			auto report = compiler.compile(parsed, expression);
 			std::cout << "flexmc compiled" << std::endl;
 
-			std::vector<std::shared_ptr<PostFixItem>> main_loop = compiler.compiled();
-			Operands::Type return_type = compiler.resultType();
+			Operands::Type return_type = report.ret_type;
 			std::cout << "Return type: " << return_type << std::endl;
 
-			CalcStacks c_stacks;
+			CalcStacks c_stacks(0,0,0,0);
 
-			for (auto iter = main_loop.cbegin(); iter != main_loop.cend(); ++iter) {
-				(*iter)->evaluate(c_stacks);
-			}
+			expression.evaluate(c_stacks);
 			if (c_stacks.size(Operands::Type::scalar) == 1) {
 				std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
 				c_stacks.popScalar();

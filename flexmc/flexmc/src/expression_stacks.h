@@ -16,7 +16,17 @@ namespace flexMC {
 			dateList
 		};
 
+		struct CompileReport {
+			CompileReport(Type ret_type, const int max_scalar, const int max_vector) :
+				ret_type(ret_type), max_scalar(max_scalar), max_vector(max_vector) {}
+			const Type ret_type;
+			const int max_scalar;
+			const int max_vector;
+		};
+
 		const bool haveCompiled() const { return ((types_.size() == 1) && (function_symbols_.size() == 0)); }
+
+		const CompileReport report() const { return CompileReport(types_.back(), scalar_size_max_, vec_size_max_); }
 
 		void pushType(const Type& type);
 
@@ -26,7 +36,7 @@ namespace flexMC {
 
 		const Type typesBack() const { return types_.back(); }
 
-		const int sizesBack() const { return sizes_.back(); }
+		const int sizesBack() const { return vector_sizes_.back(); }
 
 		void pushFunc(const std::string& symbol) { function_symbols_.push_back(symbol); }
 
@@ -38,19 +48,28 @@ namespace flexMC {
 
 		const std::size_t fSize() const { return function_symbols_.size(); }
 
+		const int maxSize(const Type& type) const;
+
 	private:
 
 		std::vector<Type> types_;
 
 		std::vector<std::string> function_symbols_;
 
-		std::vector<int> sizes_;
+		std::vector<int> vector_sizes_;
+
+		int vec_size_ = 0;
+		int vec_size_max_ = 0;
+		int scalar_size_ = 0;
+		int scalar_size_max_ = 0;
 
 	};
 
 	class CalcStacks {
 
 	public:
+
+		CalcStacks(const int& s_size, const int& v_size, const int& d_size, const int& d_l_size);
 
 		void pushScalar(const double& value) { scalars_.push_back(value); }
 
@@ -64,7 +83,7 @@ namespace flexMC {
 
 		std::vector<double>& vectorsBack() { return vectors_.back(); }
 
-		std::vector<double>& vectorsBeforeBack() { return vectors_.end()[ -2 ]; }
+		std::vector<double>& vectorsBeforeBack() { return vectors_.end()[-2]; }
 
 		const int& datesBack() const { return dates_.back(); }
 

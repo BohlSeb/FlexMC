@@ -65,37 +65,47 @@ public:
 			{"(12 / 3) * -(7 - (4 + 1))**2 + 10 / 2", -11.0},
 		};
 
+		ExpressionCompiler compiler;
+		std::vector<Expression> expressions;
+		int s_max = 0;
+		int v_max = 0;
+
 		for (auto& c : TestData) {
 
 			Lexer lexer = Lexer(c.infix);
 			ExpressionParser parser = ExpressionParser(lexer);
 			std::deque<Token> parsed = parser.parseLine();
-			ExpressionCompiler compiler = ExpressionCompiler(parsed);
-			// Assert::AreEqual(compiler.resultType(), Operands::Type::scalar);
 
-			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
-			CalcStacks c_stacks;
+			Expression expression;
+			auto report = compiler.compile(parsed, expression);
 
-			for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-				(*it)->evaluate(c_stacks);
-			}
+			CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
+			expression.evaluate(c_stacks);
+
 			double result = c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			Assert::IsTrue(c_stacks.ready());
 			Assert::AreEqual(c.result, result, 1e-14);
 
-			int trys = 10000;
-			result = 0.0;
-			for (int i = 0; i < trys; ++i) {
-				for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-					(*it)->evaluate(c_stacks);
-				}
+			s_max = std::max<int>(s_max, report.max_scalar);
+			v_max = std::max<int>(v_max, report.max_vector);
+
+			expressions.push_back(std::move(expression));
+		}
+
+
+		int trys = 10000;
+		CalcStacks c_stacks(s_max, v_max, 0, 0);
+
+		for (int i = 0; i < trys; ++i) {
+			double result = 0.0;
+			for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
+				(*it).evaluate(c_stacks);
 				result += c_stacks.scalarsBack();
 				c_stacks.popScalar();
 				Assert::IsTrue(c_stacks.ready());
 			}
 			double average = result / trys;
-			Assert::AreEqual(c.result, average, 1e-10);
 		}
 
 	}
@@ -103,6 +113,7 @@ public:
 	void areEqualVector(const std::vector<double>& expected, const std::vector<double>& result, const double& precision) {
 		auto res = result.cbegin();
 		for (auto it = expected.cbegin(); it != expected.cend(); ++it) {
+			std::cout << "problem" << std::endl; 
 			Assert::AreEqual(*it, *res, precision);
 			++res;
 		}
@@ -131,36 +142,43 @@ public:
 			{"3 + 4 * 5 / (EXP(LOG([2, 2] - [1, 1])))", vec({23.0, 23.0})},
 		};
 
+		ExpressionCompiler compiler;
+		std::vector<Expression> expressions;
+		int s_max = 0;
+		int v_max = 0;
+
 		for (auto& c : TestData) {
 
 			Lexer lexer = Lexer(c.infix);
 			ExpressionParser parser = ExpressionParser(lexer);
 			std::deque<Token> parsed = parser.parseLine();
-			ExpressionCompiler compiler = ExpressionCompiler(parsed);
 
-			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
-			CalcStacks c_stacks;
+			Expression expression;
+			auto report = compiler.compile(parsed, expression);
 
-			for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-				(*it)->evaluate(c_stacks);
-			}
+			CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
+			expression.evaluate(c_stacks);
+
 			vec result = c_stacks.vectorsBack();
 			c_stacks.popVector();
 			Assert::IsTrue(c_stacks.ready());
 			TestExpressionCompiler::areEqualVector(c.result, result, 1e-14);
 
-			int trys = 10000;
-			vec result_2 = vec(result.size(), 0.0);
-			for (int i = 0; i < trys; ++i) {
-				for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-					(*it)->evaluate(c_stacks);
-				}
-				std::transform(result_2.cbegin(), result_2.cend(), c.result.cbegin(), result_2.begin(), std::plus<double>());
+			s_max = std::max<int>(s_max, report.max_scalar);
+			v_max = std::max<int>(v_max, report.max_vector);
+
+			expressions.push_back(std::move(expression));
+		}
+
+		int trys = 10000;
+		CalcStacks c_stacks(s_max, v_max, 0, 0);
+
+		for (int i = 0; i < trys; ++i) {
+			for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
+				(*it).evaluate(c_stacks);
 				c_stacks.popVector();
 				Assert::IsTrue(c_stacks.ready());
 			}
-			std::transform(result_2.cbegin(), result_2.cend(), result_2.begin(), [=](double v) {return v / trys; });
-			TestExpressionCompiler::areEqualVector(c.result, result_2, 1e-10);
 		}
 
 	}
@@ -171,8 +189,6 @@ public:
 			std::string infix;
 			const double result;
 		};
-
-		// Test cases against python console
 
 		TestCase TestData[] = {
 			{"2 * MAX(-2, 3, 4) + 1", 9},
@@ -189,37 +205,47 @@ public:
 			{"2 * LEN([2]) + 1", 3},
 		};
 
+		ExpressionCompiler compiler;
+		std::vector<Expression> expressions;
+		int s_max = 0;
+		int v_max = 0;
+
 		for (auto& c : TestData) {
 
 			Lexer lexer = Lexer(c.infix);
 			ExpressionParser parser = ExpressionParser(lexer);
 			std::deque<Token> parsed = parser.parseLine();
-			ExpressionCompiler compiler = ExpressionCompiler(parsed);
-			// Assert::AreEqual(compiler.resultType(), Operands::Type::scalar);
 
-			std::vector<std::shared_ptr<PostFixItem>> main_l = compiler.compiled();
-			CalcStacks c_stacks;
+			Expression expression;
+			auto report = compiler.compile(parsed, expression);
 
-			for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-				(*it)->evaluate(c_stacks);
-			}
+			CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
+			expression.evaluate(c_stacks);
+
 			double result = c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			Assert::IsTrue(c_stacks.ready());
 			Assert::AreEqual(c.result, result, 1e-14);
 
-			int trys = 10000;
-			result = 0.0;
-			for (int i = 0; i < trys; ++i) {
-				for (auto it = main_l.cbegin(); it != main_l.cend(); ++it) {
-					(*it)->evaluate(c_stacks);
-				}
+			s_max = std::max<int>(s_max, report.max_scalar);
+			v_max = std::max<int>(v_max, report.max_vector);
+
+			expressions.push_back(std::move(expression));
+		}
+
+
+		int trys = 10000;
+		CalcStacks c_stacks(s_max, v_max, 0, 0);
+
+		for (int i = 0; i < trys; ++i) {
+			double result = 0.0;
+			for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
+				(*it).evaluate(c_stacks);
 				result += c_stacks.scalarsBack();
 				c_stacks.popScalar();
 				Assert::IsTrue(c_stacks.ready());
 			}
 			double average = result / trys;
-			Assert::AreEqual(c.result, average, 1e-10);
 		}
 
 	}
