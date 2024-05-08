@@ -17,7 +17,7 @@ namespace flexMC {
 		};
 
 		struct CompileReport {
-			CompileReport(Type ret_type, const int max_scalar, const int max_vector) : 
+			CompileReport(Type ret_type, const int max_scalar, const int max_vector) :
 				ret_type(ret_type), max_scalar(max_scalar), max_vector(max_vector) {}
 			const Type ret_type;
 			const int max_scalar;
@@ -69,6 +69,8 @@ namespace flexMC {
 
 	public:
 
+		CalcStacks(const int& s_size, const int& v_size, const int& d_size, const int& d_l_size);
+
 		void pushScalar(const double& value) { scalars_.push_back(value); }
 
 		void pushVector(const std::vector<double>& value) { vectors_.push_back(value); }
@@ -81,7 +83,7 @@ namespace flexMC {
 
 		std::vector<double>& vectorsBack() { return vectors_.back(); }
 
-		std::vector<double>& vectorsBeforeBack() { return vectors_.end()[ -2 ]; }
+		std::vector<double>& vectorsBeforeBack() { return vectors_.end()[-2]; }
 
 		const int& datesBack() const { return dates_.back(); }
 

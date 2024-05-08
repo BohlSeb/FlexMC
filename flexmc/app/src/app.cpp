@@ -21,9 +21,9 @@ using namespace flexMC;
 
 int main() {
 
-	// scalarOperations();
+	scalarOperations();
 
-	const bool run_main = 1;
+	const bool run_main = 0;
 
 	//struct Test {
 	//	Test(int x, int y) : x(x), y(y) {}
@@ -84,7 +84,7 @@ int main() {
 			Operands::Type return_type = report.ret_type;
 			std::cout << "Return type: " << return_type << std::endl;
 
-			CalcStacks c_stacks;
+			CalcStacks c_stacks(0,0,0,0);
 
 			expression.evaluate(c_stacks);
 			if (c_stacks.size(Operands::Type::scalar) == 1) {

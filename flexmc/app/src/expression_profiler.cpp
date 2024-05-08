@@ -1,3 +1,4 @@
+#include <cassert>
 #include "expression_profiler.h"
 #include "lexer.h"
 #include "expression_parser.h"
@@ -6,14 +7,26 @@
 using namespace flexMC;
 
 
+void areEqualVector(const std::vector<double>& expected, const std::vector<double>& result, const double& precision) {
+	auto res = result.cbegin();
+	for (auto it = expected.cbegin(); it != expected.cend(); ++it) {
+		std::cout << "problem" << std::endl;
+		assert(std::fabs(*it -  *res) < precision);
+		++res;
+	}
+}
+
+
 void scalarOperations() {
+
+	// Test cases against python console
+
+	// Scalar tests
 
 	struct TestCase {
 		std::string infix;
 		const double result;
 	};
-
-	// Test cases against python console
 
 	TestCase TestData[] = {
 		{"2 + 3", 5.0},
@@ -54,7 +67,8 @@ void scalarOperations() {
 		
 		Expression expression;
 		compiler.compile(parsed, expression);
-		CalcStacks c_stacks;
+		auto report = compiler.compile(parsed, expression);
+		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 
 		int trys = 100000;
 		double average = 0.0;
@@ -72,5 +86,62 @@ void scalarOperations() {
 			c_stacks.popScalar();
 		}
 	}
+
+	//// Vector Tests
+
+	//using vec = std::vector<double>;
+
+
+
+	//struct TestCase {
+	//	std::string infix;
+	//	const vec result;
+	//};
+
+	//TestCase TestData[] = {
+	//	{"[2, 2] + [3, 2]", vec({5.0, 4.0})},
+	//	{"[2, 2] / [2, 2]", vec({1.0, 1.0})},
+	//	{"[2, 2] * [2, 2]", vec({4.0, 4.0})},
+	//	{"[-2, -2] + [2, 2]", vec({0.0, 0.0})},
+	//	{"[-2, -2] - [2, 2]", vec({-4.0, -4.0})},
+	//	{"EXP(LOG([2, 2]))", vec({2.0, 2.0})},
+	//	{"ABS(-1 * [4, 4, 4, 4, 4])", vec({4, 4, 4, 4, 4})},
+	//	{"SQUARE([-1, 1, 2, 2])", vec({1, 1, 4, 4})},
+	//	{"-SQRT([4, 4, 4, 4])", vec({-2, -2, -2, -2})},
+	//	{"ABS(-1 * [4, 4, 4, 4, 4])", vec({4, 4, 4, 4, 4})},
+	//	{"[2, 1] * (3 + 4)", vec({14.0, 7.0})},
+	//	{"2**[3, 3] + 4**5", vec({1032, 1032})},
+	//	{"3 + 4 * 5 / (EXP(LOG([2, 2] - [1, 1])))", vec({23.0, 23.0})},
+	//};
+
+	//ExpressionCompiler compiler;
+
+	//for (auto& c : TestData) {
+
+	//	Lexer lexer = Lexer(c.infix);
+	//	ExpressionParser parser = ExpressionParser(lexer);
+	//	std::deque<Token> parsed = parser.parseLine();
+
+	//	Expression expression;
+	//	auto report = compiler.compile(parsed, expression);
+	//	CalcStacks c_stacks(0, 0, 0, 0);
+	//	// CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
+	//	expression.evaluate(c_stacks);
+	//	vec result = c_stacks.vectorsBack();
+	//	c_stacks.popVector();
+	//	assert(c_stacks.ready());
+	//	areEqualVector(c.result, result, 1e-14);
+
+	//	int trys = 10000;
+	//	vec result_2 = vec(result.size(), 0.0);
+	//	for (int i = 0; i < trys; ++i) {
+	//		expression.evaluate(c_stacks);
+	//		std::transform(result_2.cbegin(), result_2.cend(), c.result.cbegin(), result_2.begin(), std::plus<double>());
+	//		c_stacks.popVector();
+	//		assert(c_stacks.ready());
+	//	}
+	//	std::transform(result_2.cbegin(), result_2.cend(), result_2.begin(), [=](double v) {return v / trys; });
+	//	areEqualVector(c.result, result_2, 1e-10);
+	//}
 
 }

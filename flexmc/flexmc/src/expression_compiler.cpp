@@ -20,7 +20,6 @@ namespace flexMC {
 				Number num = Number(tok->value);
 				num.compile(operands);
 				expression.addItem<Number>(num);
-				// result_.push_back(std::make_shared<Number>(std::move(num)));
 				continue;
 			}
 			if (t == Token::Type::fun) {
@@ -29,7 +28,6 @@ namespace flexMC {
 			}
 			if (t == Token::Type::call_) {
 				Operation function = functionCompiler::compile(tok->context.num_args, operands);
-				// result_.push_back(std::make_shared<Operation>(std::move(function)));
 				expression.addItem<Operation>(function);
 				continue;
 			}
@@ -38,7 +36,6 @@ namespace flexMC {
 				if (elem_t == Operands::Type::scalar) {
 					Vector v = Vector(tok->context.num_args);
 					expression.addItem<Vector>(v);
-					// result_.push_back(std::make_shared<Vector>(tok->context.num_args));
 				}
 				continue;
 			}
@@ -46,7 +43,6 @@ namespace flexMC {
 				if (!((tok->value == flexMC::PLUS) && (tok->context.is_prefix))) {
 					Operation op = operatorCompiler::compile(*tok, operands);
 					expression.addItem<Operation>(op);
-					// result_.push_back(std::make_shared<Operation>(std::move(op)));
 				}
 			}
 		}

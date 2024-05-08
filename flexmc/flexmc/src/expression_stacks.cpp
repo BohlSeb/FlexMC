@@ -49,6 +49,14 @@ namespace flexMC {
 
 	}
 
+	CalcStacks::CalcStacks(const int& s_size, const int& v_size, const int& d_size, const int& d_l_size) {
+		scalars_.reserve(s_size);
+		vectors_.reserve(v_size);
+		dates_.reserve(d_size);
+		date_lists_.reserve(d_l_size);
+	}
+	
+
 	const std::size_t CalcStacks::size(Operands::Type type) const {
 		switch (type) {
 		case Operands::Type::scalar:
