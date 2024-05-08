@@ -99,7 +99,7 @@ public:
 
 		for (int i = 0; i < trys; ++i) {
 			double result = 0.0;
-			for (auto it = expressions.begin(); it != expressions.end(); ++it) {
+			for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
 				(*it).evaluate(c_stacks);
 				result += c_stacks.scalarsBack();
 				c_stacks.popScalar();
@@ -174,7 +174,7 @@ public:
 		CalcStacks c_stacks(s_max, v_max, 0, 0);
 
 		for (int i = 0; i < trys; ++i) {
-			for (auto it = expressions.begin(); it != expressions.end(); ++it) {
+			for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
 				(*it).evaluate(c_stacks);
 				c_stacks.popVector();
 				Assert::IsTrue(c_stacks.ready());
@@ -239,7 +239,7 @@ public:
 
 		for (int i = 0; i < trys; ++i) {
 			double result = 0.0;
-			for (auto it = expressions.begin(); it != expressions.end(); ++it) {
+			for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
 				(*it).evaluate(c_stacks);
 				result += c_stacks.scalarsBack();
 				c_stacks.popScalar();

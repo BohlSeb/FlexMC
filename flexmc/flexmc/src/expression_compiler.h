@@ -16,7 +16,7 @@ namespace flexMC {
 		template <class T>
 		inline void addItem(T item) { items_.emplace_back(std::make_unique<T>(std::move(item))); }
 
-		void evaluate(CalcStacks& stacks);
+		void evaluate(CalcStacks& stacks) const;
 
 	private:
 

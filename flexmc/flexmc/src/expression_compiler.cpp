@@ -5,7 +5,7 @@
 
 namespace flexMC {
 
-	void Expression::evaluate(CalcStacks& stacks) {
+	void Expression::evaluate(CalcStacks& stacks) const {
 		for (auto it = items_.cbegin(); it != items_.cend(); ++it) {
 			(*it)->evaluate(stacks);
 		}

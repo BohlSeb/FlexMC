@@ -70,16 +70,8 @@ void scalarOperations() {
 		auto report = compiler.compile(parsed, expression);
 		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 
-		int trys = 100000;
+		int trys = 10000;
 		double average = 0.0;
-		for (int i = 0; i < trys; ++i) {
-			expression.evaluate(c_stacks);
-			average += c_stacks.scalarsBack() / trys;
-			c_stacks.popScalar();
-		}
-
-		trys = 10000;
-		average = 0.0;
 		for (int i = 0; i < trys; ++i) {
 			expression.evaluate(c_stacks);
 			average += c_stacks.scalarsBack() / trys;
