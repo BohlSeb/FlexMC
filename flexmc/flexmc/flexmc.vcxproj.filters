@@ -1,31 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\expression_compiler.cpp" />
-    <ClCompile Include="src\expression_parser.cpp" />
-    <ClCompile Include="src\expression_stacks.cpp" />
-    <ClCompile Include="src\functions_real.cpp" />
     <ClCompile Include="src\lexer.cpp" />
-    <ClCompile Include="src\operand.cpp" />
-    <ClCompile Include="src\operation.cpp" />
-    <ClCompile Include="src\operation_compiler.cpp" />
-    <ClCompile Include="src\operators_calc.cpp" />
     <ClCompile Include="src\tokens.cpp" />
+    <ClCompile Include="src\expression_compiler.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\expression_parser.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\expression_stacks.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\functions_real.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\operand.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\operation.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\operation_compiler.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\operators_calc.cpp">
+      <Filter>expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\expression_compiler.h" />
-    <ClInclude Include="src\expression_parser.h" />
-    <ClInclude Include="src\expression_stacks.h" />
-    <ClInclude Include="src\functions_real.h" />
     <ClInclude Include="src\lexer.h" />
-    <ClInclude Include="src\operand.h" />
-    <ClInclude Include="src\operation.h" />
-    <ClInclude Include="src\operation_compiler.h" />
-    <ClInclude Include="src\operators_calc.h" />
     <ClInclude Include="src\terminals.h" />
     <ClInclude Include="src\tokens.h" />
+    <ClInclude Include="src\expression_compiler.h">
+      <Filter>expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\expression_parser.h">
+      <Filter>expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\expression_stacks.h">
+      <Filter>expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\functions_real.h">
+      <Filter>expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\operand.h">
+      <Filter>expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\operation.h">
+      <Filter>expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\operation_compiler.h">
+      <Filter>expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\operators_calc.h">
+      <Filter>expression</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="expression">
+      <UniqueIdentifier>{83d5445d-be28-43b7-853a-6c3d814bee2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
