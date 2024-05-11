@@ -23,6 +23,8 @@ void scalarOperations() {
 
 	// Scalar tests
 
+	std::cout << "scalar operations..." << std::endl;
+
 	struct TestCase {
 		std::string infix;
 		const double result;
