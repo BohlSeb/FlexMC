@@ -6,6 +6,6 @@ add_subdirectory(src)
 
 add_dependencies(app flexmc)
 
-target_link_libraries(app flexmc)
+target_link_libraries(app flexmc flexmc_compiler_flags)
 
 target_include_directories(app PUBLIC ${PROJECT_BINARY_DIR})

@@ -21,7 +21,7 @@ add_executable(tests ${TEST_SOURCES})
 
 add_dependencies(tests flexmc)
 
-target_link_libraries(tests GTest::gtest_main flexmc)
+target_link_libraries(tests GTest::gtest_main flexmc flexmc_compiler_flags)
 
 include(GoogleTest)
 
