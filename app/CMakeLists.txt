@@ -8,11 +8,4 @@ add_dependencies(app flexmc)
 
 target_link_libraries(app flexmc)
 
-target_include_directories(app PUBLIC 
-${PROJECT_BINARY_DIR} 
-${CMAKE_SOURCE_DIR}/flexmc/src 
-${CMAKE_SOURCE_DIR}/flexmc/src/expression
-)
-
-
-
+target_include_directories(app PUBLIC ${PROJECT_BINARY_DIR})

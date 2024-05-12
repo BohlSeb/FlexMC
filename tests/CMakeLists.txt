@@ -23,11 +23,6 @@ add_dependencies(tests flexmc)
 
 target_link_libraries(tests GTest::gtest_main flexmc)
 
-target_include_directories(tests PUBLIC 
-${CMAKE_SOURCE_DIR}/flexmc/src 
-${CMAKE_SOURCE_DIR}/flexmc/src/expression
-)
-
 include(GoogleTest)
 
 add_test(tests tests)
