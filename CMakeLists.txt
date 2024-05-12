@@ -15,16 +15,3 @@ target_compile_options(flexmc_compiler_flags INTERFACE
 add_subdirectory(flexmc)
 add_subdirectory(app)
 add_subdirectory(tests)
-
-
-# include(FetchContent)
-# FetchContent_Declare(
-# 	fmt
-# 	GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-# 	GIT_TAG 10.2.1
-# )
-# 
-# FetchContent_MakeAvailable(fmt)
-
-# add_executable(FlexMC flexmc/flexmc.cpp)
-# target_link_libraries(FlexMC PRIVATE fmt::fmt)

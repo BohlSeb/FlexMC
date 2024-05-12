@@ -1,21 +1,22 @@
 #include <cassert>
 #include <stdexcept>
-#include <sstream>
+#include <format>
 #include <algorithm>
-#include <cmath>
 #include <numeric>
-#include <functional>
+
 #include "functions_real.h"
 
 namespace flexMC {
 
 	const Operands::Type functionsReal::compileArgType(const Operands::Type& arg_type) {
 		if ((arg_type == Operands::Type::date) || (arg_type == Operands::Type::dateList)) {
-			// std format
-			std::stringstream msg;
-			msg << "expected argument type: " << Operands::Type::scalar;
-			msg << " or " << Operands::Type::vector << ", got " << arg_type;
-			throw std::runtime_error(msg.str());
+			auto msg = std::format(
+				"Expected argument type {} or {}, got {} instead",
+				Operands::type2Str(Operands::Type::scalar), 
+				Operands::type2Str(Operands::Type::vector), 
+				Operands::type2Str(arg_type)
+			);
+			throw std::runtime_error(msg);
 		}
 		return arg_type;
 	}

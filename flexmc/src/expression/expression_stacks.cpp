@@ -4,8 +4,8 @@
 namespace flexMC {
 
 	void Operands::pushType(const Type& type) {
-		assert((type == Operands::Type::scalar) || (type == Operands::Type::date));
-		if (type == Operands::Type::scalar) {
+		assert((type == Type::scalar) || (type == Type::date));
+		if (type == Type::scalar) {
 			++scalar_size_;
 			scalar_size_max_ = std::max<int>(scalar_size_, scalar_size_max_);
 		}
@@ -13,10 +13,10 @@ namespace flexMC {
 	}
 
 	void Operands::pushArray(const Type& type, const int& size) {
-		assert((type == Operands::Type::vector) || (type == Operands::Type::dateList));
+		assert((type == Type::vector) || (type == Type::dateList));
 		types_.push_back(type);
 		vector_sizes_.push_back(size);
-		if (type == Operands::Type::vector) {
+		if (type == Type::vector) {
 			++vec_size_;
 			vec_size_max_ = std::max<int>(vec_size_max_, vec_size_);
 		}
@@ -24,29 +24,45 @@ namespace flexMC {
 
 	void Operands::popType() {
 		assert(types_.size() >= 0);
-		Operands::Type back = types_.back();
-		if ((back == Operands::Type::vector) || (back == Operands::Type::dateList)) {
+		Type back = types_.back();
+		if ((back == Type::vector) || (back == Type::dateList)) {
 			assert(vector_sizes_.size() >= 0);
 			vector_sizes_.pop_back();
 		}
 		switch (back) {
-		case Operands::Type::scalar: --scalar_size_;
-		case Operands::Type::vector: --vec_size_;
-		default: break;
+		case Type::scalar: 
+			--scalar_size_;
+			break;
+		case Type::vector: 
+			--vec_size_;
+			break;
+		default: 
+			break;
 		}
 		types_.pop_back();
 	}
 
-	const int Operands::maxSize(const Operands::Type& type) const {
+	const int Operands::maxSize(const Type& type) const {
 		switch (type) {
-		case Operands::Type::scalar: 
+		case Type::scalar: 
 			return scalar_size_max_;
-		case Operands::Type::vector: 
+		case Type::vector: 
 			return vec_size_max_;
 		default:
 			return 0;
 		}
 
+	}
+
+	const std::string Operands::type2Str(const Type& type) {
+		switch (type)
+		{
+		case Type::scalar: { return "Scalar"; }
+		case Type::vector: { return "Vector"; }
+		case Type::date: { return "Date"; }
+		case Type::dateList: { return "DateList"; }
+		default: { return ""; }
+		}
 	}
 
 	CalcStacks::CalcStacks(const int& s_size, const int& v_size, const int& d_size, const int& d_l_size) {
@@ -79,25 +95,6 @@ namespace flexMC {
 		not_ready += size(Operands::Type::date);
 		not_ready += size(Operands::Type::dateList);
 		return (not_ready == 0);
-	}
-
-	std::ostream& operator<<(std::ostream& output, Operands::Type o_type) {
-		using oType = Operands::Type;
-		switch (o_type) {
-		case oType::scalar:
-			output << "scalar";
-			break;
-		case oType::date:
-			output << "date";
-			break;
-		case oType::vector:
-			output << "vector";
-			break;
-		case oType::dateList:
-			output << "dateList";
-			break;
-		}
-		return output;
 	}
 
 }

@@ -1,8 +1,4 @@
 #include <gtest/gtest.h>
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <deque>
 
 #include "expression_parser.h"
 
@@ -45,18 +41,18 @@ TEST(ExpressionParser, OperatorsAndOperands) {
 		Lexer lexer = Lexer(c.infix);
 		ExpressionParser parser = ExpressionParser(lexer);
 		std::deque<Token> parsed = parser.parseLine();
-		std::stringstream res;
+		std::string res;
 		using riter = std::deque<Token>::reverse_iterator;
 		int i = 0;
 		auto size = parsed.size();
 		for (riter it = parsed.rbegin(); it != parsed.rend(); ++it) {
-			res << *it;
+			res += (*it).value;
 			if (i < size - 1) {
-				res << " ";
+				res += " ";
 			};
 			++i;
 		}
-		EXPECT_EQ(res.str(), c.postfix);
+		EXPECT_EQ(res, c.postfix);
 
 	}
 

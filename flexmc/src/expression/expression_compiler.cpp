@@ -1,7 +1,6 @@
-#include <sstream>
-#include "expression_compiler.h"
-#include "operation_compiler.h"
 #include "operand.h"
+#include "operation_compiler.h"
+#include "expression_compiler.h"
 
 namespace flexMC {
 

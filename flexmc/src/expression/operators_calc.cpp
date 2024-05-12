@@ -1,6 +1,5 @@
 #include <cassert>
-#include <iomanip>
-#include <sstream>
+#include <format>
 #include <algorithm>
 #include <functional>
 #include "operators_calc.h"
@@ -10,16 +9,13 @@ namespace flexMC {
 	const Operands::Type operatorsCalc::unary::compileArgument(const std::string& symbol, Operands& stacks) {
 		assert(stacks.tSize() >= 1);
 		if (symbol != flexMC::MINUS) {
-			std::stringstream msg;
-			msg << "Undefined: trying to compile unary operator for symbol " << std::quoted(symbol);
-			throw std::runtime_error(msg.str());
+			auto msg = std::format("Undefined: trying to compile unary operator for symbol \"{}\"", symbol);
+			throw std::runtime_error(msg);
 		}
 		const Operands::Type t = stacks.typesBack();
 		if ((t == Operands::Type::date) || (t == Operands::Type::dateList)) {
-			std::stringstream msg;
-			msg << "Unary operator " << std::quoted(symbol) << " does not support operand type: ";
-			msg << t;
-			throw std::runtime_error(msg.str());
+			auto msg = std::format("Unary operator \"{0}\" does not support operand type: \"{1}\"", symbol, Operands::type2Str(t));
+			throw std::runtime_error(msg);
 		}
 		return t;
 	}
@@ -64,26 +60,26 @@ namespace flexMC {
 		const oprnd_t left_t = stacks.typesBack();
 
 		if ((left_t == oprnd_t::date) || (left_t == oprnd_t::dateList)) {
-			std::stringstream msg;
-			msg << "Binary operator " << std::quoted(symbol) << " does not support left operand type: ";
-			msg << left_t;
-			throw std::runtime_error(msg.str());
+			const std::string t_ = Operands::type2Str(left_t);
+			auto msg = std::format("Binary operator \"{0}\" does not support left operandt type: \"{1}\"", symbol, t_);
+			throw std::runtime_error(msg);
 		}
 		if ((right_t == oprnd_t::date) || (right_t == oprnd_t::dateList)) {
-			std::stringstream msg;
-			msg << "Binary operator " << std::quoted(symbol) << " does not support right operand type: ";
-			msg << right_t;
-			throw std::runtime_error(msg.str());
+			const std::string t_ = Operands::type2Str(right_t);
+			auto msg = std::format("Binary operator \"{0}\" does not support right operandt type: \"{1}\"", symbol, t_);
+			throw std::runtime_error(msg);
 		}
 
 		if ((left_t == oprnd_t::vector) && (right_t == oprnd_t::vector)) {
 			const int left_s = stacks.sizesBack();
 			if (left_s != maybe_right_s) {
-				std::stringstream msg;
-				msg << "Binaray operator " << std::quoted(symbol);
-				msg << " got vectors of different lengths: ";
-				msg << left_s << ", " << maybe_right_s;
-				throw std::runtime_error(msg.str());
+				auto msg = std::format(
+					"Binary operator \"{0}\" got vectors of different lengths: {1} and {2}", 
+					symbol, 
+					left_s, 
+					maybe_right_s
+				);
+				throw std::runtime_error(msg);
 			}
 			stacks.popType();
 			stacks.pushArray(oprnd_t::vector, left_s);

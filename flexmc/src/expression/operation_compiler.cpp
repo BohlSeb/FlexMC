@@ -1,8 +1,9 @@
 #include <cassert>
 #include <algorithm>
-#include "operation_compiler.h"
+
 #include "functions_real.h"
 #include "operators_calc.h"
+#include "operation_compiler.h"
 
 namespace flexMC {
 

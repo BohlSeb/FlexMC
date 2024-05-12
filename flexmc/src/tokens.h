@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <unordered_map>
 
 #include "terminals.h"
@@ -63,8 +62,6 @@ namespace flexMC {
 		const std::string value;
 		ParsingContext context;
 	};
-
-	std::ostream& operator<<(std::ostream& output, const Token& token);
 
 	namespace Tokens {
 

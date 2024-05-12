@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
 #include <functional>
-#include "operation.h"
+
 #include "terminals.h"
+#include "expression_stacks.h"
 
 
 namespace flexMC {

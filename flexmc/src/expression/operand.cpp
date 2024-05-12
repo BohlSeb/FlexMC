@@ -1,7 +1,4 @@
-#include <stdexcept>
-#include <vector>
 #include <cassert>
-#include <algorithm>
 #include "operand.h"
 
 

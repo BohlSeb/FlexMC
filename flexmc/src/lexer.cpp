@@ -1,10 +1,5 @@
-#include <iostream>
-#include <regex>
-#include <unordered_map>
-
 #include "terminals.h"
 #include "tokens.h"
-
 #include "lexer.h"
 
 
@@ -58,7 +53,7 @@ namespace flexMC {
 			searchStr_ = match_.suffix();
 			return Tokens::makeContextualized(value);
 		}
-		return Token(Token::Type::undefined, "regex");
+		return Token(Token::Type::undefined, searchStr_);
 	}
 
 
