@@ -11,7 +11,7 @@ namespace flexMC {
 	const Operands::Type functionsReal::compileArgType(const Operands::Type& arg_type) {
 		if ((arg_type == Operands::Type::date) || (arg_type == Operands::Type::dateList)) {
 			auto msg = std::format(
-				"Expected argument type {} or {}, got {} instead",
+				"Expected argument type {} or {}, got {}",
 				Operands::type2Str(Operands::Type::scalar), 
 				Operands::type2Str(Operands::Type::vector), 
 				Operands::type2Str(arg_type)
