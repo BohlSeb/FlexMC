@@ -1,6 +1,10 @@
 // flexmc.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include <iostream>
+
+#include "app_config.h"
+
 #include <stdexcept>
 #include <algorithm>
 #include <functional>
@@ -10,20 +14,24 @@
 #include "expression_parser.h"
 #include "terminals.h"
 
-#include "functions_real.h"
+ //#include "functions_real.h"
 #include "expression_stacks.h"
 #include "expression_compiler.h"
 #include "operators_calc.h"
-
 #include "expression_profiler.h"
 
 using namespace flexMC;
 
 int main() {
 
+	// report version
+	std::cout << "Version: " << APP_VERSION_MAJOR << "."
+		<< APP_VERSION_MINOR << "."
+		<< APP_VERSION_PATCH << std::endl;
+
 	scalarOperations();
 
-	const bool run_main = 0;
+	const bool run_main = 1;
 
 	//struct Test {
 	//	Test(int x, int y) : x(x), y(y) {}
@@ -60,7 +68,7 @@ int main() {
 
 	if (run_main) {
 
-		const std::string program = "2 * SUM(ABS([-2, -3, -4, -3, 4])) + 1";
+		const std::string program = "ABS([-2, -3, -4, -3, 4]";
 		// const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
 		std::cout << "Program to parse >>" << std::endl;
 		std::cout << program << std::endl << std::endl;
@@ -117,6 +125,8 @@ int main() {
 		}
 
 	}
+
+	std::cout << "Hello world" << std::endl;
 
 	return 0;
 }
