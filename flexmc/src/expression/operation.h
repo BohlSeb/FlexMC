@@ -1,14 +1,18 @@
 #pragma once
 
 #include <functional>
- 
+
 #include "expression_stacks.h"
 
 namespace flexMC {
 
 	namespace functions {
 
-		void assertNumberOfArgs(const int& min_args, const int& max_args, const std::size_t& num_args);
+		void assertNumberOfArgs(
+			const std::string& symbol,
+			const int& min_args,
+			const int& max_args,
+			const std::size_t& num_args);
 
 	}
 

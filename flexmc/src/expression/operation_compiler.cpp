@@ -29,7 +29,7 @@ namespace flexMC {
 		if (stacks.tSize() < num_args) {
 			throw std::runtime_error("Function call compiler did not find enough argument operands in the stack");
 		}
-		functions::assertNumberOfArgs(1, 1, num_args);
+		functions::assertNumberOfArgs(symbol, 1, 1, num_args);
 		const Operands::Type return_type = functionsReal::compileArgType(stacks.typesBack());
 		const std::function<void(CalcStacks&)> call_back = functionsReal::scalarFunc(symbol, return_type);
 		return Operation(call_back);
@@ -42,7 +42,7 @@ namespace flexMC {
 		const Operands::Type arg_type = functionsReal::compileArgType(stacks.typesBack());
 		stacks.popType();
 		if (arg_type == Operands::Type::scalar) {
-			functions::assertNumberOfArgs(2, -1, num_args);
+			functions::assertNumberOfArgs(symbol, 2, -1, num_args);
 			for (int i = 2; i <= num_args; ++i) {
 				auto t = stacks.typesBack();
 				if (t != Operands::Type::scalar) {
@@ -52,7 +52,7 @@ namespace flexMC {
 			}
 		}
 		else { 
-			functions::assertNumberOfArgs(1, 1, num_args);
+			functions::assertNumberOfArgs(symbol, 1, 1, num_args);
 		}
 		stacks.pushType(Operands::Type::scalar);
 		if (arg_type == Operands::Type::scalar) {

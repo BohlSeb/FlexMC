@@ -68,7 +68,7 @@ int main() {
 
 	if (run_main) {
 
-		const std::string program = "ABS([-2, -3, -4, -3, ^^])";
+		const std::string program = "MAX([0.0, 1.0, 2.0], [0.0, 1.0, 2.0])";
 		// const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
 		std::cout << "Program to parse >>" << std::endl;
 		std::cout << program << std::endl << std::endl;

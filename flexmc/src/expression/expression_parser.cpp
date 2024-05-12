@@ -66,7 +66,7 @@ namespace flexMC {
 		// Unexpected token
 		else {
 			auto msg = std::format(
-				"Expected a variable, value, function name prefix operator, got \"{}\"", 
+				"Expected a variable, value, function name or a prefix operator, got \"{}\"", 
 				token.value
 			);
 			if (t == type::eof) {
@@ -153,7 +153,6 @@ namespace flexMC {
 		}
 
 		else if ((token.type == type::op) && (token.context.maybe_infix)) {
-			// while ((!operators_.empty()) && (operators_.back().type != type::lparen))
 			while (!operators_.empty()) {
 				ParsingContext opC = operators_.back().context;
 				ParsingContext inputC = token.context;
