@@ -9,6 +9,13 @@ namespace flexMC {
 	// Refactor
 	void functions::assertNumberOfArgs(const std::string& symbol, const int& min_args, const int& max_args, const std::size_t& num_args) {
 		assert(((min_args <= max_args) || (max_args == -1)));
+<<<<<<< HEAD
+=======
+		std::string wrongArgs = "Function {0} takes between {1} and {2} arguments(s), got {3}";
+		std::string wrongArgsEx = "Function {0} takes exactly {1} argument(s), got {2}";
+		std::string noArgs = "Function {0}(...) takes no argument, got {1}";
+
+>>>>>>> c261688bd5ae72437ddcbfc187b0d4e8a084c247
 		if ((min_args > 0) && (num_args < min_args)) {
 			if (min_args == max_args) {
 				auto msg = std::format(
