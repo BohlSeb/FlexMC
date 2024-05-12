@@ -1,7 +1,4 @@
 #include <gtest/gtest.h>
-#include <iostream>
-#include <vector>
-#include <algorithm>
 
 #include "lexer.h"
 #include "expression_parser.h"

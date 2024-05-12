@@ -38,7 +38,7 @@ namespace flexMC {
 		void haveOperand();
 
 		// todo: custom exceptions?
-		void exprLineParseError(const std::string& message);
+		void exprLineParseError(const std::string& message) const;
 
 	};
 

@@ -50,6 +50,8 @@ namespace flexMC {
 
 		const int maxSize(const Type& type) const;
 
+		static const std::string type2Str(const Type& type);
+
 	private:
 
 		std::vector<Type> types_;
@@ -70,6 +72,8 @@ namespace flexMC {
 	public:
 
 		CalcStacks(const int& s_size, const int& v_size, const int& d_size, const int& d_l_size);
+
+		const bool ready() const;
 
 		void pushScalar(const double& value) { scalars_.push_back(value); }
 
@@ -96,8 +100,6 @@ namespace flexMC {
 		void popDate() { dates_.pop_back(); };
 
 		void popDateList() { date_lists_.pop_back(); }
-
-		const bool ready() const;
 
 		std::vector<double>::const_iterator scalarsStart() { return scalars_.cbegin(); }
 
@@ -129,7 +131,5 @@ namespace flexMC {
 		virtual void evaluate(CalcStacks& stacks) {}
 
 	};
-
-	std::ostream& operator<<(std::ostream& output, Operands::Type o_type);
 
 }

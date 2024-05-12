@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include <cassert>
-#include <iomanip>
-#include <sstream>
+#include <format>
 
 #include "tokens.h"
 #include "expression_parser.h"
@@ -46,10 +45,8 @@ namespace flexMC {
 		// Unmatched parenthesis or "()" expected (function with 0 args)
 		else if ((t == type::rparen) || (t == type::rbracket)) {
 			if (operators_.empty()) {
-				std::stringstream msg;
-				msg << "Unmatched parenthesis/bracket: ";
-				msg << std::quoted(token.value);
-				exprLineParseError(msg.str());;
+				auto msg = std::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
+				exprLineParseError(msg);
 			}
 			if (operators_.back().context.num_args > 0) {
 				exprLineParseError("Badly placed comma encountered within parentheses/brackets");
@@ -58,10 +55,8 @@ namespace flexMC {
 				exprLineParseError("Empty list encountered: \"[]\"");
 			}
 			if (operators_.back().type != type::lparen) {
-				std::stringstream msg;
-				msg << "Expected: " << std::quoted("()");
-				msg << ", got: " << std::quoted(token.value);
-				exprLineParseError(msg.str());
+				auto msg = std::format("Expected empty argument list  \"()\", got \"{}\"", token.value);
+				exprLineParseError(msg);
 			}
 			operators_.pop_back();
 			operators_.push_back(Tokens::makeCall(0));
@@ -70,14 +65,14 @@ namespace flexMC {
 
 		// Unexpected token
 		else {
-			std::stringstream msg;
-			msg << "Expected an operand (Variable/Value/Function name) or a prefix operator";
-			msg << " (" << std::quoted("+, -") << ")";
-			msg << ", got: " << std::quoted(token.value);
+			auto msg = std::format(
+				"Expected a variable, value, function name or a prefix operator, got \"{}\"", 
+				token.value
+			);
 			if (t == type::eof) {
-				msg << " (end of line)";
+				msg += " (end of line)";
 			}
-			exprLineParseError(msg.str());
+			exprLineParseError(msg);
 		}
 	}
 
@@ -90,10 +85,8 @@ namespace flexMC {
 			while (!operators_.empty()) {
 				Token op = operators_.back();
 				if ((op.type == type::lparen) || (op.type == type::lbracket)) {
-					std::stringstream msg;
-					msg << "Unmatched parenthesis/bracket: ";
-					msg << std::quoted(op.value);
-					exprLineParseError(msg.str());
+					auto msg = std::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
+					exprLineParseError(msg);
 				}
 				output_.push_front(op);
 				operators_.pop_back();
@@ -111,18 +104,17 @@ namespace flexMC {
 
 		// number of call args
 		else if (token.value == COMMA) {
-			std::stringstream msg;
-			msg << "Unmatched parenthesis/bracket: \")\" or \"]\"";
-			msg << " or badly placed comma \",\"";
+			std::string msg = "Unmatched parenthesis/bracket: \")\" or \"]\"";
+			msg += " or badly placed comma \",\"";
 			if (operators_.empty()) {
-				exprLineParseError(msg.str());
+				exprLineParseError(msg);
 			}
 			type opType = operators_.back().type;
 			while ((opType != type::lparen) && (opType != type::lbracket)) {
 				output_.push_front(operators_.back());
 				operators_.pop_back();
 				if (operators_.empty()) {
-					exprLineParseError(msg.str());
+					exprLineParseError(msg);
 				}
 				opType = operators_.back().type;
 			}
@@ -131,11 +123,9 @@ namespace flexMC {
 		}
 
 		else if ((token.type == type::rparen) || (token.type == type::rbracket)) {
-			std::stringstream msg;
-			msg << "Unmatched parenthesis/bracket: ";
-			msg << std::quoted(token.value);
+			auto msg = std::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
 			if (operators_.empty()) {
-				exprLineParseError(msg.str());
+				exprLineParseError(msg);
 			}
 			type opType = operators_.back().type;
 			type stop = (token.type == type::rparen) ? type::lparen : type::lbracket;
@@ -143,7 +133,7 @@ namespace flexMC {
 				output_.push_front(operators_.back());
 				operators_.pop_back();
 				if (operators_.empty()) {
-					exprLineParseError(msg.str());
+					exprLineParseError(msg);
 				}
 				opType = operators_.back().type;
 			}
@@ -163,7 +153,6 @@ namespace flexMC {
 		}
 
 		else if ((token.type == type::op) && (token.context.maybe_infix)) {
-			// while ((!operators_.empty()) && (operators_.back().type != type::lparen))
 			while (!operators_.empty()) {
 				ParsingContext opC = operators_.back().context;
 				ParsingContext inputC = token.context;
@@ -184,15 +173,17 @@ namespace flexMC {
 
 		}
 
-		// Unexpted token
+		// Unexpected token
 		else {
-			std::stringstream msg;
-			msg << "Expected an operator";
-			msg << ", got: " << std::quoted(token.value) << "; type: " << token.type2String();
+			auto msg = std::format(
+				"Expected an operator, got \"{0}\" of type {1}", 
+				token.value, 
+				token.type2String()
+			);
 			if (token.type == type::eof) {
-				msg << " (end of line)";
+				msg += " (end of line)";
 			}
-			exprLineParseError(msg.str());
+			exprLineParseError(msg);
 		}
 	}
 
@@ -200,7 +191,8 @@ namespace flexMC {
 		auto token = lexer_.nextToken();
 		auto type = token.type;
 		if (type == Token::Type::undefined) {
-			exprLineParseError("Token type undefinend / unrecognizable word (maybe regex problem)");
+			auto msg = std::format("No valid language token found at the beginning of \"{}\"", token.value);
+			exprLineParseError(msg);
 		}
 		if ((type == Token::Type::wsp) || (type == Token::Type::tab)) {
 			parsed << token.value;
@@ -210,15 +202,9 @@ namespace flexMC {
 		return token;
 	}
 
-	void ExpressionParser::exprLineParseError(const std::string& message) {
-		std::stringstream msg;
-		msg << "Parsed: ";
-		msg << ">> ";
-		msg << parsed.str();
-		msg << " << ";
-		msg << "Problem: ";
-		msg << message;
-		throw std::runtime_error(msg.str());
+	void ExpressionParser::exprLineParseError(const std::string& message) const {
+		auto msg = std::format("Parsed >> \"{0}\" \nProblem >> {1}", parsed.str(), message);
+		throw std::runtime_error(msg);
 	}
 
 }

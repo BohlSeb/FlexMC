@@ -1,8 +1,7 @@
 #pragma once
 
 #include "expression_stacks.h"
-#include "functions_real.h"
-#include "operand.h"
+#include "operation.h"
 #include "tokens.h"
 
 namespace flexMC {

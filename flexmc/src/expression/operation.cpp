@@ -1,38 +1,45 @@
 #include <stdexcept>
 #include <cassert>
-#include <vector>
-#include <string>
-//#include <format>
+#include <format>
 #include "operation.h"
 
 
 namespace flexMC {
 
-	void functions::assertNumberOfArgs(const int& min_args, const int& max_args, const std::size_t& num_args) {
+	// Refactor
+	void functions::assertNumberOfArgs(const std::string& symbol, const int& min_args, const int& max_args, const std::size_t& num_args) {
 		assert(((min_args <= max_args) || (max_args == -1)));
-		std::string wrongArgs = "takes between {} and {} arguments(s), got {}";
-		std::string wrongArgsEx = "takes exactly {} argument(s), got {}";
-		std::string noArgs = "Function {}(...) takes no argument, got {}";
-
 		if ((min_args > 0) && (num_args < min_args)) {
 			if (min_args == max_args) {
-				std::string problem = wrongArgsEx;
-				throw std::runtime_error(problem);
+				auto msg = std::format(
+					"Function {0} takes exactly {1} argument(s), got {2}", 
+					symbol, min_args, num_args
+				);
+				throw std::runtime_error(msg);
 			}
-			std::string problem = wrongArgs;
-			throw std::runtime_error(problem);
+			auto msg = std::format(
+				"Function {0} takes between {1} and {2} arguments(s), got {3}",
+				symbol, min_args, max_args, num_args
+			);;
+			throw std::runtime_error(msg);
 		}
 		if ((0 <= max_args) && (max_args < num_args)) {
 			if (max_args == 0) {
-				std::string problem = noArgs;
-				throw std::runtime_error(problem);
+				auto msg = std::format("Function {0}(...) takes no argument, got {1}", symbol, num_args);
+				throw std::runtime_error(msg);
 			}
 			if (max_args == min_args) {
-				std::string problem = wrongArgsEx;
-				throw std::runtime_error(problem);
+				auto msg = std::format(
+					"Function {0} takes exactly {1} argument(s), got {2}",
+					symbol, min_args, num_args
+				);
+				throw std::runtime_error(msg);
 			}
-			std::string problem = wrongArgs;
-			throw std::runtime_error(problem);
+			auto msg = std::format(
+				"Function {0} takes between {1} and {2} arguments(s), got {3}",
+				symbol, min_args, max_args, num_args
+			);
+			throw std::runtime_error(msg);
 		}
 	}
 

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <stdexcept>
 
 #include "tokens.h"
@@ -59,18 +58,6 @@ namespace flexMC {
 			out = value;
 		}
 		return "Tok(t=" + type2String() + ", v=" + out + ")";
-	}
-
-
-	std::ostream& operator<<(std::ostream& output, const Token& token) {
-		using t = Token::Type;
-		if ((token.type == t::call_) || (token.type == t::append_) || (token.type == t::index_)) {
-			output << token.value << "(" << token.context.num_args << ")";
-		}
-		else {
-			output << token.value;
-		}
-		return output;
 	}
 
 	Token::Type Tokens::getType(const std::string& symbol) {
