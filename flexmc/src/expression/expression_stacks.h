@@ -1,135 +1,156 @@
 #pragma once
-#include <iostream>
+
 #include <vector>
 
 
-namespace flexMC {
+namespace flexMC
+{
 
-	class Operands {
+    class Operands
+    {
 
-	public:
+    public:
 
-		enum class Type {
-			scalar,
-			date,
-			vector,
-			dateList
-		};
+        enum class Type
+        {
+            scalar,
+            date,
+            vector,
+            dateList
+        };
 
-		struct CompileReport {
-			CompileReport(Type ret_type, const int max_scalar, const int max_vector) :
-				ret_type(ret_type), max_scalar(max_scalar), max_vector(max_vector) {}
-			const Type ret_type;
-			const int max_scalar;
-			const int max_vector;
-		};
+        [[nodiscard]] bool haveCompiled() const
+        { return ((types_.size() == 1) && (function_symbols_.empty())); }
 
-		const bool haveCompiled() const { return ((types_.size() == 1) && (function_symbols_.size() == 0)); }
+        void pushType(const Type &type);
 
-		const CompileReport report() const { return CompileReport(types_.back(), scalar_size_max_, vec_size_max_); }
+        void popType();
 
-		void pushType(const Type& type);
+        void pushArray(const Type &type, const size_t &size);
 
-		void popType();
+        [[nodiscard]] Type typesBack() const
+        { return types_.back(); }
 
-		void pushArray(const Type& type, const int& size);
+        [[nodiscard]] size_t sizesBack() const
+        { return vector_sizes_.back(); }
 
-		const Type typesBack() const { return types_.back(); }
+        void pushFunc(const std::string &symbol)
+        { function_symbols_.push_back(symbol); }
 
-		const int sizesBack() const { return vector_sizes_.back(); }
+        [[nodiscard]] std::string funcsBack() const
+        { return function_symbols_.back(); }
 
-		void pushFunc(const std::string& symbol) { function_symbols_.push_back(symbol); }
+        void popFunc()
+        { function_symbols_.pop_back(); }
 
-		const std::string funcsBack() const { return function_symbols_.back(); }
+        [[nodiscard]] size_t tSize() const
+        { return types_.size(); }
 
-		void popFunc() { function_symbols_.pop_back(); }
+        [[nodiscard]] size_t fSize() const
+        { return function_symbols_.size(); }
 
-		const std::size_t tSize() const { return types_.size(); }
+        [[nodiscard]] size_t maxSize(const Type &type) const;
 
-		const std::size_t fSize() const { return function_symbols_.size(); }
+        static std::string type2Str(const Type &type);
 
-		const int maxSize(const Type& type) const;
+    private:
 
-		static const std::string type2Str(const Type& type);
+        std::vector<Type> types_;
 
-	private:
+        std::vector<std::string> function_symbols_;
 
-		std::vector<Type> types_;
+        std::vector<size_t> vector_sizes_;
 
-		std::vector<std::string> function_symbols_;
+        size_t vec_size_{0};
 
-		std::vector<int> vector_sizes_;
+        size_t vec_size_max_{0};
 
-		int vec_size_ = 0;
-		int vec_size_max_ = 0;
-		int scalar_size_ = 0;
-		int scalar_size_max_ = 0;
+        size_t scalar_size_{0};
 
-	};
+        size_t scalar_size_max_{0};
 
-	class CalcStacks {
+    };
 
-	public:
+    class CalcStacks
+    {
 
-		CalcStacks(const int& s_size, const int& v_size, const int& d_size, const int& d_l_size);
+    public:
 
-		const bool ready() const;
+        CalcStacks(const size_t &s_size, const size_t &v_size, const size_t &d_size, const size_t &d_l_size);
 
-		void pushScalar(const double& value) { scalars_.push_back(value); }
+        [[nodiscard]] bool ready() const;
 
-		void pushVector(const std::vector<double>& value) { vectors_.push_back(value); }
+        void pushScalar(const double &value)
+        { scalars_.push_back(value); }
 
-		void pushDate(const int& value) { dates_.push_back(value); }
+        void pushVector(const std::vector<double> &value)
+        { vectors_.push_back(value); }
 
-		void pushDateList(const std::vector<int>& value) { date_lists_.push_back(value); }
+        void pushDate(const int &value)
+        { dates_.push_back(value); }
 
-		const double& scalarsBack() const { return scalars_.back(); }
+        void pushDateList(const std::vector<int> &value)
+        { date_lists_.push_back(value); }
 
-		std::vector<double>& vectorsBack() { return vectors_.back(); }
+        [[nodiscard]] const double &scalarsBack() const
+        { return scalars_.back(); }
 
-		std::vector<double>& vectorsBeforeBack() { return vectors_.end()[-2]; }
+        std::vector<double> &vectorsBack()
+        { return vectors_.back(); }
 
-		const int& datesBack() const { return dates_.back(); }
+        std::vector<double> &vectorsBeforeBack()
+        { return vectors_.end()[-2]; }
 
-		std::vector<int>& dateListsBack() { return date_lists_.back(); }
+        [[nodiscard]] const int &datesBack() const
+        { return dates_.back(); }
 
-		void popScalar() { scalars_.pop_back(); }
+        std::vector<int> &dateListsBack()
+        { return date_lists_.back(); }
 
-		void popVector() { vectors_.pop_back(); }
+        void popScalar()
+        { scalars_.pop_back(); }
 
-		void popDate() { dates_.pop_back(); };
+        void popVector()
+        { vectors_.pop_back(); }
 
-		void popDateList() { date_lists_.pop_back(); }
+        void popDate()
+        { dates_.pop_back(); };
 
-		std::vector<double>::const_iterator scalarsStart() { return scalars_.cbegin(); }
+        void popDateList()
+        { date_lists_.pop_back(); }
 
-		std::vector<double>::const_iterator scalarsEnd() { return scalars_.cend(); }
+        std::vector<double>::const_iterator scalarsStart()
+        { return scalars_.cbegin(); }
 
-		//const bool hasCalculated() const;
+        std::vector<double>::const_iterator scalarsEnd()
+        { return scalars_.cend(); }
 
-		//const bool hasReturnType(const Operands::Type& expected) const;
+        //const bool hasCalculated() const;
 
-		// for debugging?
-		const std::size_t size(Operands::Type type) const;
+        //const bool hasReturnType(const Operands::Type& expected) const;
 
-	private:
+        // for debugging?
+        [[nodiscard]]  size_t size(Operands::Type type) const;
 
-		std::vector<double> scalars_;
+    private:
 
-		std::vector<std::vector<double>> vectors_;
+        std::vector<double> scalars_;
 
-		std::vector<int> dates_;
+        std::vector<std::vector<double>> vectors_;
 
-		std::vector<std::vector<int>> date_lists_;
+        std::vector<int> dates_;
 
-	};
+        std::vector<std::vector<int>> date_lists_;
 
-	class PostFixItem {
+    };
 
-	public:
+    class PostFixItem
+    {
 
-		virtual void evaluate(CalcStacks& stacks) {}
+    public:
 
-	};
+        virtual void evaluate(CalcStacks & /* stacks */) {}
+
+    };
 
 }

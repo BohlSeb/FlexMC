@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <ranges>
+
 #include "expression_parser.h"
 
 
@@ -39,14 +41,13 @@ TEST(ExpressionParser, OperatorsAndOperands) {
 	for (auto& c : TestData) {
 
 		Lexer lexer = Lexer(c.infix);
-		ExpressionParser parser = ExpressionParser(lexer);
+		auto parser = ExpressionParser(lexer);
 		std::deque<Token> parsed = parser.parseLine();
 		std::string res;
-		using riter = std::deque<Token>::reverse_iterator;
-		int i = 0;
+		size_t i = 0;
 		auto size = parsed.size();
-		for (riter it = parsed.rbegin(); it != parsed.rend(); ++it) {
-			res += (*it).value;
+		for (auto & it : std::ranges::reverse_view(parsed)) {
+			res += it.value;
 			if (i < size - 1) {
 				res += " ";
 			};

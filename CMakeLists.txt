@@ -8,8 +8,9 @@ add_library(flexmc_compiler_flags INTERFACE)
 
 target_compile_features(flexmc_compiler_flags INTERFACE cxx_std_23)
 target_compile_options(flexmc_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
-  "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
+        "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
+        # "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wformat=2>>"
+        "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
 
 add_subdirectory(flexmc)

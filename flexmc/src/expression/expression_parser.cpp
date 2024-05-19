@@ -138,7 +138,7 @@ namespace flexMC {
 				opType = operators_.back().type;
 			}
 			Token leftClose = operators_.back();
-			unsigned int num_args = leftClose.context.num_args + 1;
+			int num_args = leftClose.context.num_args + 1;
 			if ((leftClose.type == type::lparen && leftClose.context.is_infix)) {
 				output_.push_front(Tokens::makeCall(num_args));
 			}

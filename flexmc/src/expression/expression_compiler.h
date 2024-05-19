@@ -1,6 +1,8 @@
 #pragma once
+
 #include <deque>
 #include <vector>
+#include <memory>
 
 #include "tokens.h"
 #include "expression_stacks.h"
@@ -8,25 +10,39 @@
 
 namespace flexMC {
 
-	class Expression {
+    class Expression {
 
-	public:
+    public:
 
-		template <class T>
-		inline void addItem(T item) { items_.emplace_back(std::make_unique<T>(std::move(item))); }
+        template<class T>
+        inline void addItem(T item) { items_.emplace_back(std::make_unique<T>(std::move(item))); }
 
-		void evaluate(CalcStacks& stacks) const;
+        void evaluate(CalcStacks &stacks) const;
 
-	private:
+    private:
 
-		std::vector<std::unique_ptr<PostFixItem>> items_;
+        std::vector<std::unique_ptr<PostFixItem>> items_;
 
-	};
+    };
 
-	struct ExpressionCompiler {
+    struct CompileReport
+    {
+        CompileReport(Operands::Type ret_t, const size_t& max_s, const size_t& max_v) :
+                ret_type(ret_t), max_scalar(max_s), max_vector(max_v)
+        {}
 
-		const Operands::CompileReport compile(const std::deque<Token>& post_fix, Expression& expression);
+        const Operands::Type ret_type;
 
-	};
+        const size_t max_scalar;
+
+        const size_t max_vector;
+
+    };
+
+    struct ExpressionCompiler {
+
+        static CompileReport compile(const std::deque<Token> &post_fix, Expression &expression);
+
+    };
 
 }

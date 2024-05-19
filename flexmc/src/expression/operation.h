@@ -16,11 +16,11 @@ namespace flexMC {
 
 	}
 
-	class Operation : public PostFixItem {
+	class Operation final : public PostFixItem {
 
 	public:
 
-		Operation(const std::function<void(CalcStacks& stacks)>& call_back) : call_back_(call_back) {}
+		explicit Operation(const std::function<void(CalcStacks& stacks)>& call_back) : call_back_(call_back) {}
 
 		inline void evaluate(CalcStacks& stacks) override { call_back_(stacks); }
 

@@ -12,9 +12,9 @@ namespace flexMC {
 
 	public:
 
-		Number(const std::string& symbol) : value_(std::stod(symbol)) {}
+		explicit Number(const std::string& symbol) : value_(std::stod(symbol)) {}
 
-		void compile(Operands& stacks);
+		static void compile(Operands& stacks);
 
 		void evaluate(CalcStacks& stacks) override;
 
@@ -28,13 +28,13 @@ namespace flexMC {
 		
 	public:
 
-		Vector(const int& size) : size_(size) {}
+		explicit Vector(const size_t& size) : size_(size) {}
 
 		void evaluate(CalcStacks& stacks) override;
 
 	private:
 
-		const int size_;
+		const size_t size_;
 
 	};
 
