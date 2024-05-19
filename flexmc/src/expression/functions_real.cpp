@@ -1,9 +1,9 @@
-#include <cassert>
 #include <stdexcept>
+#include <cassert>
+#include <format>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
-#include <format>
 
 #include "functions_real.h"
 
