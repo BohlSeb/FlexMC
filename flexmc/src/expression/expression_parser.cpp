@@ -2,7 +2,6 @@
 #include <cassert>
 #include <fmt/format.h>
 
-#include "tokens.h"
 #include "expression_parser.h"
 
 // We try to implement this exceptional answer to a question about the shunting yard algorithm on stackoverflow:

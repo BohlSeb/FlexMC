@@ -1,10 +1,12 @@
 #pragma once
 
 #include <unordered_map>
+#include <functional>
 #include <cmath>
 
 #include "terminals.h"
-#include "operation.h"
+#include "expression_stacks.h"
+
 
 namespace flexMC
 {
