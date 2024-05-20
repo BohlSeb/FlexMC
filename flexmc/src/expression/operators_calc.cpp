@@ -1,4 +1,5 @@
 #include <cassert>
+#include <algorithm>
 #include <fmt/format.h>
 
 #include "operators_calc.h"
