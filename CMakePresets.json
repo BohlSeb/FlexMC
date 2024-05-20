@@ -55,7 +55,7 @@
       "hidden": true,
       "description": "Sets compiler, vendor",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "cl"
+        "CMAKE_CXX_COMPILER": "cl.exe"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
