@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <cassert>
-#include <format>
+#include <fmt/format.h>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
@@ -14,7 +14,7 @@ namespace flexMC
     {
         if ((arg_type == Operands::Type::date) || (arg_type == Operands::Type::dateList))
         {
-            auto msg = std::format(
+            auto msg = fmt::format(
                     "Expected argument type {} or {}, got {}",
                     Operands::type2Str(Operands::Type::scalar),
                     Operands::type2Str(Operands::Type::vector),

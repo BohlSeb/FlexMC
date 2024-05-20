@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <cassert>
-#include <format>
+#include <fmt/format.h>
 
 #include "tokens.h"
 #include "expression_parser.h"
@@ -45,7 +45,7 @@ namespace flexMC {
 		// Unmatched parenthesis or "()" expected (function with 0 args)
 		else if ((t == type::rparen) || (t == type::rbracket)) {
 			if (operators_.empty()) {
-				auto msg = std::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
+				auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
 				exprLineParseError(msg);
 			}
 			if (operators_.back().context.num_args > 0) {
@@ -55,7 +55,7 @@ namespace flexMC {
 				exprLineParseError("Empty list encountered: \"[]\"");
 			}
 			if (operators_.back().type != type::lparen) {
-				auto msg = std::format("Expected empty argument list  \"()\", got \"{}\"", token.value);
+				auto msg = fmt::format("Expected empty argument list  \"()\", got \"{}\"", token.value);
 				exprLineParseError(msg);
 			}
 			operators_.pop_back();
@@ -65,7 +65,7 @@ namespace flexMC {
 
 		// Unexpected token
 		else {
-			auto msg = std::format(
+			auto msg = fmt::format(
 				"Expected a variable, value, function name or a prefix operator, got \"{}\"", 
 				token.value
 			);
@@ -85,7 +85,7 @@ namespace flexMC {
 			while (!operators_.empty()) {
 				Token op = operators_.back();
 				if ((op.type == type::lparen) || (op.type == type::lbracket)) {
-					auto msg = std::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
+					auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
 					exprLineParseError(msg);
 				}
 				output_.push_front(op);
@@ -123,7 +123,7 @@ namespace flexMC {
 		}
 
 		else if ((token.type == type::rparen) || (token.type == type::rbracket)) {
-			auto msg = std::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
+			auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
 			if (operators_.empty()) {
 				exprLineParseError(msg);
 			}
@@ -175,7 +175,7 @@ namespace flexMC {
 
 		// Unexpected token
 		else {
-			auto msg = std::format(
+			auto msg = fmt::format(
 				"Expected an operator, got \"{0}\" of type {1}", 
 				token.value, 
 				token.type2String()
@@ -191,7 +191,7 @@ namespace flexMC {
 		auto token = lexer_.nextToken();
 		auto type = token.type;
 		if (type == Token::Type::undefined) {
-			auto msg = std::format("No valid language token found at the beginning of \"{}\"", token.value);
+			auto msg = fmt::format("No valid language token found at the beginning of \"{}\"", token.value);
 			exprLineParseError(msg);
 		}
 		if ((type == Token::Type::wsp) || (type == Token::Type::tab)) {
@@ -203,7 +203,7 @@ namespace flexMC {
 	}
 
 	void ExpressionParser::exprLineParseError(const std::string& message) const {
-		auto msg = std::format("Parsed >> \"{0}\" \nProblem >> {1}", parsed.str(), message);
+		auto msg = fmt::format("Parsed >> \"{0}\" \nProblem >> {1}", parsed.str(), message);
 		throw std::runtime_error(msg);
 	}
 

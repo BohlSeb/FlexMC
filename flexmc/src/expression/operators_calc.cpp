@@ -1,6 +1,7 @@
 #include <cassert>
-#include <format>
+#include <fmt/format.h>
 #include <algorithm>
+
 #include "operators_calc.h"
 
 namespace flexMC
@@ -11,13 +12,13 @@ namespace flexMC
         assert(stacks.tSize() >= 1);
         if (symbol != flexMC::MINUS)
         {
-            auto msg = std::format("Undefined: trying to compile unary operator for symbol \"{}\"", symbol);
+            auto msg = fmt::format("Undefined: trying to compile unary operator for symbol \"{}\"", symbol);
             throw std::runtime_error(msg);
         }
         const Operands::Type t = stacks.typesBack();
         if ((t == Operands::Type::date) || (t == Operands::Type::dateList))
         {
-            auto msg = std::format(R"(Unary operator "{0}" does not support operand type: "{1}")", symbol,
+            auto msg = fmt::format(R"(Unary operator "{0}" does not support operand type: "{1}")", symbol,
                                    Operands::type2Str(t));
             throw std::runtime_error(msg);
         }
@@ -72,13 +73,13 @@ namespace flexMC
         if ((left_t == oprnd_t::date) || (left_t == oprnd_t::dateList))
         {
             const std::string t_ = Operands::type2Str(left_t);
-            auto msg = std::format(R"(Binary operator "{0}" does not support left operand type: "{1}")", symbol, t_);
+            auto msg = fmt::format(R"(Binary operator "{0}" does not support left operand type: "{1}")", symbol, t_);
             throw std::runtime_error(msg);
         }
         if ((right_t == oprnd_t::date) || (right_t == oprnd_t::dateList))
         {
             const std::string t_ = Operands::type2Str(right_t);
-            auto msg = std::format(R"(Binary operator "{0}" does not support right operand type: "{1}")", symbol, t_);
+            auto msg = fmt::format(R"(Binary operator "{0}" does not support right operand type: "{1}")", symbol, t_);
             throw std::runtime_error(msg);
         }
 
@@ -87,7 +88,7 @@ namespace flexMC
             const size_t left_s = stacks.sizesBack();
             if (left_s != maybe_right_s)
             {
-                auto msg = std::format(
+                auto msg = fmt::format(
                         R"("Binary operator \"{0}\" got vectors of different lengths: {1} and {2}")",
                         symbol,
                         left_s,
