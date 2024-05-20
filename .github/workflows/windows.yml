@@ -49,7 +49,9 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Configure
-        run: cmake --preset windows-msvc-debug
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Vc\Auxiliary\Build\vcvarsall.bat" amd64 -vcvars_ver=14.3 || exit 1
+          cmake --preset windows-msvc-debug
 
       - name: Build
         shell: cmd
