@@ -12,7 +12,8 @@ on: [pull_request, workflow_dispatch]
 #  BUILD_TYPE: Debug
   
 jobs:
-  Windows-gcc-debug:
+
+  windows-gcc-debug:
     # The CMake configure and build commands are platform-agnostic and should work equally well on Ubuntu or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
