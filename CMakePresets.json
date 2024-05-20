@@ -29,6 +29,23 @@
       }
     },
     {
+      "name": "linux-base",
+      "inherits": [
+        "ninja-multi"
+      ],
+      "description": "Sets architecture",
+      "hidden": true,
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
       "name": "windows-gcc-base",
       "inherits": [
         "windows-base"
@@ -60,6 +77,28 @@
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "intelliSenseMode": "windows-msvc-x64"
+        }
+      }
+    },
+    {
+      "name": "linux-gcc-base",
+      "inherits": [
+        "linux-base"
+      ],
+      "hidden": true,
+      "description": "Sets compiler, vendor",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+        },
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64",
+          "hostOS": [
+            "Linux"
+          ]
         }
       }
     },
@@ -102,6 +141,20 @@
       "name": "windows-msvc-release",
       "inherits": [
         "windows-msvc-base",
+        "_release"
+      ]
+    },
+    {
+      "name": "linux-gcc-debug",
+      "inherits": [
+        "linux-gcc-base",
+        "_debug"
+      ]
+    },
+    {
+      "name": "linux-gcc-release",
+      "inherits": [
+        "linux-gcc-base",
         "_release"
       ]
     }
