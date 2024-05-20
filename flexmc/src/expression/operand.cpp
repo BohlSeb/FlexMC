@@ -1,4 +1,5 @@
 #include <cassert>
+
 #include "operand.h"
 
 
@@ -11,7 +12,7 @@ namespace flexMC {
 	void Vector::evaluate(CalcStacks& stacks) {
 		assert(stacks.size(Operands::Type::scalar) >= size_);
 		std::vector<double> res(stacks.scalarsEnd() - size_, stacks.scalarsEnd());
-		for (int i = 0; i < size_; ++i) {
+		for (size_t i{0}; i < size_; ++i) {
 			stacks.popScalar();
 		}
 		stacks.pushVector(res);

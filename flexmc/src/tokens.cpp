@@ -1,5 +1,3 @@
-#include <stdexcept>
-
 #include "tokens.h"
 
 
@@ -109,20 +107,20 @@ namespace flexMC {
 					context.left_associative = false;
 					context.maybe_infix = true;
 					context.is_infix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				// leave precedence gap to above for unary +/-
 				if ((tokenValue == MUL) || (tokenValue == DIV)) {
 					context.precedence = 7;
 					context.maybe_infix = true;
 					context.is_infix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				if ((tokenValue == PLUS) || (tokenValue == MINUS)) {
 					context.precedence = 6;
 					context.maybe_infix = true;
 					context.maybe_prefix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				if ((tokenValue == LT) ||
 					(tokenValue == GT) ||
@@ -134,33 +132,33 @@ namespace flexMC {
 					context.left_associative = false;
 					context.maybe_infix = true;
 					context.is_infix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				if (tokenValue == NOT) {
 					context.precedence = 4;
 					context.left_associative = false;
 					context.maybe_infix = true;
 					context.is_infix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				if (tokenValue == AND) {
 					context.precedence = 3;
 					context.left_associative = false;
 					context.maybe_infix = true;
 					context.is_infix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				if (tokenValue == OR) {
 					context.precedence = 2;
 					context.left_associative = false;
 					context.maybe_infix = true;
 					context.is_infix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				if (tokenValue == COMMA) {
 					context.maybe_infix = true;
 					context.is_infix = true;
-					return Token(t, tokenValue, context);
+					return {t, tokenValue, context};
 				}
 				return Token(type::undefined, tokenValue);
 			}
@@ -168,13 +166,12 @@ namespace flexMC {
 				context.precedence = 0;
 				context.maybe_infix = true;
 				context.maybe_prefix = true;
-				return Token(t, tokenValue, context);
+				return {t, tokenValue, context};
 			}
-			if (t == type::lbracket) {
-				context.precedence = 0;
-				context.maybe_prefix = true;
-				return Token(t, tokenValue, context);
-			}
+            // lbracket
+            context.precedence = 0;
+            context.maybe_prefix = true;
+            return {t, tokenValue, context};
 		}
 		if (t == type::tab) { return Token(t, "\t"); }  // review this
 		if (t == type::eof) { return Token(t); }

@@ -4,32 +4,37 @@
 #include "operation.h"
 #include "tokens.h"
 
-namespace flexMC {
+namespace flexMC
+{
 
-	namespace functionCompiler {
+    namespace functionCompiler
+    {
 
-		Operation compile(const int& num_args, Operands& stacks);
+        Operation compile(const size_t &num_args, Operands &stacks);
 
-		namespace detail {
+        namespace detail
+        {
 
-			Operation compileScalar(const std::string& symbol, const int& num_args, Operands& stacks);
+            Operation compileScalar(const std::string &symbol, const size_t &num_args, Operands &stacks);
 
-			Operation compileReduce(const std::string& symbol, const int& num_args, Operands& stacks);
+            Operation compileReduce(const std::string &symbol, const size_t &num_args, Operands &stacks);
 
-		}
-		
-	}
+        }
 
-	namespace arrayCompiler {
+    }
 
-		const Operands::Type compile(const int& num_args, Operands& stacks);
+    namespace arrayCompiler
+    {
 
-	}
+        Operands::Type compile(const size_t &num_args, Operands &stacks);
 
-	namespace operatorCompiler {
+    }
 
-		Operation compile(const Token& token, Operands& stacks);
+    namespace operatorCompiler
+    {
 
-	}
+        Operation compile(const Token &token, Operands &stacks);
+
+    }
 
 }

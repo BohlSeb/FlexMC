@@ -10,7 +10,7 @@ namespace flexMC {
 
 	public:
 
-		Lexer(const std::string& program);
+		explicit Lexer(const std::string& program);
 
 		Token nextToken();
 

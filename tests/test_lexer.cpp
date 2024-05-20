@@ -106,10 +106,9 @@ TEST(Lexer, ValidKeywordsAndSymbols) {
 
 
 	Lexer lexer = Lexer(testStr);
-	for (auto it = std::begin(expected); it != std::end(expected); ++it) {
+	for (const auto & exp : expected) {
 		Token token = lexer.nextToken();
-		Token expected = *it;
-		EXPECT_EQ(expected.toString(), token.toString());
+		EXPECT_EQ(exp.toString(), token.toString());
 	}
 	Token end = lexer.nextToken();
 	Token endExpected = Token(Token::Type::eof);
@@ -288,10 +287,9 @@ TEST(Lexer, ValidNumbersAndIdentifiers) {
 
 	Lexer lexer = Lexer(testStr);
 
-	for (auto it = std::begin(expected); it != std::end(expected); ++it) {
+	for (const auto & exp : expected) {
 		Token token = lexer.nextToken();
-		Token expected = *it;
-		EXPECT_EQ(expected.toString(), token.toString());
+		EXPECT_EQ(exp.toString(), token.toString());
 	}
 	Token end = lexer.nextToken();
 	Token endExpected = Token(Token::Type::eof);

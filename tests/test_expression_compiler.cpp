@@ -56,19 +56,18 @@ TEST(ExpressionCompiler, RealOperatorsScalar) {
 		{"(12 / 3) * -(7 - (4 + 1))**2 + 10 / 2", -11.0},
 	};
 
-	ExpressionCompiler compiler;
 	std::vector<Expression> expressions;
-	int s_max = 0;
-	int v_max = 0;
+	size_t s_max = 0;
+	size_t v_max = 0;
 
 	for (auto& c : TestData) {
 
 		Lexer lexer = Lexer(c.infix);
-		ExpressionParser parser = ExpressionParser(lexer);
+		auto parser = ExpressionParser(lexer);
 		std::deque<Token> parsed = parser.parseLine();
 
 		Expression expression;
-		auto report = compiler.compile(parsed, expression);
+		CompileReport report = ExpressionCompiler::compile(parsed, expression);
 
 		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 		expression.evaluate(c_stacks);
@@ -78,8 +77,8 @@ TEST(ExpressionCompiler, RealOperatorsScalar) {
 		ASSERT_TRUE(c_stacks.ready());
 		EXPECT_DOUBLE_EQ(c.result, result);
 
-		s_max = std::max<int>(s_max, report.max_scalar);
-		v_max = std::max<int>(v_max, report.max_vector);
+		s_max = std::max<size_t>(s_max, report.max_scalar);
+		v_max = std::max<size_t>(v_max, report.max_vector);
 
 		expressions.push_back(std::move(expression));
 	}
@@ -90,8 +89,8 @@ TEST(ExpressionCompiler, RealOperatorsScalar) {
 
 	for (int i = 0; i < trys; ++i) {
 		double result = 0.0;
-		for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
-			(*it).evaluate(c_stacks);
+		for (const auto & expression : expressions) {
+			expression.evaluate(c_stacks);
 			result += c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			ASSERT_TRUE(c_stacks.ready());
@@ -103,8 +102,8 @@ TEST(ExpressionCompiler, RealOperatorsScalar) {
 
 void areEqualVector(const std::vector<double>& expected, const std::vector<double>& result) {
 	auto res = result.cbegin();
-	for (auto it = expected.cbegin(); it != expected.cend(); ++it) {
-		EXPECT_DOUBLE_EQ(*it, *res);
+	for (double it : expected) {
+		EXPECT_DOUBLE_EQ(it, *res);
 		++res;
 	}
 }
@@ -132,19 +131,18 @@ TEST(ExpressionCompiler, RealOperatorsVector) {
 		{"3 + 4 * 5 / (EXP(LOG([2, 2] - [1, 1])))", vec({23.0, 23.0})},
 	};
 
-	ExpressionCompiler compiler;
 	std::vector<Expression> expressions;
-	int s_max = 0;
-	int v_max = 0;
+	size_t s_max = 0;
+	size_t v_max = 0;
 
 	for (auto& c : TestData) {
 
 		Lexer lexer = Lexer(c.infix);
-		ExpressionParser parser = ExpressionParser(lexer);
+		auto parser = ExpressionParser(lexer);
 		std::deque<Token> parsed = parser.parseLine();
 
 		Expression expression;
-		auto report = compiler.compile(parsed, expression);
+		auto report = ExpressionCompiler::compile(parsed, expression);
 
 		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 		expression.evaluate(c_stacks);
@@ -154,8 +152,8 @@ TEST(ExpressionCompiler, RealOperatorsVector) {
 		ASSERT_TRUE(c_stacks.ready());
 		areEqualVector(c.result, result);
 
-		s_max = std::max<int>(s_max, report.max_scalar);
-		v_max = std::max<int>(v_max, report.max_vector);
+		s_max = std::max<size_t>(s_max, report.max_scalar);
+		v_max = std::max<size_t>(v_max, report.max_vector);
 
 		expressions.push_back(std::move(expression));
 	}
@@ -164,8 +162,8 @@ TEST(ExpressionCompiler, RealOperatorsVector) {
 	CalcStacks c_stacks(s_max, v_max, 0, 0);
 
 	for (int i = 0; i < trys; ++i) {
-		for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
-			(*it).evaluate(c_stacks);
+		for (const auto & expression : expressions) {
+			expression.evaluate(c_stacks);
 			c_stacks.popVector();
 			ASSERT_TRUE(c_stacks.ready());
 		}
@@ -195,19 +193,18 @@ TEST(ExpressionCompiler, RealOperatorsReduce) {
 		{"2 * LEN([2]) + 1", 3},
 	};
 
-	ExpressionCompiler compiler;
 	std::vector<Expression> expressions;
-	int s_max = 0;
-	int v_max = 0;
+	size_t s_max = 0;
+	size_t v_max = 0;
 
 	for (auto& c : TestData) {
 
 		Lexer lexer = Lexer(c.infix);
-		ExpressionParser parser = ExpressionParser(lexer);
+		auto parser = ExpressionParser(lexer);
 		std::deque<Token> parsed = parser.parseLine();
 
 		Expression expression;
-		auto report = compiler.compile(parsed, expression);
+		CompileReport report = ExpressionCompiler::compile(parsed, expression);
 
 		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 		expression.evaluate(c_stacks);
@@ -217,8 +214,8 @@ TEST(ExpressionCompiler, RealOperatorsReduce) {
 		ASSERT_TRUE(c_stacks.ready());
 		EXPECT_DOUBLE_EQ(c.result, result);
 
-		s_max = std::max<int>(s_max, report.max_scalar);
-		v_max = std::max<int>(v_max, report.max_vector);
+		s_max = std::max<size_t>(s_max, report.max_scalar);
+		v_max = std::max<size_t>(v_max, report.max_vector);
 
 		expressions.push_back(std::move(expression));
 	}
@@ -229,8 +226,8 @@ TEST(ExpressionCompiler, RealOperatorsReduce) {
 
 	for (int i = 0; i < trys; ++i) {
 		double result = 0.0;
-		for (auto it = expressions.cbegin(); it != expressions.cend(); ++it) {
-			(*it).evaluate(c_stacks);
+		for (const auto & expression : expressions) {
+			expression.evaluate(c_stacks);
 			result += c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			ASSERT_TRUE(c_stacks.ready());

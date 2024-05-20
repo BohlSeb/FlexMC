@@ -5,6 +5,7 @@
 
 #include "app_config.h"
 
+#include <ranges>
 #include <stdexcept>
 #include <algorithm>
 #include <functional>
@@ -31,7 +32,7 @@ int main() {
 
 	scalarOperations();
 
-	const bool run_main = 1;
+	const bool run_main = true;
 
 	//struct Test {
 	//	Test(int x, int y) : x(x), y(y) {}
@@ -68,25 +69,26 @@ int main() {
 
 	if (run_main) {
 
-		const std::string program = "MAX([0.0, 1.0, 2.0], [0.0, 1.0, 2.0])";
+//		const std::string program = " -2 * [0.0, 1.0, 2.0, 3, 2]";
+        const std::string program = "MAX(3, 4, 0)";
 		// const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
 		std::cout << "Program to parse >>" << std::endl;
 		std::cout << program << std::endl << std::endl;
 
 		Lexer lexer = Lexer(program);
 
-		ExpressionParser parser = ExpressionParser(lexer);
+		auto parser = ExpressionParser(lexer);
 
 		try {
 			std::deque<Token> parsed = parser.parseLine();
 			std::cout << "Items parsed: " << parsed.size() << std::endl;
-			for (auto iter = parsed.rbegin(); iter != parsed.rend(); ++iter) {
-				std::cout << (*iter).value << " ";
+			for (auto & iter : std::ranges::reverse_view(parsed)) {
+				std::cout << iter.value << " ";
 			}
 			std::cout << std::endl;
-			ExpressionCompiler compiler;
+			// ExpressionCompiler compiler;
 			Expression expression;
-			auto report = compiler.compile(parsed, expression);
+			auto report = ExpressionCompiler::compile(parsed, expression);
 			std::cout << "flexmc compiled" << std::endl;
 
 			Operands::Type return_type = report.ret_type;

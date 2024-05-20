@@ -1,4 +1,7 @@
 #include <cassert>
+#include <cmath>
+#include <iostream>
+
 #include "expression_profiler.h"
 #include "lexer.h"
 #include "expression_parser.h"
@@ -7,14 +10,14 @@
 using namespace flexMC;
 
 
-void areEqualVector(const std::vector<double>& expected, const std::vector<double>& result, const double& precision) {
-	auto res = result.cbegin();
-	for (auto it = expected.cbegin(); it != expected.cend(); ++it) {
-		std::cout << "problem" << std::endl;
-		assert(std::fabs(*it -  *res) < precision);
-		++res;
-	}
-}
+//void areEqualVector(const std::vector<double>& expected, const std::vector<double>& result, const double& precision) {
+//	auto res = result.cbegin();
+//	for (double it : expected) {
+//		std::cout << "problem" << std::endl;
+//		assert(std::fabs(it -  *res) < precision);
+//		++res;
+//	}
+//}
 
 
 void scalarOperations() {
@@ -59,25 +62,24 @@ void scalarOperations() {
 		{"(8 ** 2) / ((5 - 2) * (3 + 1)) - 7 + 2", 0.33333333333333304},
 	};
 
-	ExpressionCompiler compiler;
-
 	for (auto& c : TestData) {
 
 		Lexer lexer = Lexer(c.infix);
-		ExpressionParser parser = ExpressionParser(lexer);
+		auto parser = ExpressionParser(lexer);
 		std::deque<Token> parsed = parser.parseLine();
-		
-		Expression expression;
-		compiler.compile(parsed, expression);
-		auto report = compiler.compile(parsed, expression);
-		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 
-		int trys = 10000;
-		double average = 0.0;
+		Expression expression;
+		const CompileReport report = ExpressionCompiler::compile(parsed, expression);;
+        CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
+
+
+		int trys = 10;
+		// double average = 0.0;
 		for (int i = 0; i < trys; ++i) {
 			expression.evaluate(c_stacks);
-			average += c_stacks.scalarsBack() / trys;
+			// average += c_stacks.scalarsBack() / trys;
 			c_stacks.popScalar();
+            assert(c_stacks.ready());
 		}
 	}
 
