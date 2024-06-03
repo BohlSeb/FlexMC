@@ -6,16 +6,18 @@
 #include "app_config.h"
 
 #include <ranges>
+#include <tuple>
 #include <stdexcept>
 #include <algorithm>
 #include <functional>
 #include <numeric>
+#include <utility>
 
 #include "lexer.h"
 #include "expression_parser.h"
 #include "terminals.h"
 
- //#include "functions_real.h"
+//#include "functions_real.h"
 #include "expression_stacks.h"
 #include "expression_compiler.h"
 #include "operators_calc.h"
@@ -23,112 +25,104 @@
 
 using namespace flexMC;
 
-int main() {
+int main()
+{
 
-	// report version
-	std::cout << "Version: " << APP_VERSION_MAJOR << "."
-		<< APP_VERSION_MINOR << "."
-		<< APP_VERSION_PATCH << std::endl;
+    // report version
+    std::cout << "Version: " << APP_VERSION_MAJOR << "."
+              << APP_VERSION_MINOR << "."
+              << APP_VERSION_PATCH << std::endl;
 
-	scalarOperations();
+    scalarOperations();
 
-	const bool run_main = true;
+    const bool run_main = true;
 
-	//struct Test {
-	//	Test(int x, int y) : x(x), y(y) {}
-	//	int x;
-	//	int y;
-	//};
+    std::vector<int> t_1{1, 2, 3};
+    std::vector<int> t_2{4, 5, 6};
 
-	//Test e();
+    for (const std::pair<const int&, const int&> elem : std::views::zip(t_1, t_1)){
+        std::cout << std::get<0>(elem) << "\n";
+    }
 
-	//std::vector<int> v({ 1, 2, 3, 4 });
-	//int i = 0;
-	//const int size = v.size();
-	//while (i++ < size) {
-	//	std::cout << i << std::endl;
-	//	std::cout << v.back() << std::endl;
-	//	v.pop_back();
-	//}
-	//std::cout << "Size: " << v.size() << std::endl;
-
-	//CalcStacks stacks;
-	//std::vector<double> values;
-	//values.push_back(-1.0);
-	//values.push_back(1.0);
-	//values.push_back(2.0);
-	//values.push_back(4.0);
-	//
-	//stacks.pushVector(values);
-
-	//std::function<void(CalcStacks&)> fun = functionsReal::reduceVec("LEN");
-	//fun(stacks);
-	//std::cout << "Result: " << stacks.scalarsBack() << std::endl;
-	//stacks.popScalar();
-	//std::cout << "Ready: " << std::boolalpha << stacks.ready() << std::endl;
-
-	if (run_main) {
+    if (run_main)
+    {
 
 //		const std::string program = " -2 * [0.0, 1.0, 2.0, 3, 2]";
-        const std::string program = "MAX(3, 4, 0)";
-		// const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
-		std::cout << "Program to parse >>" << std::endl;
-		std::cout << program << std::endl << std::endl;
+        // const std::string program = "MAX(EXP(0)+5, 4, 0) + 3";
+        const std::string program = "EXP ([0.0, 1.0, 2.0] ) - 1";
+        std::cout << "Program to parse >>" << std::endl;
+        std::cout << program << std::endl << std::endl;
 
-		Lexer lexer = Lexer(program);
+        Lexer lexer;
 
-		auto parser = ExpressionParser(lexer);
+        std::deque<Token> infix = lexer.tokenize(program);
 
-		try {
-			std::deque<Token> parsed = parser.parseLine();
-			std::cout << "Items parsed: " << parsed.size() << std::endl;
-			for (auto & iter : std::ranges::reverse_view(parsed)) {
-				std::cout << iter.value << " ";
-			}
-			std::cout << std::endl;
-			// ExpressionCompiler compiler;
-			Expression expression;
-			auto report = ExpressionCompiler::compile(parsed, expression);
-			std::cout << "flexmc compiled" << std::endl;
+        std::pair<MaybeError, std::vector<Token>> parse_result = postfix(infix);
 
-			Operands::Type return_type = report.ret_type;
-			std::cout << "Return type: " << Operands::type2Str(return_type) << std::endl;
-
-			CalcStacks c_stacks(0,0,0,0);
-
-			expression.evaluate(c_stacks);
-			if (c_stacks.size(Operands::Type::scalar) == 1) {
-				std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
-				c_stacks.popScalar();
-			}
-			else if (c_stacks.size(Operands::Type::vector) == 1) {
-				std::cout << "Vector result:" << std::endl << "[ ";
-				std::vector<double> res = c_stacks.vectorsBack();
-				for (auto r : res) {
-					std::cout << r << ", ";
-				}
-				std::cout << "]" << std::endl;
-				c_stacks.popVector();
-			}
-			else {
-				throw std::runtime_error("No result ready");
-			}
-			if (!c_stacks.ready()) {
-				throw std::runtime_error("Stacks not ready for next run");
-			}
-			std::cout << "flexmc calculated" << std::endl;
+        MaybeError parse_report = std::get<0>(parse_result);
+        std::vector<Token> parsed = std::get<1>(parse_result);
 
 
-		}
-		catch (const std::runtime_error& error) {
-			std::cout << "Error:" << std::endl;
-			std::cout << error.what() << std::endl;
-			//throw error;
-		}
+//		auto parser = ExpressionParser(lexer);
+//
+        try
+        {
 
-	}
+            std::cout << "Items parsed: " << parsed.size() << std::endl;
+            for (auto &iter: std::ranges::reverse_view(parsed))
+            {
+                std::cout << iter.value << " ";
+            }
+            std::cout << std::endl;
+            // ExpressionCompiler compiler;
+            Expression expression;
+            auto report = ExpressionCompiler::compile(parsed, expression);
+            std::cout << "flexmc compiled" << std::endl;
 
-	std::cout << "Hello world" << std::endl;
+            Operands::Type return_type = report.ret_type;
+            std::cout << "Return type: " << Operands::type2Str(return_type) << std::endl;
 
-	return 0;
+            CalcStacks c_stacks(0, 0, 0, 0);
+
+            expression.evaluate(c_stacks);
+            if (c_stacks.size(Operands::Type::scalar) == 1)
+            {
+                std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
+                c_stacks.popScalar();
+            }
+            else if (c_stacks.size(Operands::Type::vector) == 1)
+            {
+                std::cout << "Vector result:" << std::endl << "[ ";
+                std::vector<double> res = c_stacks.vectorsBack();
+                for (auto r: res)
+                {
+                    std::cout << r << ", ";
+                }
+                std::cout << "]" << std::endl;
+                c_stacks.popVector();
+            }
+            else
+            {
+                throw std::runtime_error("No result ready");
+            }
+            if (!c_stacks.ready())
+            {
+                throw std::runtime_error("Stacks not ready for next run");
+            }
+            std::cout << "flexmc calculated" << std::endl;
+
+
+        }
+        catch (const std::runtime_error &error)
+        {
+            std::cout << "Error:" << std::endl;
+            std::cout << error.what() << std::endl;
+            //throw error;
+        }
+
+    }
+
+    std::cout << "Hello world" << std::endl;
+
+    return 0;
 }

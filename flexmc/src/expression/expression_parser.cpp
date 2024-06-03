@@ -1,5 +1,5 @@
-#include <stdexcept>
 #include <cassert>
+#include <sstream>
 #include <fmt/format.h>
 
 #include "expression_parser.h"
@@ -9,201 +9,350 @@
 // https://en.wikipedia.org/wiki/Shunting_yard_algorithm
 
 
-namespace flexMC {
+namespace flexMC
+{
 
-	std::deque<Token> ExpressionParser::parseLine() {
-		wantOperand();
-		return output_;
-	}
+    void MaybeError::setError(const std::string &msg, const size_t &at, const size_t &len)
+    {
+        err_msg_ = msg;
+        err_at_ = at;
+        err_len_ = len;
+    }
 
-	void ExpressionParser::wantOperand() {
-		using type = Token::Type;
-		auto token = getNext();
-		type t = token.type;
+    namespace
+    {
 
-		// easy: is operand
-		if (t == type::num || t == type::id || t == type::fun) {
-			output_.push_front(token);
-			haveOperand();
-		}
+        enum class State
+        {
+            want_operand,
+            have_operand,
+            end,
+            error
+        };
 
-		// prefix operator
-		else if ((t == type::op && token.context.maybe_prefix)
-			|| (t == type::lparen) || (t == type::lbracket)) {
-			assert(!token.context.is_infix);
-			token.context.is_prefix = true;
-			token.context.is_infix = false;
-			// jump mul/div
-			if ((token.value == PLUS) || (token.value == MINUS)) {
-				token.context.precedence += 2;
-			}
-			operators_.push_back(token);
-			wantOperand();
-		}
+        bool isSpace(const Token::Type &t)
+        { return ((t == Token::Type::wsp) || (t == Token::Type::tab)); }
 
-		// Unmatched parenthesis or "()" expected (function with 0 args)
-		else if ((t == type::rparen) || (t == type::rbracket)) {
-			if (operators_.empty()) {
-				auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
-				exprLineParseError(msg);
-			}
-			if (operators_.back().context.num_args > 0) {
-				exprLineParseError("Badly placed comma encountered within parentheses/brackets");
-			}
-			if (operators_.back().type == type::lbracket) {
-				exprLineParseError("Empty list encountered: \"[]\"");
-			}
-			if (operators_.back().type != type::lparen) {
-				auto msg = fmt::format("Expected empty argument list  \"()\", got \"{}\"", token.value);
-				exprLineParseError(msg);
-			}
-			operators_.pop_back();
-			operators_.push_back(Tokens::makeCall(0));
-			haveOperand();
-		}
+        bool isOperand(const Token::Type &t)
+        { return (t == Token::Type::num || t == Token::Type::id || t == Token::Type::fun); }
 
-		// Unexpected token
-		else {
-			auto msg = fmt::format(
-				"Expected a variable, value, function name or a prefix operator, got \"{}\"", 
-				token.value
-			);
-			if (t == type::eof) {
-				msg += " (end of line)";
-			}
-			exprLineParseError(msg);
-		}
-	}
+        bool isPrefixOp(const Token &tok)
+        {
+            return (tok.type == Token::Type::op && tok.context.maybe_prefix)
+                   || (tok.type == Token::Type::lparen)
+                   || (tok.type == Token::Type::lbracket);
+        }
 
-	void ExpressionParser::haveOperand() {
-		using type = Token::Type;
-		Token token = getNext();
+        State terminate(const Token &tok,
+                        std::deque<Token> &postfix,
+                        std::vector<Token> &operators,
+                        MaybeError &report)
+        {
+            while (!operators.empty())
+            {
+                Token op = operators.back();
+                if ((op.type == Token::Type::lparen) || (op.type == Token::Type::lbracket))
+                {
+                    auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", tok.value);
+                    report.setError(msg, tok.start, tok.size);
+                    return State::error;
+                }
+                postfix.push_front(op);
+                operators.pop_back();
+            }
+            return State::end;
+        }
 
-		// base case / leave 2-state machine
-		if (token.type == type::eof) {
-			while (!operators_.empty()) {
-				Token op = operators_.back();
-				if ((op.type == type::lparen) || (op.type == type::lbracket)) {
-					auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
-					exprLineParseError(msg);
-				}
-				output_.push_front(op);
-				operators_.pop_back();
-			}
-			return;
-		}
+        State expectNoArgs(const Token &tok, const std::vector<Token> &operators, MaybeError &report)
+        {
+            std::stringstream error_msg("");
+            if (operators.empty())
+            {
+                error_msg << fmt::format("Unmatched parenthesis/bracket: \"{}\"", tok.value);
+            }
+            else if (operators.back().context.num_args > 0)
+            {
+                error_msg << "Badly placed comma encountered within parentheses/brackets";
+            }
+            else if (operators.back().type == Token::Type::lbracket)
+            {
+                error_msg << "Empty list not allowed: \"[]\"";
+            }
+            else if (operators.back().type != Token::Type::lparen)
+            {
+                error_msg << fmt::format("Expected empty argument list  \"()\", got \"{}\"", tok.value);
+            }
+            if (!error_msg.str().empty())
+            {
+                report.setError(error_msg.str(), tok.start, tok.size);
+                return State::error;
+            }
+            return State::have_operand;
+        }
 
-		// wiki page shunting yard
-		if ((token.type == type::lparen) || (token.type == type::lbracket)) {
-			assert(!token.context.is_prefix);
-			token.context.is_infix = true;
-			operators_.push_back(token);
-			wantOperand();
-		}
+        State incrementArgsCount(const Token &tok,
+                                 std::deque<Token> &postfix,
+                                 std::vector<Token> &operators,
+                                 MaybeError &report)
+        {
+            std::string msg = "Unmatched parenthesis/bracket: \")\" or \"]\"";
+            msg += " or badly placed comma \",\"";
+            if (operators.empty())
+            {
+                report.setError(msg, tok.start, tok.size);
+                return State::error;
+            }
+            Token::Type operator_t = operators.back().type;
+            while ((operator_t != Token::Type::lparen) && (operator_t != Token::Type::lbracket))
+            {
+                postfix.push_front(operators.back());
+                operators.pop_back();
+                if (operators.empty())
+                {
+                    report.setError(msg, tok.start, tok.size);
+                    return State::error;
+                }
+                operator_t = operators.back().type;
+            }
+            operators.back().context.num_args += 1;
+            return State::want_operand;
+        }
 
-		// number of call args
-		else if (token.value == COMMA) {
-			std::string msg = "Unmatched parenthesis/bracket: \")\" or \"]\"";
-			msg += " or badly placed comma \",\"";
-			if (operators_.empty()) {
-				exprLineParseError(msg);
-			}
-			type opType = operators_.back().type;
-			while ((opType != type::lparen) && (opType != type::lbracket)) {
-				output_.push_front(operators_.back());
-				operators_.pop_back();
-				if (operators_.empty()) {
-					exprLineParseError(msg);
-				}
-				opType = operators_.back().type;
-			}
-			operators_.back().context.num_args += 1;
-			wantOperand();
-		}
+        State makeReduceOperator(const Token &tok,
+                                 std::deque<Token> &postfix,
+                                 std::vector<Token> &operators,
+                                 MaybeError &report)
+        {
+            auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", tok.value);
+            if (operators.empty())
+            {
+                report.setError(msg, tok.start, tok.size);
+                return State::error;
+            }
+            Token::Type operator_t = operators.back().type;
+            Token::Type stop = (tok.type == Token::Type::rparen) ? Token::Type::lparen : Token::Type::lbracket;
+            while (operator_t != stop)
+            {
+                postfix.push_front(operators.back());
+                operators.pop_back();
+                if (operators.empty())
+                {
+                    report.setError(msg, tok.start, tok.size);
+                    return State::error;
+                }
+                operator_t = operators.back().type;
+            }
+            Token left_close = operators.back();
+            size_t num_args = left_close.context.num_args + 1;
+            if (left_close.type == Token::Type::lparen && left_close.context.is_infix)
+            {
+                postfix.push_front(Tokens::makeCall(num_args, tok.start));
+            }
+            else if (left_close.type == Token::Type::lbracket && left_close.context.is_prefix)
+            {
+                postfix.push_front(Tokens::makeAppend(num_args, tok.start));
+            }
+            else if (left_close.type == Token::Type::lbracket && left_close.context.is_infix)
+            {
+                postfix.push_front(Tokens::makeIndex(num_args, tok.start));
+            }
+            operators.pop_back();
+            return State::have_operand;
+        }
 
-		else if ((token.type == type::rparen) || (token.type == type::rbracket)) {
-			auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", token.value);
-			if (operators_.empty()) {
-				exprLineParseError(msg);
-			}
-			type opType = operators_.back().type;
-			type stop = (token.type == type::rparen) ? type::lparen : type::lbracket;
-			while (opType != stop) {
-				output_.push_front(operators_.back());
-				operators_.pop_back();
-				if (operators_.empty()) {
-					exprLineParseError(msg);
-				}
-				opType = operators_.back().type;
-			}
-			Token leftClose = operators_.back();
-			int num_args = leftClose.context.num_args + 1;
-			if ((leftClose.type == type::lparen && leftClose.context.is_infix)) {
-				output_.push_front(Tokens::makeCall(num_args));
-			}
-			else if (leftClose.type == type::lbracket && leftClose.context.is_prefix) {
-				output_.push_front(Tokens::makeAppend(num_args));
-			}
-			else if (leftClose.type == type::lbracket && leftClose.context.is_infix) {
-				output_.push_front(Tokens::makeIndex(num_args));
-			}
-			operators_.pop_back();
-			haveOperand();
-		}
+        State pushOperators(Token tok,
+                            std::deque<Token> &postfix,
+                            std::vector<Token> &operators)
+        {
+            while (!operators.empty())
+            {
+                ParsingContext op_c = operators.back().context;
+                ParsingContext input_c = tok.context;
+                bool higher = op_c.precedence > input_c.precedence;
+                bool barely_higher = (op_c.precedence == input_c.precedence) && input_c.left_associative;
+                if (higher || barely_higher)
+                {
+                    postfix.push_front(operators.back());
+                    operators.pop_back();
+                }
+                else
+                {
+                    break;
+                }
+            }
+            assert(!tok.context.is_prefix);
+            tok.context.is_infix = true;
+            operators.push_back(tok);
+            return State::want_operand;
+        }
 
-		else if ((token.type == type::op) && (token.context.maybe_infix)) {
-			while (!operators_.empty()) {
-				ParsingContext opC = operators_.back().context;
-				ParsingContext inputC = token.context;
-				bool higher = opC.precedence > inputC.precedence;
-				bool barelyHigher = (opC.precedence == inputC.precedence) && inputC.left_associative;
-				if (higher || barelyHigher) {
-					output_.push_front(operators_.back());
-					operators_.pop_back();
-				}
-				else {
-					break;
-				}
-			}
-			assert(!token.context.is_prefix);
-			token.context.is_infix = true;
-			operators_.push_back(token);
-			wantOperand();
+        State wantOperand(std::deque<Token> &infix,
+                          std::deque<Token> &postfix,
+                          std::vector<Token> &operators,
+                          MaybeError &report)
+        {
+            using type = Token::Type;
 
-		}
+            assert(!infix.empty());
 
-		// Unexpected token
-		else {
-			auto msg = fmt::format(
-				"Expected an operator, got \"{0}\" of type {1}", 
-				token.value, 
-				token.type2String()
-			);
-			if (token.type == type::eof) {
-				msg += " (end of line)";
-			}
-			exprLineParseError(msg);
-		}
-	}
+            Token next = infix.front();
+            Token::Type t = next.type;
 
-	Token ExpressionParser::getNext() {
-		auto token = lexer_.nextToken();
-		auto type = token.type;
-		if (type == Token::Type::undefined) {
-			auto msg = fmt::format("No valid language token found at the beginning of \"{}\"", token.value);
-			exprLineParseError(msg);
-		}
-		if ((type == Token::Type::wsp) || (type == Token::Type::tab)) {
-			parsed << token.value;
-			return getNext();
-		}
-		parsed << token.value;
-		return token;
-	}
+            if (t == Token::Type::undefined)
+            {
+                report.setError("Does not start with a valid language token", next.start, next.size);
+                return State::error;
+            }
+            if (t == Token::Type::eof)
+            {
+                report.setError(
+                        "Expected a variable, value, function name or a prefix operator, got end of line",
+                        next.start,
+                        0
+                );
+                return State::error;
+            }
+            if (isSpace(t))
+            {
+                infix.pop_front();
+                return State::want_operand;
+            }
+            if (isOperand(t))
+            {
+                postfix.push_front(next);
+                infix.pop_front();
+                return State::have_operand;
+            }
+            if (isPrefixOp(next))
+            {
+                assert(!next.context.is_infix);
+                next.context.is_prefix = true;
+                next.context.is_infix = false;
+                // jump mul/div
+                if ((next.value == PLUS) || (next.value == MINUS))
+                {
+                    next.context.precedence += 2;
+                }
+                operators.push_back(next);
+                infix.pop_front();
+                return State::want_operand;
+            }
 
-	void ExpressionParser::exprLineParseError(const std::string& message) const {
-		auto msg = fmt::format("Parsed >> \"{0}\" \nProblem >> {1}", parsed.str(), message);
-		throw std::runtime_error(msg);
-	}
+            // Unmatched parenthesis or "()" expected (function with 0 args)
+            if ((t == type::rparen) || (t == type::rbracket))
+            {
+                State s = expectNoArgs(next, operators, report);
+                if (s != State::error)
+                {
+                    operators.pop_back();
+                    operators.push_back(Tokens::makeCall(0, 0));
+                    infix.pop_front();
+                }
+                return s;
+
+            }
+            std::string msg = fmt::format(
+                    "Expected a variable, value, function name or a prefix operator, got \"{0}\" ({1})",
+                    next.value,
+                    next.type2String()
+            );
+            report.setError(msg, next.start, next.size);
+            return State::error;
+        }
+
+        State haveOperand(std::deque<Token> &infix,
+                          std::deque<Token> &postfix,
+                          std::vector<Token> &operators,
+                          MaybeError &report)
+        {
+            using type = Token::Type;
+
+            assert(!infix.empty());
+
+            Token next = infix.front();
+            Token::Type t = next.type;
+
+            if (t == Token::Type::undefined)
+            {
+                report.setError("Does not start with a valid language token", next.start, next.size);
+                return State::error;
+            }
+            if (isSpace(t))
+            {
+                infix.pop_front();
+                return State::have_operand;
+            }
+            if (t == type::eof)
+            {
+                return terminate(next, postfix, operators, report);
+            }
+            // wiki page shunting yard
+            if ((t == type::lparen) || (t == type::lbracket))
+            {
+                assert(!next.context.is_prefix);
+                next.context.is_infix = true;
+                operators.push_back(next);
+                infix.pop_front();
+                return State::want_operand;
+            }
+            if (next.value == COMMA)
+            {
+                State s = incrementArgsCount(next, postfix, operators, report);
+                if (s == State::want_operand)
+                {
+                    infix.pop_front();
+                }
+                return s;
+            }
+            if ((next.type == type::rparen) || (next.type == type::rbracket))
+            {
+                State s = makeReduceOperator(next, postfix, operators, report);
+                if (s == State::have_operand)
+                {
+                    infix.pop_front();
+                }
+                return s;
+            }
+            if ((next.type == type::op) && (next.context.maybe_infix))
+            {
+                State s = pushOperators(next, postfix, operators);
+                infix.pop_front();
+                return s;
+            }
+            std::string msg = fmt::format(
+                    "Expected an operator, got \"{0}\" of type {1}",
+                    next.value,
+                    next.type2String()
+            );
+            report.setError(msg, next.start, next.size);
+            return State::error;
+        }
+    }
+
+    std::pair<MaybeError, std::vector<Token>> postfix(const std::deque<Token> &infix)
+    {
+        assert(!infix.empty());
+        std::deque<Token> infix_(infix);
+        std::deque<Token> out_;
+        std::vector<Token> operators_;
+        Token first = infix_.front();
+
+        MaybeError report;
+
+        State current = wantOperand(infix_, out_, operators_, report);
+        while ((current != State::end) && (current != State::error))
+        {
+            if (current == State::want_operand)
+            {
+                current = wantOperand(infix_, out_, operators_, report);
+            }
+            else
+            {
+                current = haveOperand(infix_, out_, operators_, report);
+            }
+        }
+        std::vector<Token> result(out_.cbegin(), out_.cend());
+        return std::make_pair(report, result);
+    }
 
 }

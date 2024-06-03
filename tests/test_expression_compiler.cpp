@@ -60,14 +60,19 @@ TEST(ExpressionCompiler, RealOperatorsScalar) {
 	size_t s_max = 0;
 	size_t v_max = 0;
 
+    Lexer lexer;
+
 	for (auto& c : TestData) {
 
-		Lexer lexer = Lexer(c.infix);
-		auto parser = ExpressionParser(lexer);
-		std::deque<Token> parsed = parser.parseLine();
+		const std::deque<Token> infix = lexer.tokenize(c.infix);
+		const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+
+        auto parse_report = parse_result.first;
+        EXPECT_FALSE(parse_report.isError());
+        auto postfix = parse_result.second;
 
 		Expression expression;
-		CompileReport report = ExpressionCompiler::compile(parsed, expression);
+		CompileReport report = ExpressionCompiler::compile(postfix, expression);
 
 		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 		expression.evaluate(c_stacks);
@@ -88,14 +93,11 @@ TEST(ExpressionCompiler, RealOperatorsScalar) {
 	CalcStacks c_stacks(s_max, v_max, 0, 0);
 
 	for (int i = 0; i < trys; ++i) {
-		double result = 0.0;
 		for (const auto & expression : expressions) {
 			expression.evaluate(c_stacks);
-			result += c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			ASSERT_TRUE(c_stacks.ready());
 		}
-		double average = result / trys;
 	}
 
 }
@@ -135,14 +137,19 @@ TEST(ExpressionCompiler, RealOperatorsVector) {
 	size_t s_max = 0;
 	size_t v_max = 0;
 
+    Lexer lexer;
+
 	for (auto& c : TestData) {
 
-		Lexer lexer = Lexer(c.infix);
-		auto parser = ExpressionParser(lexer);
-		std::deque<Token> parsed = parser.parseLine();
+        const std::deque<Token> infix = lexer.tokenize(c.infix);
+        const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+
+        auto parse_report = std::get<0>(parse_result);
+        EXPECT_FALSE(parse_report.isError());
+        auto postfix = std::get<1>(parse_result);
 
 		Expression expression;
-		auto report = ExpressionCompiler::compile(parsed, expression);
+		auto report = ExpressionCompiler::compile(postfix, expression);
 
 		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 		expression.evaluate(c_stacks);
@@ -197,14 +204,19 @@ TEST(ExpressionCompiler, RealOperatorsReduce) {
 	size_t s_max = 0;
 	size_t v_max = 0;
 
+    Lexer lexer;
+
 	for (auto& c : TestData) {
 
-		Lexer lexer = Lexer(c.infix);
-		auto parser = ExpressionParser(lexer);
-		std::deque<Token> parsed = parser.parseLine();
+        const std::deque<Token> infix = lexer.tokenize(c.infix);
+        const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+
+        const auto parse_report = parse_result.first;
+        EXPECT_FALSE(parse_report.isError());
+        const auto postfix = parse_result.second;
 
 		Expression expression;
-		CompileReport report = ExpressionCompiler::compile(parsed, expression);
+		const CompileReport report = ExpressionCompiler::compile(postfix, expression);
 
 		CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 		expression.evaluate(c_stacks);
@@ -225,14 +237,11 @@ TEST(ExpressionCompiler, RealOperatorsReduce) {
 	CalcStacks c_stacks(s_max, v_max, 0, 0);
 
 	for (int i = 0; i < trys; ++i) {
-		double result = 0.0;
 		for (const auto & expression : expressions) {
 			expression.evaluate(c_stacks);
-			result += c_stacks.scalarsBack();
 			c_stacks.popScalar();
 			ASSERT_TRUE(c_stacks.ready());
 		}
-		double average = result / trys;
 	}
 
 }

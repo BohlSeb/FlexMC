@@ -1,47 +1,46 @@
 #pragma once
 
-#include <deque>
-#include <vector>
 #include <sstream>
+#include <deque>
+#include <utility>
 
-#include "lexer.h"
 #include "tokens.h"
+#include "lexer.h"
 
-namespace flexMC {
 
-	class ExpressionParser {
+namespace flexMC
+{
 
-	public:
 
-		explicit ExpressionParser(Lexer& lexer) : parsed(""), lexer_(lexer) {}
+    class MaybeError
+    {
 
-		std::deque<Token> parseLine();
+    public:
 
-		std::stringstream parsed;
+        MaybeError() : err_msg_(""), err_at_(0), err_len_(0)
+        {}
 
-	private:
+        void setError(const std::string &msg, const size_t &at, const size_t &len);
 
-        enum class Next {
-            want_operand,
-            have_operand,
-            end
-        };
+        bool isError() const
+        { return !err_msg_.empty(); }
 
-		Lexer& lexer_;
+        std::pair<size_t, size_t> at() const
+        { return std::make_pair(err_at_, err_len_); }
 
-		std::deque<Token> output_;
+        std::string msg() const
+        { return err_msg_; }
 
-		std::vector<Token> operators_;
+    private:
 
-		Token getNext();
+        std::string err_msg_;
 
-		void wantOperand();
+        size_t err_at_;
 
-		void haveOperand();
+        size_t err_len_;
 
-		// todo: custom exceptions?
-		void exprLineParseError(const std::string& message) const;
+    };
 
-	};
+    std::pair<MaybeError, std::vector<Token>> postfix(const std::deque<Token> &infix);
 
 }

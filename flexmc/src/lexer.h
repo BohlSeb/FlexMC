@@ -1,27 +1,33 @@
 #pragma once
 
 #include <regex>
+#include <deque>
+#include <utility>
 
 #include "tokens.h"
 
-namespace flexMC {
+namespace flexMC
+{
 
-	class Lexer {
+    class Lexer
+    {
 
-	public:
+    public:
 
-		explicit Lexer(const std::string& program);
+        Lexer();
 
-		Token nextToken();
+        std::deque<Token> tokenize(const std::string &line);
 
-	private:
+    private:
 
-		std::string searchStr_;
-		std::regex groups_1_;
-		std::regex groups_2_;
-		std::regex id_;
-		std::regex num_;
-		std::smatch match_;
+        std::pair<Token, std::string> nextTok(const std::string &suffix, const size_t &line_no);
 
-	};
+        std::regex groups_1_;
+        std::regex groups_2_;
+        std::regex id_;
+        std::regex num_;
+
+        std::smatch match_;
+
+    };
 }
