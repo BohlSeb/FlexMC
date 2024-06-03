@@ -16,14 +16,12 @@ jobs:
           - os: windows-latest
             build_type: release
             preset: windows-gcc-release
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             build_type: debug
             preset: linux-gcc-debug
-            gcc: 13
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             build_type: release
             preset: linux-gcc-release
-            gcc: 13
 
     runs-on: ${{ matrix.os }}
 
