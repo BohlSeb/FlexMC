@@ -38,15 +38,19 @@ TEST(ExpressionParser, OperatorsAndOperands) {
 		{"x **(y + z) / 2", "x y z + ** 2 /"},
 	};
 
+    Lexer lexer;
+
 	for (auto& c : TestData) {
 
-		Lexer lexer = Lexer(c.infix);
-		auto parser = ExpressionParser(lexer);
-		std::deque<Token> parsed = parser.parseLine();
+        const std::deque<Token> infix = lexer.tokenize(c.infix);
+		const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+        const auto report = parse_result.first;
+        EXPECT_FALSE(report.isError());
+        const auto postfix = parse_result.second;
 		std::string res;
 		size_t i = 0;
-		auto size = parsed.size();
-		for (auto & it : std::ranges::reverse_view(parsed)) {
+		auto size = postfix.size();
+		for (auto & it : std::ranges::reverse_view(postfix)) {
 			res += it.value;
 			if (i < size - 1) {
 				res += " ";

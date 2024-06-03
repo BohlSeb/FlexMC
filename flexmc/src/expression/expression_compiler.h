@@ -1,6 +1,5 @@
 #pragma once
 
-#include <deque>
 #include <vector>
 #include <memory>
 
@@ -41,7 +40,7 @@ namespace flexMC {
 
     struct ExpressionCompiler {
 
-        static CompileReport compile(const std::deque<Token> &post_fix, Expression &expression);
+        static CompileReport compile(const std::vector<Token> &post_fix, Expression &expression);
 
     };
 

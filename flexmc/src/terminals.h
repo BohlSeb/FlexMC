@@ -67,6 +67,7 @@ namespace flexMC {
 
 	const std::string R_GROUPS_1[ ] = {
 		R"(^\*\*(=?))",
+        R"(^\s{4})",
 	};
 
 	const std::string R_GROUPS_2[ ] = {

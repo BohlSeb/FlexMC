@@ -1,4 +1,4 @@
-name: CMake msvc build
+name: MSVC build
 on: [pull_request, workflow_dispatch]
 
 # Workaround for

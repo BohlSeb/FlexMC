@@ -14,12 +14,12 @@ namespace flexMC
         ParsingContext() : precedence(1)
         {}
 
-        int precedence;
+        size_t precedence;
         bool maybe_prefix = false;
         bool maybe_infix = false;
         bool is_prefix = false;
         bool is_infix = false;
-        int num_args = 0;
+        size_t num_args = 0;
         bool left_associative = true;
 
     };
@@ -47,16 +47,28 @@ namespace flexMC
             index_
         };
 
-        explicit Token(Type t, std::string val = "") :
+        Token(Type t, const std::string &val, const size_t &at) :
                 type(t),
-                value(std::move(val)),
+                value(val),
+                start(at),
+                size(val.length()),
                 context(ParsingContext())
         {}
 
-        Token(Type t, std::string val, ParsingContext con) :
+        Token(Type t, std::string val, const size_t &at, ParsingContext con) :
                 type(t),
-                value(std::move(val)),
+                value(val),
+                start(at),
+                size(val.length()),
                 context(con)
+        {}
+
+        Token(Type t, const std::string &val, const size_t &at, const size_t &length) :
+                type(t),
+                value(val),
+                start(at),
+                size(length),
+                context(ParsingContext())
         {}
 
         [[nodiscard]] std::string toString() const;
@@ -65,6 +77,8 @@ namespace flexMC
 
         const Type type;
         const std::string value;
+        const size_t start;
+        const size_t size;
         ParsingContext context;
     };
 
@@ -73,13 +87,13 @@ namespace flexMC
 
         Token::Type getType(const std::string &symbol);
 
-        Token makeContextualized(const std::string &symbol);
+        Token makeContextualized(const std::string &val, const size_t &at);
 
-        Token makeCall(const int &num_args);
+        Token makeCall(const int &num_args, const size_t &at);
 
-        Token makeAppend(const int &num_args);
+        Token makeAppend(const int &num_args, const size_t &at);
 
-        Token makeIndex(const int &num_args);
+        Token makeIndex(const int &num_args, const size_t &at);
 
         const std::unordered_map<std::string, Token::Type> TYPES = {
 
@@ -130,6 +144,7 @@ namespace flexMC
                 {B_RIGHT,      Token::Type::rbracket},
 
                 {"\t",         Token::Type::tab},
+                {"    ",         Token::Type::tab},
                 {" ",          Token::Type::wsp},
         };
     }

@@ -17,7 +17,7 @@ namespace flexMC
         }
     }
 
-    CompileReport ExpressionCompiler::compile(const std::deque<Token> &post_fix, Expression &expression)
+    CompileReport ExpressionCompiler::compile(const std::vector<Token> &post_fix, Expression &expression)
     {
         Operands operands;
         for (const auto &tok: std::ranges::reverse_view(post_fix))

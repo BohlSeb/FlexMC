@@ -62,14 +62,18 @@ void scalarOperations() {
 		{"(8 ** 2) / ((5 - 2) * (3 + 1)) - 7 + 2", 0.33333333333333304},
 	};
 
+    Lexer lexer;
+
 	for (auto& c : TestData) {
 
-		Lexer lexer = Lexer(c.infix);
-		auto parser = ExpressionParser(lexer);
-		std::deque<Token> parsed = parser.parseLine();
+        std::deque<Token> infix = lexer.tokenize(c.infix);
+		std::pair<MaybeError, std::vector<Token>> parse_result = postfix(infix);
+		auto parse_report = std::get<0>(parse_result);
+        assert(!parse_report.isError());
+		auto postfix = std::get<1>(parse_result);
 
 		Expression expression;
-		const CompileReport report = ExpressionCompiler::compile(parsed, expression);;
+		const CompileReport report = ExpressionCompiler::compile(postfix, expression);
         CalcStacks c_stacks(report.max_scalar, report.max_vector, 0, 0);
 
 
