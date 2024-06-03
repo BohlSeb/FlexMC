@@ -40,7 +40,7 @@ int main()
     std::vector<int> t_1{1, 2, 3};
     std::vector<int> t_2{4, 5, 6};
 
-    for (const std::pair<const int&, const int&> elem : std::views::zip(t_1, t_1)){
+    for (const std::pair<const int&, const int&> elem : std::ranges::zip_view(t_1, t_1)){
         std::cout << std::get<0>(elem) << "\n";
     }
 
