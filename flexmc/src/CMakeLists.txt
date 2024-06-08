@@ -10,6 +10,8 @@ set(SOURCES
         "expression/operation.cpp"
         "expression/operation_compiler.cpp"
         "expression/operators_calc.cpp"
+        language_error.h
+        language_error.cpp
 )
 
 add_library(flexmc STATIC ${SOURCES})

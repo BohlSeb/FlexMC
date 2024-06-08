@@ -42,7 +42,7 @@ namespace flexMC
 
         while ((previous != Token::Type::eof) && (previous != Token::Type::undefined) && (line_no <= max_line_length))
         {
-            std::tuple<Token, std::string> pair = nextTok(suffix, 0);
+            std::tuple<Token, std::string> pair = nextTok(suffix, line_no);
             suffix = std::get<1>(pair);
             Token next = std::get<0>(pair);
             previous = next.type;

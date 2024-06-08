@@ -67,7 +67,7 @@ void scalarOperations() {
 	for (auto& c : TestData) {
 
         std::deque<Token> infix = lexer.tokenize(c.infix);
-		std::pair<MaybeError, std::vector<Token>> parse_result = postfix(infix);
+		std::pair<MaybeError, std::vector<Token>> parse_result = infixToPostfix(infix);
 		auto parse_report = std::get<0>(parse_result);
         assert(!parse_report.isError());
 		auto postfix = std::get<1>(parse_result);

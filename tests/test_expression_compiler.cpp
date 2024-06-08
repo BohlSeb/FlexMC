@@ -65,7 +65,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar) {
 	for (auto& c : TestData) {
 
 		const std::deque<Token> infix = lexer.tokenize(c.infix);
-		const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+		const std::pair<const MaybeError, const std::vector<Token>> parse_result = infixToPostfix(infix);
 
         auto parse_report = parse_result.first;
         EXPECT_FALSE(parse_report.isError());
@@ -142,7 +142,7 @@ TEST(ExpressionCompiler, RealOperatorsVector) {
 	for (auto& c : TestData) {
 
         const std::deque<Token> infix = lexer.tokenize(c.infix);
-        const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+        const std::pair<const MaybeError, const std::vector<Token>> parse_result = infixToPostfix(infix);
 
         auto parse_report = std::get<0>(parse_result);
         EXPECT_FALSE(parse_report.isError());
@@ -209,7 +209,7 @@ TEST(ExpressionCompiler, RealOperatorsReduce) {
 	for (auto& c : TestData) {
 
         const std::deque<Token> infix = lexer.tokenize(c.infix);
-        const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+        const std::pair<const MaybeError, const std::vector<Token>> parse_result = infixToPostfix(infix);
 
         const auto parse_report = parse_result.first;
         EXPECT_FALSE(parse_report.isError());

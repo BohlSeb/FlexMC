@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <ranges>
-
+#include <iostream>
 #include "operand.h"
 #include "operation_compiler.h"
 #include "expression_compiler.h"
@@ -20,7 +20,7 @@ namespace flexMC
     CompileReport ExpressionCompiler::compile(const std::vector<Token> &post_fix, Expression &expression)
     {
         Operands operands;
-        for (const auto &tok: std::ranges::reverse_view(post_fix))
+        for (const auto &tok: post_fix)
         {
             const Token::Type t = tok.type;
             if (t == Token::Type::num)
