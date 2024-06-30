@@ -3,6 +3,8 @@
 #include <functional>
 
 #include "terminals.h"
+#include "tokens.h"
+#include "language_error.h"
 #include "expression_stacks.h"
 
 
@@ -27,7 +29,7 @@ namespace flexMC::functionsReal
             LEN,
     };
 
-    Operands::Type compileArgType(const Operands::Type &arg_type);
+    Operands::Type compileArgType(const Token& token, const Operands::Type &arg_type, MaybeError &report);
 
     std::function<void(CalcStacks &)> scalarFunc(const std::string &symbol, const Operands::Type &return_type);
 

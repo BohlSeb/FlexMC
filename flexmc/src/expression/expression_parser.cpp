@@ -184,6 +184,25 @@ namespace flexMC
             return State::want_operand;
         }
 
+        State checkParenthesisAfterFunction(const Token &function, std::deque<Token> &infix, MaybeError &report)
+        {
+            auto found = false;
+            for (const auto &token: infix)
+            {
+                if (!isSpace(token.type)) {
+                    if (token.type == Token::Type::lparen) {
+                        found = true;
+                    }
+                    break;
+                }
+            }
+            if (!found) {
+                report.setError("Expected opening parenthesis \"(\" after function", function.start, function.size);
+                return State::error;
+            }
+            return State::have_operand;
+        }
+
         State wantOperand(std::deque<Token> &infix,
                           std::vector<Token> &postfix,
                           std::vector<Token> &operators,
@@ -219,6 +238,9 @@ namespace flexMC
             {
                 postfix.push_back(next);
                 infix.pop_front();
+                if (t == Token::Type::fun) {
+                    return checkParenthesisAfterFunction(postfix.back(), infix, report);
+                }
                 return State::have_operand;
             }
             if (isPrefixOp(next))

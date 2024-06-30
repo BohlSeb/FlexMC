@@ -33,7 +33,7 @@ int main()
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
 
-    // scalarOperations();
+    scalarOperations();
 
 
     std::string test_program = "This is a program";
@@ -52,7 +52,7 @@ int main()
 //		const std::string program = " -2 * [0.0, 1.0, 2.0, 3, 2]";
         // const std::string program = "MAX(EXP(0)+5, 4, 0) + 3";
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "EXP ( 3 )";
+        const std::string program_err = "2 + EXP( +3 )";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -85,39 +85,48 @@ int main()
                 std::cout << std::endl;
                 // ExpressionCompiler compiler;
                 Expression expression;
-                auto report = ExpressionCompiler::compile(parsed, expression);
-                Operands::Type return_type = report.ret_type;
+                const std::pair<const MaybeError, const CompileReport> reports
+                        = ExpressionCompiler::compile(parsed, expression);
 
-                std::cout << "Compiled >> Return type: " << Operands::type2Str(return_type) << std::endl;
-
-                CalcStacks c_stacks(0, 0, 0, 0);
-
-                expression.evaluate(c_stacks);
-                if (c_stacks.size(Operands::Type::scalar) == 1)
+                if (reports.first.isError())
                 {
-                    std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
-                    c_stacks.popScalar();
-                }
-                else if (c_stacks.size(Operands::Type::vector) == 1)
-                {
-                    std::cout << "Vector result:" << std::endl << "[ ";
-                    std::vector<double> res = c_stacks.vectorsBack();
-                    for (auto r: res)
-                    {
-                        std::cout << r << ", ";
-                    }
-                    std::cout << "]" << std::endl;
-                    c_stacks.popVector();
+                    std::cout << printError("Compilation", current, reports.first) << std::endl;
                 }
                 else
                 {
-                    throw std::runtime_error("No result ready");
+                    Operands::Type return_type = reports.second.ret_type;
+
+                    std::cout << "Compiled >> Return type: " << Operands::type2Str(return_type) << std::endl;
+
+                    CalcStacks c_stacks(0, 0, 0, 0);
+
+                    expression.evaluate(c_stacks);
+                    if (c_stacks.size(Operands::Type::scalar) == 1)
+                    {
+                        std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
+                        c_stacks.popScalar();
+                    }
+                    else if (c_stacks.size(Operands::Type::vector) == 1)
+                    {
+                        std::cout << "Vector result:" << std::endl << "[ ";
+                        std::vector<double> res = c_stacks.vectorsBack();
+                        for (auto r: res)
+                        {
+                            std::cout << r << ", ";
+                        }
+                        std::cout << "]" << std::endl;
+                        c_stacks.popVector();
+                    }
+                    else
+                    {
+                        throw std::runtime_error("No result ready");
+                    }
+                    if (!c_stacks.ready())
+                    {
+                        throw std::runtime_error("Stacks not ready for next run");
+                    }
+                    std::cout << "flexmc calculated" << std::endl;
                 }
-                if (!c_stacks.ready())
-                {
-                    throw std::runtime_error("Stacks not ready for next run");
-                }
-                std::cout << "flexmc calculated" << std::endl;
 
 
             }

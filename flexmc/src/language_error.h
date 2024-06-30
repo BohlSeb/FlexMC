@@ -19,6 +19,10 @@ namespace flexMC
         bool isError() const
         { return !err_msg_.empty(); }
 
+        void setMessage(const std::string &msg);
+
+        void setPosition(const size_t &at, const size_t &len);
+
         std::pair<size_t, size_t> position() const
         { return std::make_pair(err_at_, err_len_); }
 
@@ -35,6 +39,6 @@ namespace flexMC
 
     };
 
-    std::string printError(const std::string err_prefix, const std::string &line, const MaybeError &error);
+    std::string printError(const std::string err_prefix, const std::string &line, const MaybeError &report);
 
 }
