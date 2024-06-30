@@ -2,6 +2,7 @@
 
 #include <ranges>
 
+#include "lexer.h"
 #include "expression_parser.h"
 
 
@@ -43,14 +44,14 @@ TEST(ExpressionParser, OperatorsAndOperands) {
 	for (auto& c : TestData) {
 
         const std::deque<Token> infix = lexer.tokenize(c.infix);
-		const std::pair<const MaybeError, const std::vector<Token>> parse_result = postfix(infix);
+		const std::pair<const MaybeError, const std::vector<Token>> parse_result = infixToPostfix(infix);
         const auto report = parse_result.first;
         EXPECT_FALSE(report.isError());
         const auto postfix = parse_result.second;
 		std::string res;
 		size_t i = 0;
 		auto size = postfix.size();
-		for (auto & it : std::ranges::reverse_view(postfix)) {
+		for (auto & it : postfix) {
 			res += it.value;
 			if (i < size - 1) {
 				res += " ";

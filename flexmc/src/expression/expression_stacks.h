@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "tokens.h"
 
 namespace flexMC
 {
@@ -16,11 +17,12 @@ namespace flexMC
             scalar,
             date,
             vector,
-            dateList
+            dateList,
+            undefined
         };
 
         [[nodiscard]] bool haveCompiled() const
-        { return ((types_.size() == 1) && (function_symbols_.empty())); }
+        { return ((types_.size() == 1) && (functions_.empty())); }
 
         void pushType(const Type &type);
 
@@ -34,20 +36,20 @@ namespace flexMC
         [[nodiscard]] size_t sizesBack() const
         { return vector_sizes_.back(); }
 
-        void pushFunc(const std::string &symbol)
-        { function_symbols_.push_back(symbol); }
+        void pushFunc(const Token& token)
+        { functions_.push_back(token); }
 
-        [[nodiscard]] std::string funcsBack() const
-        { return function_symbols_.back(); }
+        [[nodiscard]] Token funcsBack() const
+        { return functions_.back(); }
 
         void popFunc()
-        { function_symbols_.pop_back(); }
+        { functions_.pop_back(); }
 
         [[nodiscard]] size_t tSize() const
         { return types_.size(); }
 
         [[nodiscard]] size_t fSize() const
-        { return function_symbols_.size(); }
+        { return functions_.size(); }
 
         [[nodiscard]] size_t maxSize(const Type &type) const;
 
@@ -57,7 +59,7 @@ namespace flexMC
 
         std::vector<Type> types_;
 
-        std::vector<std::string> function_symbols_;
+        std::vector<Token> functions_;
 
         std::vector<size_t> vector_sizes_;
 

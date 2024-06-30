@@ -2,41 +2,50 @@
 
 #include <string>
 
+#include "tokens.h"
+#include "language_error.h"
 #include "expression_stacks.h"
 
 
 // Todo: Keep precision in mind
 
-namespace flexMC {
+namespace flexMC
+{
 
-	class Number final : public PostFixItem {
+    double compileNumber(const Token &token, Operands &stacks, MaybeError &report);
 
-	public:
+    Operands::Type compileVector(const size_t &num_args, Operands &stacks, MaybeError &report);
 
-		explicit Number(const std::string& symbol) : value_(std::stod(symbol)) {}
+    class Number final : public PostFixItem
+    {
 
-		static void compile(Operands& stacks);
+    public:
 
-		void evaluate(CalcStacks& stacks) override;
+        explicit Number(double value) : value_(value)
+        {}
 
-	private:
+        void evaluate(CalcStacks &stacks) override;
 
-		const double value_;
+    private:
 
-	};
+        const double value_;
 
-	class Vector final : public PostFixItem {
-		
-	public:
+    };
 
-		explicit Vector(const size_t& size) : size_(size) {}
+    class Vector final : public PostFixItem
+    {
 
-		void evaluate(CalcStacks& stacks) override;
+    public:
 
-	private:
+        explicit Vector(const size_t &size) : size_(size)
+        {}
 
-		const size_t size_;
+        void evaluate(CalcStacks &stacks) override;
 
-	};
+    private:
+
+        const size_t size_;
+
+    };
 
 }

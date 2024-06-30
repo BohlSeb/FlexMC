@@ -1,33 +1,34 @@
-#include <stdexcept>
 #include <cassert>
-#include <fmt/format.h>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
+#include <fmt/format.h>
 
 #include "functions_real.h"
 
 namespace flexMC
 {
 
-    Operands::Type functionsReal::compileArgType(const Operands::Type &arg_type)
+    Operands::Type
+    functionsReal::compileArgType(const Token &token, const Operands::Type &arg_type, MaybeError &report)
     {
         if ((arg_type == Operands::Type::date) || (arg_type == Operands::Type::dateList))
         {
             auto msg = fmt::format(
-                    "Expected argument type {} or {}, got {}",
+                    "Function \"{0}\" expects argument type {1} or {2}, got {3}",
+                    token.value,
                     Operands::type2Str(Operands::Type::scalar),
                     Operands::type2Str(Operands::Type::vector),
                     Operands::type2Str(arg_type)
             );
-            throw std::runtime_error(msg);
+            report.setError(msg, token.start, token.size);
+            return Operands::Type::undefined;
         }
         return arg_type;
     }
 
-    std::function<void(CalcStacks &)> functionsReal::scalarFunc(
-            const std::string &symbol,
-            const Operands::Type &return_type)
+    std::function<void(CalcStacks &)> functionsReal::scalarFunc(const std::string &symbol,
+                                                                const Operands::Type &return_type)
     {
 
         if ((symbol == EXP) && (return_type == Operands::Type::scalar))
@@ -35,7 +36,9 @@ namespace flexMC
             return {
                     [capture0 = [](const double &val)
                     { return std::exp(val); }](auto &&stacks)
-                    { functionsReal::detail::calculateScalar(std::forward<decltype(stacks)>(stacks), capture0); }
+                    {
+                        functionsReal::detail::calculateScalar(std::forward<decltype(stacks)>(stacks), capture0);
+                    }
             };
         }
         if ((symbol == EXP) && (return_type == Operands::Type::vector))

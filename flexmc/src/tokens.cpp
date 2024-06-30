@@ -6,37 +6,36 @@ namespace flexMC
 
     // this is stupid but apparently not straight forward
     // https://stackoverflow.com/questions/3342726/c-print-out-enum-value-as-text
-    // TODO: Remove this entirely (tokens do not care about string output)
     std::string Token::type2String() const
     {
         switch (type)
         {
             case Type::eof:
-                return "eof";
+                return "end of line";
             case Type::wsp:
-                return "wsp";
+                return "space";
             case Type::tab:
                 return "tab";
             case Type::fun:
-                return "fun";
+                return "function";
             case Type::op:
-                return "op";
+                return "operator";
             case Type::num:
-                return "num";
+                return "number";
             case Type::keyW:
-                return "keyW";
+                return "keyword";
             case Type::id:
-                return "id";
+                return "variable name";
             case Type::lparen:
-                return "lparen";
+                return "opening parenthesis";
             case Type::rparen:
-                return "rparen";
+                return "closing parenthesis";
             case Type::lbracket:
-                return "lbracket";
+                return "opening bracket";
             case Type::rbracket:
-                return "rbracket";
+                return "closing bracket";
             case Type::undefined:
-                return "undefined";
+                return "undefined or not recognized";
             case Type::call_:
                 return "call_";
             case Type::append_:
@@ -44,7 +43,7 @@ namespace flexMC
             case Type::index_:
                 return "index_";
             default:
-                return "undefinedType";
+                return "undefined or not recognized";
         }
     }
 

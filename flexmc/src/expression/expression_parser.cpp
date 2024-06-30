@@ -11,14 +11,6 @@
 
 namespace flexMC
 {
-
-    void MaybeError::setError(const std::string &msg, const size_t &at, const size_t &len)
-    {
-        err_msg_ = msg;
-        err_at_ = at;
-        err_len_ = len;
-    }
-
     namespace
     {
 
@@ -44,7 +36,7 @@ namespace flexMC
         }
 
         State terminate(const Token &tok,
-                        std::deque<Token> &postfix,
+                        std::vector<Token> &postfix,
                         std::vector<Token> &operators,
                         MaybeError &report)
         {
@@ -53,26 +45,30 @@ namespace flexMC
                 Token op = operators.back();
                 if ((op.type == Token::Type::lparen) || (op.type == Token::Type::lbracket))
                 {
-                    auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", tok.value);
+                    auto msg = fmt::format("Unmatched parenthesis or bracket: \"(\" or \"[\", got \"{}\" ({})",
+                                           tok.value,
+                                           tok.type2String());
                     report.setError(msg, tok.start, tok.size);
                     return State::error;
                 }
-                postfix.push_front(op);
+                postfix.push_back(op);
                 operators.pop_back();
             }
             return State::end;
         }
 
-        State expectNoArgs(const Token &tok, const std::vector<Token> &operators, MaybeError &report)
+        State noArgsOrError(const Token &tok, const std::vector<Token> &operators, MaybeError &report)
         {
             std::stringstream error_msg("");
             if (operators.empty())
             {
-                error_msg << fmt::format("Unmatched parenthesis/bracket: \"{}\"", tok.value);
+                error_msg << fmt::format("Expected parenthesis or bracket, got \"{}\" ({})",
+                                         tok.value,
+                                         tok.type2String());
             }
             else if (operators.back().context.num_args > 0)
             {
-                error_msg << "Badly placed comma encountered within parentheses/brackets";
+                error_msg << "Unexpected comma encountered within parentheses or brackets";
             }
             else if (operators.back().type == Token::Type::lbracket)
             {
@@ -80,7 +76,9 @@ namespace flexMC
             }
             else if (operators.back().type != Token::Type::lparen)
             {
-                error_msg << fmt::format("Expected empty argument list  \"()\", got \"{}\"", tok.value);
+                error_msg << fmt::format("Expected empty argument list  \"()\", got \"{}\" ({})",
+                                         tok.value,
+                                         tok.type2String());
             }
             if (!error_msg.str().empty())
             {
@@ -91,11 +89,11 @@ namespace flexMC
         }
 
         State incrementArgsCount(const Token &tok,
-                                 std::deque<Token> &postfix,
+                                 std::vector<Token> &postfix,
                                  std::vector<Token> &operators,
                                  MaybeError &report)
         {
-            std::string msg = "Unmatched parenthesis/bracket: \")\" or \"]\"";
+            std::string msg = "Unmatched parenthesis or bracket: \")\" or \"]\"";
             msg += " or badly placed comma \",\"";
             if (operators.empty())
             {
@@ -105,7 +103,7 @@ namespace flexMC
             Token::Type operator_t = operators.back().type;
             while ((operator_t != Token::Type::lparen) && (operator_t != Token::Type::lbracket))
             {
-                postfix.push_front(operators.back());
+                postfix.push_back(operators.back());
                 operators.pop_back();
                 if (operators.empty())
                 {
@@ -119,11 +117,11 @@ namespace flexMC
         }
 
         State makeReduceOperator(const Token &tok,
-                                 std::deque<Token> &postfix,
+                                 std::vector<Token> &postfix,
                                  std::vector<Token> &operators,
                                  MaybeError &report)
         {
-            auto msg = fmt::format("Unmatched parenthesis/bracket: \"{}\"", tok.value);
+            auto msg = fmt::format("Unmatched parenthesis or bracket: \"{}\"", tok.value);
             if (operators.empty())
             {
                 report.setError(msg, tok.start, tok.size);
@@ -133,7 +131,7 @@ namespace flexMC
             Token::Type stop = (tok.type == Token::Type::rparen) ? Token::Type::lparen : Token::Type::lbracket;
             while (operator_t != stop)
             {
-                postfix.push_front(operators.back());
+                postfix.push_back(operators.back());
                 operators.pop_back();
                 if (operators.empty())
                 {
@@ -146,22 +144,22 @@ namespace flexMC
             size_t num_args = left_close.context.num_args + 1;
             if (left_close.type == Token::Type::lparen && left_close.context.is_infix)
             {
-                postfix.push_front(Tokens::makeCall(num_args, tok.start));
+                postfix.push_back(Tokens::makeCall(num_args, tok.start));
             }
             else if (left_close.type == Token::Type::lbracket && left_close.context.is_prefix)
             {
-                postfix.push_front(Tokens::makeAppend(num_args, tok.start));
+                postfix.push_back(Tokens::makeAppend(num_args, tok.start));
             }
             else if (left_close.type == Token::Type::lbracket && left_close.context.is_infix)
             {
-                postfix.push_front(Tokens::makeIndex(num_args, tok.start));
+                postfix.push_back(Tokens::makeIndex(num_args, tok.start));
             }
             operators.pop_back();
             return State::have_operand;
         }
 
         State pushOperators(Token tok,
-                            std::deque<Token> &postfix,
+                            std::vector<Token> &postfix,
                             std::vector<Token> &operators)
         {
             while (!operators.empty())
@@ -172,7 +170,7 @@ namespace flexMC
                 bool barely_higher = (op_c.precedence == input_c.precedence) && input_c.left_associative;
                 if (higher || barely_higher)
                 {
-                    postfix.push_front(operators.back());
+                    postfix.push_back(operators.back());
                     operators.pop_back();
                 }
                 else
@@ -186,8 +184,27 @@ namespace flexMC
             return State::want_operand;
         }
 
+        State checkParenthesisAfterFunction(const Token &function, std::deque<Token> &infix, MaybeError &report)
+        {
+            auto found = false;
+            for (const auto &token: infix)
+            {
+                if (!isSpace(token.type)) {
+                    if (token.type == Token::Type::lparen) {
+                        found = true;
+                    }
+                    break;
+                }
+            }
+            if (!found) {
+                report.setError("Expected opening parenthesis \"(\" after function", function.start, function.size);
+                return State::error;
+            }
+            return State::have_operand;
+        }
+
         State wantOperand(std::deque<Token> &infix,
-                          std::deque<Token> &postfix,
+                          std::vector<Token> &postfix,
                           std::vector<Token> &operators,
                           MaybeError &report)
         {
@@ -219,8 +236,11 @@ namespace flexMC
             }
             if (isOperand(t))
             {
-                postfix.push_front(next);
+                postfix.push_back(next);
                 infix.pop_front();
+                if (t == Token::Type::fun) {
+                    return checkParenthesisAfterFunction(postfix.back(), infix, report);
+                }
                 return State::have_operand;
             }
             if (isPrefixOp(next))
@@ -241,7 +261,7 @@ namespace flexMC
             // Unmatched parenthesis or "()" expected (function with 0 args)
             if ((t == type::rparen) || (t == type::rbracket))
             {
-                State s = expectNoArgs(next, operators, report);
+                State s = noArgsOrError(next, operators, report);
                 if (s != State::error)
                 {
                     operators.pop_back();
@@ -261,7 +281,7 @@ namespace flexMC
         }
 
         State haveOperand(std::deque<Token> &infix,
-                          std::deque<Token> &postfix,
+                          std::vector<Token> &postfix,
                           std::vector<Token> &operators,
                           MaybeError &report)
         {
@@ -329,30 +349,29 @@ namespace flexMC
         }
     }
 
-    std::pair<MaybeError, std::vector<Token>> postfix(const std::deque<Token> &infix)
+    std::pair<MaybeError, std::vector<Token>> infixToPostfix(const std::deque<Token> &infix)
     {
         assert(!infix.empty());
         std::deque<Token> infix_(infix);
-        std::deque<Token> out_;
-        std::vector<Token> operators_;
+        std::vector<Token> out;
+        std::vector<Token> operators;
         Token first = infix_.front();
 
         MaybeError report;
 
-        State current = wantOperand(infix_, out_, operators_, report);
+        State current = wantOperand(infix_, out, operators, report);
         while ((current != State::end) && (current != State::error))
         {
             if (current == State::want_operand)
             {
-                current = wantOperand(infix_, out_, operators_, report);
+                current = wantOperand(infix_, out, operators, report);
             }
             else
             {
-                current = haveOperand(infix_, out_, operators_, report);
+                current = haveOperand(infix_, out, operators, report);
             }
         }
-        std::vector<Token> result(out_.cbegin(), out_.cend());
-        return std::make_pair(report, result);
+        return std::make_pair(report, out);
     }
 
 }

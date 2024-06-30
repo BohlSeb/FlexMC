@@ -1,10 +1,12 @@
 #pragma once
 
+#include <string>
 #include <unordered_map>
 #include <functional>
 #include <cmath>
 
 #include "terminals.h"
+#include "language_error.h"
 #include "expression_stacks.h"
 
 
@@ -16,12 +18,10 @@ namespace flexMC
 
         bool isBinarySymbol(const std::string &symbol);
 
-        std::function<void(CalcStacks &)> compileBinary(const std::string &symbol, Operands &stacks);
-
         namespace unary
         {
 
-            Operands::Type compileArgument(const std::string &symbol, Operands &stacks);
+            Operands::Type compileArgument(const std::string &symbol, Operands &stacks, MaybeError &report);
 
             void scMinus(CalcStacks &stacks);
 
@@ -43,8 +43,9 @@ namespace flexMC
                     flexMC::POW,
             };
 
+            std::string compileArgumentsAndKey(const std::string &symbol, Operands &stacks, MaybeError &report);
 
-            std::string compileArguments(const std::string &symbol, Operands &stacks);
+            std::function<void(CalcStacks &)> get(const std::string &key);
 
             std::string makeKey(const std::string &symbol, const oprnd_t &left_t, const oprnd_t &right_t);
 
@@ -62,7 +63,6 @@ namespace flexMC
                             [capture_0 = [](const double &left, const double &right)
                             { return left - right; }](auto &&stacks)
                             { binary::scSc(std::forward<decltype(stacks)>(stacks), capture_0); }
-                            // std::bind(binary::scSc, _1, [](const double& left, const double& right) {return left - right; })
                     },
                     {
                             makeKey(flexMC::MINUS, oprnd_t::scalar, oprnd_t::vector),

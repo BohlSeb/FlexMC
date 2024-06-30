@@ -78,6 +78,8 @@ namespace flexMC
                 return "Date";
             case Type::dateList:
                 return "DateList";
+            case Type::undefined:
+                return "undefined";
             default:
                 return "";
         }

@@ -2,19 +2,24 @@
 
 #include <vector>
 #include <memory>
+#include <utility>
 
 #include "tokens.h"
+#include "language_error.h"
 #include "expression_stacks.h"
 
 
-namespace flexMC {
+namespace flexMC
+{
 
-    class Expression {
+    class Expression
+    {
 
     public:
 
         template<class T>
-        inline void addItem(T item) { items_.emplace_back(std::make_unique<T>(std::move(item))); }
+        inline void addItem(T item)
+        { items_.emplace_back(std::make_unique<T>(std::move(item))); }
 
         void evaluate(CalcStacks &stacks) const;
 
@@ -26,8 +31,9 @@ namespace flexMC {
 
     struct CompileReport
     {
-        CompileReport(Operands::Type ret_t, const size_t& max_s, const size_t& max_v) :
-                ret_type(ret_t), max_scalar(max_s), max_vector(max_v)
+        CompileReport(Operands::Type ret_t,
+                      const size_t &max_s,
+                      const size_t &max_v) : ret_type(ret_t), max_scalar(max_s), max_vector(max_v)
         {}
 
         const Operands::Type ret_type;
@@ -38,9 +44,10 @@ namespace flexMC {
 
     };
 
-    struct ExpressionCompiler {
+    struct ExpressionCompiler
+    {
 
-        static CompileReport compile(const std::vector<Token> &post_fix, Expression &expression);
+        static std::pair<MaybeError, CompileReport> compile(const std::vector<Token> &post_fix, Expression &expression);
 
     };
 
