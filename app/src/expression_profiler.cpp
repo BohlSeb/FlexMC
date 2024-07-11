@@ -73,7 +73,7 @@ void scalarOperations() {
 		auto postfix = std::get<1>(parse_result);
 
 		Expression expression;
-		const std::pair<MaybeError, CompileReport> reports = ExpressionCompiler::compile(postfix, expression);
+		const std::pair<MaybeError, CompileReport> reports = compileExpression(postfix, expression);
         assert(!reports.first.isError());
         CalcStacks c_stacks(reports.second.max_scalar, reports.second.max_vector, 0, 0);
 

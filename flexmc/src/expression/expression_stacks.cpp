@@ -8,8 +8,10 @@ namespace flexMC
 
     void Operands::pushType(const Type &type)
     {
-        assert((type == Type::scalar) || (type == Type::date));
-        if (type == Type::scalar)
+        using
+        enum Type;
+        assert((type == scalar) || (type == date));
+        if (type == scalar)
         {
             ++scalar_size_;
             scalar_size_max_ = std::max<size_t>(scalar_size_, scalar_size_max_);
@@ -19,10 +21,12 @@ namespace flexMC
 
     void Operands::pushArray(const Type &type, const size_t &size)
     {
-        assert((type == Type::vector) || (type == Type::dateList));
+        using
+        enum Type;
+        assert((type == vector) || (type == dateList));
         types_.push_back(type);
         vector_sizes_.push_back(size);
-        if (type == Type::vector)
+        if (type == vector)
         {
             ++vec_size_;
             vec_size_max_ = std::max<size_t>(vec_size_, vec_size_max_);
@@ -31,19 +35,21 @@ namespace flexMC
 
     void Operands::popType()
     {
+        using
+        enum Type;
         assert(!types_.empty());
         Type back = types_.back();
-        if ((back == Type::vector) || (back == Type::dateList))
+        if ((back == vector) || (back == dateList))
         {
             assert(!vector_sizes_.empty());
             vector_sizes_.pop_back();
         }
         switch (back)
         {
-            case Type::scalar:
+            case scalar:
                 --scalar_size_;
                 break;
-            case Type::vector:
+            case vector:
                 --vec_size_;
                 break;
             default:
@@ -68,17 +74,19 @@ namespace flexMC
 
     std::string Operands::type2Str(const Type &type)
     {
+        using
+        enum Type;
         switch (type)
         {
-            case Type::scalar:
+            case scalar:
                 return "Scalar";
-            case Type::vector:
+            case vector:
                 return "Vector";
-            case Type::date:
+            case date:
                 return "Date";
-            case Type::dateList:
+            case dateList:
                 return "DateList";
-            case Type::undefined:
+            case undefined:
                 return "undefined";
             default:
                 return "";
@@ -96,15 +104,17 @@ namespace flexMC
 
     size_t CalcStacks::size(Operands::Type type) const
     {
+        using
+        enum Operands::Type;
         switch (type)
         {
-            case Operands::Type::scalar:
+            case scalar:
                 return scalars_.size();
-            case Operands::Type::date:
+            case date:
                 return dates_.size();
-            case Operands::Type::vector:
+            case vector:
                 return vectors_.size();
-            case Operands::Type::dateList:
+            case dateList:
                 return date_lists_.size();
             default:
                 return 0;
@@ -114,11 +124,13 @@ namespace flexMC
     // Refactor
     bool CalcStacks::ready() const
     {
+        using
+        enum Operands::Type;
         size_t not_ready{0};
-        not_ready += size(Operands::Type::scalar);
-        not_ready += size(Operands::Type::vector);
-        not_ready += size(Operands::Type::date);
-        not_ready += size(Operands::Type::dateList);
+        not_ready += size(scalar);
+        not_ready += size(vector);
+        not_ready += size(date);
+        not_ready += size(dateList);
         return (not_ready == 0);
     }
 

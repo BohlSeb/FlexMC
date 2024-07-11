@@ -2,21 +2,12 @@
 //
 
 #include <iostream>
-
-#include "app_config.h"
-
-#include <ranges>
-#include <tuple>
-#include <stdexcept>
 #include <algorithm>
-#include <functional>
-#include <numeric>
-#include <utility>
+#include "app_config.h"
 
 #include "lexer.h"
 #include "expression_parser.h"
 #include "terminals.h"
-
 //#include "functions_real.h"
 #include "expression_stacks.h"
 #include "expression_compiler.h"
@@ -33,26 +24,12 @@ int main()
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
 
-    scalarOperations();
-
-
-    std::string test_program = "This is a program";
-
-
     const bool run_main = true;
-
-    std::string test = std::string(0, '-');
-    std::string at_test = std::string(4, '^');
-    std::string end_test = std::string(10, '-');
-    std::cout << test << at_test << end_test << "\n";
-
     if (run_main)
     {
 
-//		const std::string program = " -2 * [0.0, 1.0, 2.0, 3, 2]";
-        // const std::string program = "MAX(EXP(0)+5, 4, 0) + 3";
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "2 + EXP( +3 )";
+        const std::string program_err = "ARGMAX(0, 1, 0, 2, 1, 0, 1, 2, 3, 0, 0)";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -83,10 +60,8 @@ int main()
                     std::cout << token.value << " ";
                 }
                 std::cout << std::endl;
-                // ExpressionCompiler compiler;
                 Expression expression;
-                const std::pair<const MaybeError, const CompileReport> reports
-                        = ExpressionCompiler::compile(parsed, expression);
+                const std::pair<const MaybeError, const CompileReport> reports = compileExpression(parsed, expression);
 
                 if (reports.first.isError())
                 {

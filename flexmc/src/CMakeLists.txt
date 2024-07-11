@@ -11,6 +11,7 @@ set(SOURCES
         expression/operations/operation_compiler.cpp
         expression/operations/functions_real.cpp
         expression/operations/operators_calc.cpp
+        utils.h
 )
 
 add_library(flexmc STATIC ${SOURCES})

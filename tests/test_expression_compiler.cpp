@@ -18,8 +18,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
     };
 
     // Test cases against python console
-
-    TestCase TestData[] = {
+    std::vector<TestCase> test_data = {
             {"2 + 3",                                    5.0},
             {"4 * 5 - 7",                                13.0},
             {"8 + 9 * 10",                               98.0},
@@ -64,30 +63,27 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
 
     Lexer lexer;
 
-    for (auto &c: TestData)
+    for (const auto &c: test_data)
     {
 
         const std::deque<Token> infix = lexer.tokenize(c.infix);
-        const std::pair<const MaybeError, const std::vector<Token>> parse_result = infixToPostfix(infix);
+        const auto [parse_report, postfix] = infixToPostfix(infix);
 
-        auto parse_report = parse_result.first;
         EXPECT_FALSE(parse_report.isError());
-        auto postfix = parse_result.second;
 
         Expression expression;
-        const std::pair<const MaybeError, const CompileReport> reports =
-                ExpressionCompiler::compile(postfix, expression);
-        ASSERT_FALSE(reports.first.isError());
-        CalcStacks c_stacks(reports.second.max_scalar, reports.second.max_vector, 0, 0);
+        const auto [error_report, compile_report] = compileExpression(postfix, expression);
+        ASSERT_FALSE(error_report.isError());
+        CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression.evaluate(c_stacks);
 
-        double result = c_stacks.scalarsBack();
+        const double result = c_stacks.scalarsBack();
         c_stacks.popScalar();
         ASSERT_TRUE(c_stacks.ready());
         EXPECT_DOUBLE_EQ(c.result, result);
 
-        s_max = std::max<size_t>(s_max, reports.second.max_scalar);
-        v_max = std::max<size_t>(v_max, reports.second.max_vector);
+        s_max = std::max<size_t>(s_max, compile_report.max_scalar);
+        v_max = std::max<size_t>(v_max, compile_report.max_vector);
 
         expressions.push_back(std::move(expression));
     }
@@ -111,7 +107,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
 void areEqualVector(const std::vector<double> &expected, const std::vector<double> &result)
 {
     auto res = result.cbegin();
-    for (double it: expected)
+    for (const double it: expected)
     {
         EXPECT_DOUBLE_EQ(it, *res);
         ++res;
@@ -127,12 +123,12 @@ TEST(ExpressionCompiler, RealOperatorsVector)
         const vec result;
     };
 
-    TestCase TestData[] = {
+    std::vector<TestCase> test_data = {
             {"[2, 2] + [3, 2]",                         vec({5.0, 4.0})},
             {"[2, 2] / [2, 2]",                         vec({1.0, 1.0})},
             {"[2, 2] * [2, 2]",                         vec({4.0, 4.0})},
-            {"[-2, -2] + [2, 2]",                       vec({0.0, 0.0})},
-            {"[-2, -2] - [2, 2]",                       vec({-4.0, -4.0})},
+            {"[-2, -2] + [2, 2] - [1, 1]",              vec({-1.0, -1.0})},
+            {"[-2, -2] - [2, 2] - [1, 1]",              vec({-5.0, -5.0})},
             {"EXP(LOG([2, 2]))",                        vec({2.0, 2.0})},
             {"ABS(-1 * [4, 4, 4, 4, 4])",               vec({4, 4, 4, 4, 4})},
             {"SQUARE([-1, 1, 2, 2])",                   vec({1, 1, 4, 4})},
@@ -149,32 +145,31 @@ TEST(ExpressionCompiler, RealOperatorsVector)
 
     Lexer lexer;
 
-    for (auto &c: TestData)
+    for (const auto &c: test_data)
     {
 
         const std::deque<Token> infix = lexer.tokenize(c.infix);
-        const std::pair<const MaybeError, const std::vector<Token>> parse_result = infixToPostfix(infix);
+        const auto [parse_report, postfix] = infixToPostfix(infix);
 
-        auto parse_report = std::get<0>(parse_result);
         EXPECT_FALSE(parse_report.isError());
-        auto postfix = std::get<1>(parse_result);
 
         Expression expression;
-        const std::pair<const MaybeError, const CompileReport> reports =
-                ExpressionCompiler::compile(postfix, expression);
+        const auto [error_report, compile_report] = compileExpression(postfix, expression);
 
-        ASSERT_FALSE(reports.first.isError());
+        ASSERT_FALSE(error_report.isError());
 
-        CalcStacks c_stacks(reports.second.max_scalar, reports.second.max_vector, 0, 0);
+        CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression.evaluate(c_stacks);
 
         vec result = c_stacks.vectorsBack();
         c_stacks.popVector();
+
         ASSERT_TRUE(c_stacks.ready());
+
         areEqualVector(c.result, result);
 
-        s_max = std::max<size_t>(s_max, reports.second.max_scalar);
-        v_max = std::max<size_t>(v_max, reports.second.max_vector);
+        s_max = std::max<size_t>(s_max, compile_report.max_scalar);
+        v_max = std::max<size_t>(v_max, compile_report.max_vector);
 
         expressions.push_back(std::move(expression));
     }
@@ -203,13 +198,15 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
         const double result;
     };
 
-    TestCase TestData[] = {
+    std::vector<TestCase> test_data = {
             {"2 * MAX(-2, 3, 4) + 1",                    9},
             {"2 * MAX([-2, 4, 3]) + 1",                  9},
             {"2 * MIN(-2, 3, 4) + 1",                    -3},
             {"2 * MIN([-2, 3, 4]) + 1",                  -3},
             {"2 * ARGMAX(2, 3, 4, 3, 4) + 1",            5},
             {"2 * ARGMAX(ABS([-2, -3, -4, -3, 4])) + 1", 5},
+            {"2 * ARGMIN(2, 3, 1, 1, 4, 1, 3, 4) + 1",   5},
+            {"2 * ARGMIN([-2, -3, -4, -3, 4, -4]) + 1",  5},
             {"2 * SUM(2, 3, 4, 3, 4) + 1",               33},
             {"2 * SUM(ABS([-2, -3, -4, -3, 4])) + 1",    33},
             {"2 * PROD(2, 3, 4, 3, 4) + 1",              577},
@@ -224,32 +221,29 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
 
     Lexer lexer;
 
-    for (auto &c: TestData)
+    for (const auto &c: test_data)
     {
 
         const std::deque<Token> infix = lexer.tokenize(c.infix);
-        const std::pair<const MaybeError, const std::vector<Token>> parse_result = infixToPostfix(infix);
+        const auto [parse_report, postfix] = infixToPostfix(infix);
 
-        const auto parse_report = parse_result.first;
         EXPECT_FALSE(parse_report.isError());
-        const auto postfix = parse_result.second;
 
         Expression expression;
-        const std::pair<const MaybeError, const CompileReport> reports =
-                ExpressionCompiler::compile(postfix, expression);
+        const auto [error_report, compile_report] = compileExpression(postfix, expression);
 
-        ASSERT_FALSE(reports.first.isError());
+        ASSERT_FALSE(error_report.isError());
 
-        CalcStacks c_stacks(reports.second.max_scalar, reports.second.max_vector, 0, 0);
+        CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression.evaluate(c_stacks);
 
-        double result = c_stacks.scalarsBack();
+        const double result = c_stacks.scalarsBack();
         c_stacks.popScalar();
         ASSERT_TRUE(c_stacks.ready());
         EXPECT_DOUBLE_EQ(c.result, result);
 
-        s_max = std::max<size_t>(s_max, reports.second.max_scalar);
-        v_max = std::max<size_t>(v_max, reports.second.max_vector);
+        s_max = std::max<size_t>(s_max, compile_report.max_scalar);
+        v_max = std::max<size_t>(v_max, compile_report.max_vector);
 
         expressions.push_back(std::move(expression));
     }

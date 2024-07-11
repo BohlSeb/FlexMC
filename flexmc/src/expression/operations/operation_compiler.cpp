@@ -15,8 +15,8 @@ namespace flexMC
         const Token fun = stacks.funcsBack();
 
         using namespace functionsReal;
-        auto is_scalar = std::find(symbols_scalar.cbegin(), symbols_scalar.cend(), fun.value) != symbols_scalar.cend();
-        auto is_reduce = std::find(symbols_reduce.cbegin(), symbols_reduce.cend(), fun.value) != symbols_reduce.cend();
+        const auto is_scalar = std::ranges::find(symbols_scalar, fun.value) != symbols_scalar.cend();
+        const auto is_reduce = std::ranges::find(symbols_reduce, fun.value) != symbols_reduce.cend();
         assert(is_scalar || is_reduce);
 
         stacks.popFunc();
@@ -34,21 +34,23 @@ namespace flexMC
     Operation
     functionCompiler::detail::compileScalar(const Token &function,
                                             const size_t &num_args,
-                                            Operands &stacks,
+                                            const Operands &stacks,
                                             MaybeError &report)
     {
         assert(stacks.tSize() >= num_args);
-        functions::assertNumberOfArgs(function, 1, num_args, report);
+        const Operands::Type arg_type = stacks.tSize() > 0 ? stacks.typesBack() : Operands::Type::scalar;
+        functions::assertNumberOfArgs(function, 1, num_args, arg_type, report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
-        const Operands::Type return_type = functionsReal::compileArgType(function, stacks.typesBack(), report);
+        const Operands::Type return_type = functionsReal::compileArgType(function, arg_type, report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
-        const std::function<void(CalcStacks &)> call_back = functionsReal::scalarFunc(function.value, return_type);
+        const std::string key = functionsReal::scalar::makeKey(function.value, return_type);
+        const std::function<void(CalcStacks &)> call_back = functionsReal::scalar::get(key);
         return Operation(call_back);
     }
 
@@ -58,26 +60,33 @@ namespace flexMC
                                             Operands &stacks,
                                             MaybeError &report)
     {
+        using
+        enum Operands::Type;
         assert(stacks.tSize() >= num_args);
+        const Operands::Type dummy_arg_type = stacks.tSize() > 0 ? stacks.typesBack() : Operands::Type::scalar;
+        functions::assertNumberOfArgs(function, 1, 0, num_args, dummy_arg_type, report);
+        if (report.isError())
+        {
+            return Operation(std::function<void(CalcStacks &)>({}));
+        }
         const Operands::Type arg_type = functionsReal::compileArgType(function, stacks.typesBack(), report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
         stacks.popType();
-        if (arg_type == Operands::Type::scalar)
+        if (arg_type == scalar)
         {
-            functions::assertNumberOfArgs(function, 2, 0, num_args, report);
+            functions::assertNumberOfArgs(function, 2, 0, num_args, arg_type, report);
             if (report.isError())
             {
                 return Operation(std::function<void(CalcStacks &)>({}));
             }
             for (size_t i{2}; i <= num_args; ++i)
             {
-                auto t = stacks.typesBack();
-                if (t != Operands::Type::scalar)
+                if (stacks.typesBack() != scalar)
                 {
-                    std::string msg = fmt::format("Function \"{}\" cannot take both array and scalar arguments",
+                    std::string msg = fmt::format(R"(Function "{}" cannot take both <Vector> and <Scalar> arguments)",
                                                   function.value);
                     report.setMessage(msg);
                     return Operation(std::function<void(CalcStacks &)>({}));
@@ -87,18 +96,18 @@ namespace flexMC
         }
         else
         {
-            functions::assertNumberOfArgs(function, 1, num_args, report);
+            functions::assertNumberOfArgs(function, 1, num_args, arg_type, report);
             if (report.isError())
             {
                 return Operation(std::function<void(CalcStacks &)>({}));
             }
         }
-        stacks.pushType(Operands::Type::scalar);
-        if (arg_type == Operands::Type::scalar)
+        stacks.pushType(scalar);
+        if (arg_type == scalar)
         {
-            return Operation(functionsReal::reduceArgs(function.value, num_args));
+            return Operation(functionsReal::reduceArguments::get(function.value, num_args));
         }
-        return Operation(functionsReal::reduceVec(function.value));
+        return Operation(functionsReal::reduceVector::get(function.value));
     }
 
     Operation operatorCompiler::compile(const Token &token, Operands &stacks, MaybeError &report)
@@ -130,7 +139,8 @@ namespace flexMC
             }
             return Operation(std::function<void(CalcStacks &)>(operatorsCalc::unary::vecMinus));
         }
-        throw std::runtime_error("Unknown operator");
+        report.setError("Internal Error: Unknown operator", 1, 1);
+        return Operation(std::function<void(CalcStacks &)>({}));
     }
 
 }

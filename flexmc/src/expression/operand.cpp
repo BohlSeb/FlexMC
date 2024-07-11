@@ -27,24 +27,24 @@ namespace flexMC
     {
         assert(num_args > 0);
         assert(stacks.tSize() >= num_args);
+        using enum Operands::Type;
         const Operands::Type last_t = stacks.typesBack();
-        if ((last_t == Operands::Type::dateList) || (last_t == Operands::Type::vector))
+        if ((last_t == dateList) || (last_t == vector))
         {
             report.setMessage("List cannot not contain another list (Matrices not allowed)");
-            return Operands::Type::undefined;
+            return undefined;
         }
         stacks.popType();
         for (size_t i{1}; i < num_args; ++i)
         {
-            Operands::Type left = stacks.typesBack();
-            if (left != last_t)
+            if (stacks.typesBack() != last_t)
             {
                 report.setMessage("All elements of a list must be of the same type");
-                return Operands::Type::undefined;
+                return undefined;
             }
             stacks.popType();
         }
-        stacks.pushArray(Operands::Type::vector, num_args);
+        stacks.pushArray(vector, num_args);
         return last_t;
     }
 

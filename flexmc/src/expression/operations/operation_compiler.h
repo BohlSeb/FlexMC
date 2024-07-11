@@ -18,7 +18,7 @@ namespace flexMC
 
             Operation compileScalar(const Token &token,
                                     const size_t &num_args,
-                                    Operands &stacks,
+                                    const Operands &stacks,
                                     MaybeError &report);
 
             Operation compileReduce(const Token &token,

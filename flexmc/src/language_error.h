@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <string>
+#include <string_view>
 
 namespace flexMC
 {
@@ -11,15 +12,12 @@ namespace flexMC
 
     public:
 
-        MaybeError() : err_msg_(""), err_at_(0), err_len_(0)
-        {}
-
-        void setError(const std::string &msg, const size_t &at, const size_t &len);
+        void setError(const std::string_view msg, const size_t &at, const size_t &len);
 
         bool isError() const
         { return !err_msg_.empty(); }
 
-        void setMessage(const std::string &msg);
+        void setMessage(const std::string_view msg);
 
         void setPosition(const size_t &at, const size_t &len);
 
@@ -33,12 +31,12 @@ namespace flexMC
 
         std::string err_msg_;
 
-        size_t err_at_;
+        size_t err_at_{0};
 
-        size_t err_len_;
+        size_t err_len_{0};
 
     };
 
-    std::string printError(const std::string err_prefix, const std::string &line, const MaybeError &report);
+    std::string printError(const std::string_view err_prefix, const std::string_view line, const MaybeError &report);
 
 }

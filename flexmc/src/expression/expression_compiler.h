@@ -44,11 +44,6 @@ namespace flexMC
 
     };
 
-    struct ExpressionCompiler
-    {
-
-        static std::pair<MaybeError, CompileReport> compile(const std::vector<Token> &post_fix, Expression &expression);
-
-    };
+    std::pair<MaybeError, CompileReport> compileExpression(const std::vector<Token> &post_fix, Expression &expression);
 
 }

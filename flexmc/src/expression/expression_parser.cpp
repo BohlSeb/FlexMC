@@ -30,9 +30,9 @@ namespace flexMC
 
         bool isPrefixOp(const Token &tok)
         {
-            return (tok.type == Token::Type::op && tok.context.maybe_prefix)
-                   || (tok.type == Token::Type::lparen)
-                   || (tok.type == Token::Type::lbracket);
+            using
+            enum Token::Type;
+            return (tok.type == op && tok.context.maybe_prefix) || (tok.type == lparen) || (tok.type == lbracket);
         }
 
         State terminate(const Token &tok,
@@ -45,7 +45,7 @@ namespace flexMC
                 Token op = operators.back();
                 if ((op.type == Token::Type::lparen) || (op.type == Token::Type::lbracket))
                 {
-                    auto msg = fmt::format("Unmatched parenthesis or bracket: \"(\" or \"[\", got \"{}\" ({})",
+                    auto msg = fmt::format(R"(Unmatched parenthesis or bracket: "(" or "[", got "{}" ({}))",
                                            tok.value,
                                            tok.type2String());
                     report.setError(msg, tok.start, tok.size);
@@ -62,7 +62,7 @@ namespace flexMC
             std::stringstream error_msg("");
             if (operators.empty())
             {
-                error_msg << fmt::format("Expected parenthesis or bracket, got \"{}\" ({})",
+                error_msg << fmt::format(R"(Expected parenthesis or bracket, got "{}" ({}))",
                                          tok.value,
                                          tok.type2String());
             }
@@ -72,11 +72,11 @@ namespace flexMC
             }
             else if (operators.back().type == Token::Type::lbracket)
             {
-                error_msg << "Empty list not allowed: \"[]\"";
+                error_msg << R"(Empty list not allowed: "[]")";
             }
             else if (operators.back().type != Token::Type::lparen)
             {
-                error_msg << fmt::format("Expected empty argument list  \"()\", got \"{}\" ({})",
+                error_msg << fmt::format(R"_(Expected empty argument list  "()", got "{}" ({}))_",
                                          tok.value,
                                          tok.type2String());
             }
@@ -93,8 +93,8 @@ namespace flexMC
                                  std::vector<Token> &operators,
                                  MaybeError &report)
         {
-            std::string msg = "Unmatched parenthesis or bracket: \")\" or \"]\"";
-            msg += " or badly placed comma \",\"";
+            std::string msg = R"_(Unmatched parenthesis or bracket: ")" or "]")_";
+            msg += R"( or badly placed comma ",")";
             if (operators.empty())
             {
                 report.setError(msg, tok.start, tok.size);
@@ -121,14 +121,16 @@ namespace flexMC
                                  std::vector<Token> &operators,
                                  MaybeError &report)
         {
-            auto msg = fmt::format("Unmatched parenthesis or bracket: \"{}\"", tok.value);
+            using
+            enum Token::Type;
+            auto msg = fmt::format(R"(Unmatched parenthesis or bracket: "{}")", tok.value);
             if (operators.empty())
             {
                 report.setError(msg, tok.start, tok.size);
                 return State::error;
             }
             Token::Type operator_t = operators.back().type;
-            Token::Type stop = (tok.type == Token::Type::rparen) ? Token::Type::lparen : Token::Type::lbracket;
+            Token::Type stop = (tok.type == rparen) ? lparen : lbracket;
             while (operator_t != stop)
             {
                 postfix.push_back(operators.back());
@@ -142,15 +144,15 @@ namespace flexMC
             }
             Token left_close = operators.back();
             size_t num_args = left_close.context.num_args + 1;
-            if (left_close.type == Token::Type::lparen && left_close.context.is_infix)
+            if (left_close.type == lparen && left_close.context.is_infix)
             {
                 postfix.push_back(Tokens::makeCall(num_args, tok.start));
             }
-            else if (left_close.type == Token::Type::lbracket && left_close.context.is_prefix)
+            else if (left_close.type == lbracket && left_close.context.is_prefix)
             {
                 postfix.push_back(Tokens::makeAppend(num_args, tok.start));
             }
-            else if (left_close.type == Token::Type::lbracket && left_close.context.is_infix)
+            else if (left_close.type == lbracket && left_close.context.is_infix)
             {
                 postfix.push_back(Tokens::makeIndex(num_args, tok.start));
             }
@@ -184,20 +186,23 @@ namespace flexMC
             return State::want_operand;
         }
 
-        State checkParenthesisAfterFunction(const Token &function, std::deque<Token> &infix, MaybeError &report)
+        State checkParenthesisAfterFunction(const Token &function, const std::deque<Token> &infix, MaybeError &report)
         {
             auto found = false;
             for (const auto &token: infix)
             {
-                if (!isSpace(token.type)) {
-                    if (token.type == Token::Type::lparen) {
+                if (!isSpace(token.type))
+                {
+                    if (token.type == Token::Type::lparen)
+                    {
                         found = true;
                     }
                     break;
                 }
             }
-            if (!found) {
-                report.setError("Expected opening parenthesis \"(\" after function", function.start, function.size);
+            if (!found)
+            {
+                report.setError(R"(Expected opening parenthesis "(" after function)", function.start, function.size);
                 return State::error;
             }
             return State::have_operand;
@@ -208,19 +213,21 @@ namespace flexMC
                           std::vector<Token> &operators,
                           MaybeError &report)
         {
-            using type = Token::Type;
+            using
+            enum Token::Type;
 
             assert(!infix.empty());
 
             Token next = infix.front();
             Token::Type t = next.type;
 
-            if (t == Token::Type::undefined)
+            if (t == undefined)
             {
                 report.setError("Does not start with a valid language token", next.start, next.size);
                 return State::error;
             }
-            if (t == Token::Type::eof)
+
+            if (t == eof)
             {
                 report.setError(
                         "Expected a variable, value, function name or a prefix operator, got end of line",
@@ -229,25 +236,28 @@ namespace flexMC
                 );
                 return State::error;
             }
+
             if (isSpace(t))
             {
                 infix.pop_front();
                 return State::want_operand;
             }
+
             if (isOperand(t))
             {
                 postfix.push_back(next);
                 infix.pop_front();
-                if (t == Token::Type::fun) {
+                if (t == fun)
+                {
                     return checkParenthesisAfterFunction(postfix.back(), infix, report);
                 }
                 return State::have_operand;
             }
+
             if (isPrefixOp(next))
             {
                 assert(!next.context.is_infix);
                 next.context.is_prefix = true;
-                next.context.is_infix = false;
                 // jump mul/div
                 if ((next.value == PLUS) || (next.value == MINUS))
                 {
@@ -259,7 +269,7 @@ namespace flexMC
             }
 
             // Unmatched parenthesis or "()" expected (function with 0 args)
-            if ((t == type::rparen) || (t == type::rbracket))
+            if ((t == rparen) || (t == rbracket))
             {
                 State s = noArgsOrError(next, operators, report);
                 if (s != State::error)
@@ -269,10 +279,10 @@ namespace flexMC
                     infix.pop_front();
                 }
                 return s;
-
             }
+
             std::string msg = fmt::format(
-                    "Expected a variable, value, function name or a prefix operator, got \"{0}\" ({1})",
+                    R"(Expected a variable, value, function name or a prefix operator, got "{}" ({}))",
                     next.value,
                     next.type2String()
             );
@@ -285,36 +295,42 @@ namespace flexMC
                           std::vector<Token> &operators,
                           MaybeError &report)
         {
-            using type = Token::Type;
+            using
+            enum Token::Type;
 
             assert(!infix.empty());
 
             Token next = infix.front();
             Token::Type t = next.type;
 
-            if (t == Token::Type::undefined)
+            if (t == undefined)
             {
                 report.setError("Does not start with a valid language token", next.start, next.size);
                 return State::error;
             }
+
             if (isSpace(t))
             {
                 infix.pop_front();
                 return State::have_operand;
             }
-            if (t == type::eof)
+
+            if (t == eof)
             {
                 return terminate(next, postfix, operators, report);
             }
+
             // wiki page shunting yard
-            if ((t == type::lparen) || (t == type::lbracket))
+            if ((t == lparen) || (t == lbracket))
             {
                 assert(!next.context.is_prefix);
+                assert(next.context.maybe_infix);
                 next.context.is_infix = true;
                 operators.push_back(next);
                 infix.pop_front();
                 return State::want_operand;
             }
+
             if (next.value == COMMA)
             {
                 State s = incrementArgsCount(next, postfix, operators, report);
@@ -324,7 +340,8 @@ namespace flexMC
                 }
                 return s;
             }
-            if ((next.type == type::rparen) || (next.type == type::rbracket))
+
+            if ((next.type == rparen) || (next.type == rbracket))
             {
                 State s = makeReduceOperator(next, postfix, operators, report);
                 if (s == State::have_operand)
@@ -333,17 +350,20 @@ namespace flexMC
                 }
                 return s;
             }
-            if ((next.type == type::op) && (next.context.maybe_infix))
+
+            if ((next.type == op) && (next.context.maybe_infix))
             {
                 State s = pushOperators(next, postfix, operators);
                 infix.pop_front();
                 return s;
             }
+
             std::string msg = fmt::format(
-                    "Expected an operator, got \"{0}\" of type {1}",
+                    R"(Expected an operator, got "{}" of type {})",
                     next.value,
                     next.type2String()
             );
+
             report.setError(msg, next.start, next.size);
             return State::error;
         }

@@ -7,15 +7,16 @@
 namespace flexMC
 {
 
-    void functions::assertNumberOfArgs(const Token& function,
-                            const size_t &expected,
-                            const size_t &num_args,
-                            MaybeError &report)
+    void functions::assertNumberOfArgs(const Token &function,
+                                       const size_t &expected,
+                                       const size_t &num_args,
+                                       const Operands::Type &arg_type,
+                                       MaybeError &report)
     {
         if (expected != num_args)
         {
-            auto msg = fmt::format("Function \"{0}\" takes exactly {1} argument(s), got {2}",
-                                   function.value, expected, num_args);
+            auto msg = fmt::format(R"(Function "{}" with argument type <{}> takes exactly {} argument(s), got {})",
+                                   function.value, Operands::type2Str(arg_type), expected, num_args);
             report.setError(msg, function.start, function.size);
         }
     }
@@ -24,14 +25,26 @@ namespace flexMC
                                        const size_t &min_args,
                                        const size_t &max_args,
                                        const size_t &num_args,
+                                       const Operands::Type &arg_type,
                                        MaybeError &report)
     {
         if ((num_args < min_args) || ((max_args > 0) && (num_args > max_args)))
         {
-            auto msg = fmt::format(
-                    "Function {0} takes between {1} and {2} arguments(s), got {3}",
-                    function.value, min_args, max_args, num_args
-            );
+            std::string msg;
+            if (max_args > 0)
+            {
+                msg = fmt::format(
+                        R"(Function "{}" with argument type <{}> takes between {} and {} arguments(s), got {})",
+                        function.value, Operands::type2Str(arg_type), min_args, max_args, num_args
+                );
+            }
+            else
+            {
+                msg = fmt::format(
+                        R"(Function "{}" with argument type <{}> at least {} arguments(s), got {})",
+                        function.value, Operands::type2Str(arg_type), min_args, num_args
+                );
+            }
             report.setError(msg, function.start, function.size);
         }
 

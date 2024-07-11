@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "terminals.h"
+#include "utils.h"
 
 
 namespace flexMC
@@ -10,18 +11,13 @@ namespace flexMC
 
     struct ParsingContext
     {
-
-        ParsingContext() : precedence(1)
-        {}
-
-        size_t precedence;
+        size_t precedence = 0;
         bool maybe_prefix = false;
         bool maybe_infix = false;
         bool is_prefix = false;
         bool is_infix = false;
         size_t num_args = 0;
         bool left_associative = true;
-
     };
 
     struct Token
@@ -51,11 +47,10 @@ namespace flexMC
                 type(t),
                 value(val),
                 start(at),
-                size(val.length()),
-                context(ParsingContext())
+                size(val.length())
         {}
 
-        Token(Type t, std::string val, const size_t &at, ParsingContext con) :
+        Token(Type t, const std::string &val, const size_t &at, const ParsingContext &con) :
                 type(t),
                 value(val),
                 start(at),
@@ -67,8 +62,7 @@ namespace flexMC
                 type(t),
                 value(val),
                 start(at),
-                size(length),
-                context(ParsingContext())
+                size(length)
         {}
 
         [[nodiscard]] std::string toString() const;
@@ -82,6 +76,7 @@ namespace flexMC
         ParsingContext context;
     };
 
+
     namespace Tokens
     {
 
@@ -89,13 +84,15 @@ namespace flexMC
 
         Token makeContextualized(const std::string &val, const size_t &at);
 
-        Token makeCall(const int &num_args, const size_t &at);
+        Token makeCall(const size_t &num_args, const size_t &at);
 
-        Token makeAppend(const int &num_args, const size_t &at);
+        Token makeAppend(const size_t &num_args, const size_t &at);
 
-        Token makeIndex(const int &num_args, const size_t &at);
+        Token makeIndex(const size_t &num_args, const size_t &at);
 
-        const std::unordered_map<std::string, Token::Type> TYPES = {
+        Token makeOperator(const Token::Type t, const std::string &val, const size_t &at);
+
+        const std::unordered_map<std::string, Token::Type, SHash, std::equal_to<>> TYPES = {
 
                 {IF,           Token::Type::keyW},
                 {THEN,         Token::Type::keyW},
@@ -144,7 +141,7 @@ namespace flexMC
                 {B_RIGHT,      Token::Type::rbracket},
 
                 {"\t",         Token::Type::tab},
-                {"    ",         Token::Type::tab},
+                {"    ",       Token::Type::tab},
                 {" ",          Token::Type::wsp},
         };
     }
