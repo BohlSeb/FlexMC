@@ -17,8 +17,28 @@ namespace flexMC
         }
     }
 
-    std::pair<MaybeError, CompileReport> ExpressionCompiler::compile(const std::vector<Token> &post_fix,
-                                                                     Expression &expression)
+    namespace
+    {
+        std::pair<MaybeError, CompileReport> makeReport(MaybeError &report, const Operands &operands)
+        {
+            using
+            enum Operands::Type;
+            if (report.isError())
+            {
+                return std::make_pair(report, CompileReport(undefined, 0, 0));
+            }
+            if (!operands.haveCompiled())
+            {
+                report.setError("Could not compile expression up to its return type", 0, 0);
+                return std::make_pair(report, CompileReport(undefined, 0, 0));
+            }
+            CompileReport c_rep{operands.typesBack(), operands.maxSize(scalar), operands.maxSize(vector)};
+            return std::make_pair(report, c_rep);
+        }
+    }
+
+    std::pair<MaybeError, CompileReport> compileExpression(const std::vector<Token> &post_fix,
+                                                           Expression &expression)
     {
         Operands operands;
         MaybeError report;
@@ -55,41 +75,23 @@ namespace flexMC
                 if (report.isError())
                 {
                     report.setPosition(tok.start, 1);
-                    break;
                 }
-                if (elem_t == Operands::Type::scalar)
+                else if (elem_t == Operands::Type::scalar)
                 {
                     auto v = Vector(tok.context.num_args);
                     expression.addItem<Vector>(v);
                 }
             }
-            else if (t == Token::Type::op)
+            else if ((t == Token::Type::op) && !(tok.value == flexMC::PLUS && tok.context.is_prefix))
             {
-                if (!(tok.value == flexMC::PLUS && tok.context.is_prefix))
+                Operation op = operatorCompiler::compile(tok, operands, report);
+                if (!report.isError())
                 {
-                    Operation op = operatorCompiler::compile(tok, operands, report);
-                    if (!report.isError())
-                    {
-                        expression.addItem<Operation>(op);
-                    }
+                    expression.addItem<Operation>(op);
                 }
             }
         }
-        if (report.isError())
-        {
-            return std::make_pair(report, CompileReport(Operands::Type::undefined, 0, 0));
-        }
-        if (!operands.haveCompiled())
-        {
-            report.setError("Could not compile expression up to its return type", 0, 0);
-            return std::make_pair(report, CompileReport(Operands::Type::undefined, 0, 0));
-        }
-        CompileReport c_rep{
-                operands.typesBack(),
-                operands.maxSize(Operands::Type::scalar),
-                operands.maxSize(Operands::Type::vector)
-        };
-        return std::make_pair(report, c_rep);
+        return makeReport(report, operands);
     }
 
 }

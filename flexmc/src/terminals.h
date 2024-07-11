@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 
 namespace flexMC {
 
@@ -65,12 +66,12 @@ namespace flexMC {
 	const std::string R_ID = R"(^[_a-z]\w*)";
 	const std::string R_NUM = R"(^(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)";
 
-	const std::string R_GROUPS_1[ ] = {
+	const std::array<std::string, 2> R_GROUPS_1 = {
 		R"(^\*\*(=?))",
         R"(^\s{4})",
 	};
 
-	const std::string R_GROUPS_2[ ] = {
+	const std::array<std::string, 35> R_GROUPS_2 = {
 		R"(^IF)",
 		R"(^THEN)",
 		R"(^ELSE)",

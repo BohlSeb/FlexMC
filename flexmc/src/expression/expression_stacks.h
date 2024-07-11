@@ -36,7 +36,7 @@ namespace flexMC
         [[nodiscard]] size_t sizesBack() const
         { return vector_sizes_.back(); }
 
-        void pushFunc(const Token& token)
+        void pushFunc(const Token &token)
         { functions_.push_back(token); }
 
         [[nodiscard]] Token funcsBack() const
@@ -80,59 +80,57 @@ namespace flexMC
 
         CalcStacks(const size_t &s_size, const size_t &v_size, const size_t &d_size, const size_t &d_l_size);
 
-        [[nodiscard]] bool ready() const;
+        bool ready() const;
 
-        void pushScalar(const double &value)
+        size_t size(Operands::Type type) const;
+
+        inline void pushScalar(const double &value)
         { scalars_.push_back(value); }
 
-        void pushVector(const std::vector<double> &value)
+        inline void pushVector(const std::vector<double> &value)
         { vectors_.push_back(value); }
 
-        void pushDate(const int &value)
-        { dates_.push_back(value); }
-
-        void pushDateList(const std::vector<int> &value)
-        { date_lists_.push_back(value); }
-
-        [[nodiscard]] const double &scalarsBack() const
+        inline const double &scalarsBack() const
         { return scalars_.back(); }
 
-        std::vector<double> &vectorsBack()
+        inline const std::vector<double> &vectorsBack() const
         { return vectors_.back(); }
 
-        std::vector<double> &vectorsBeforeBack()
+        inline std::vector<double> &vectorsBack()
+        { return vectors_.back(); }
+
+        inline std::vector<double> &vectorsBeforeBack()
         { return vectors_.end()[-2]; }
 
-        [[nodiscard]] const int &datesBack() const
-        { return dates_.back(); }
+        inline const std::vector<double> &vectorsBeforeBack() const
+        { return vectors_.end()[-2]; }
 
-        std::vector<int> &dateListsBack()
-        { return date_lists_.back(); }
-
-        void popScalar()
+        inline void popScalar()
         { scalars_.pop_back(); }
 
-        void popVector()
+        inline void popVector()
         { vectors_.pop_back(); }
 
-        void popDate()
-        { dates_.pop_back(); };
-
-        void popDateList()
-        { date_lists_.pop_back(); }
-
-        std::vector<double>::const_iterator scalarsStart()
-        { return scalars_.cbegin(); }
-
-        std::vector<double>::const_iterator scalarsEnd()
+        inline std::vector<double>::const_iterator scalarsEnd() const
         { return scalars_.cend(); }
 
-        //const bool hasCalculated() const;
+        inline void pushDate(const int &value)
+        { dates_.push_back(value); }
 
-        //const bool hasReturnType(const Operands::Type& expected) const;
+        inline void pushDateList(const std::vector<int> &value)
+        { date_lists_.push_back(value); }
 
-        // for debugging?
-        [[nodiscard]]  size_t size(Operands::Type type) const;
+        inline void popDate()
+        { dates_.pop_back(); };
+
+        inline void popDateList()
+        { date_lists_.pop_back(); }
+
+        [[nodiscard]] inline const int &datesBack() const
+        { return dates_.back(); }
+
+        inline std::vector<int> &dateListsBack()
+        { return date_lists_.back(); }
 
     private:
 
@@ -151,7 +149,10 @@ namespace flexMC
 
     public:
 
-        virtual void evaluate(CalcStacks & /* stacks */) {}
+        virtual ~PostFixItem() = default;
+
+        virtual void evaluate(CalcStacks & /* stacks */)
+        { /* evaluate operands on the stack */ }
 
     };
 
