@@ -28,6 +28,21 @@ namespace flexMC
 
         }
 
+        void assertNumberOfArgs(
+                const Token& function,
+                const size_t &expected,
+                const std::size_t &num_args,
+                const Operands::Type& arg_type,
+                MaybeError& report);
+
+        void assertNumberOfArgs(
+                const Token& function,
+                const size_t &min_args,
+                const size_t &max_args,
+                const std::size_t &num_args,
+                const Operands::Type& arg_type,
+                MaybeError& report);
+
     }
 
     namespace operatorCompiler

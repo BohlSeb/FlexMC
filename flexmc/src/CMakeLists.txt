@@ -7,7 +7,6 @@ set(SOURCES
         expression/expression_compiler.cpp
         expression/expression_stacks.cpp
         expression/operand.cpp
-        expression/operations/operation.cpp
         expression/operations/operation_compiler.cpp
         expression/operations/functions_real.cpp
         expression/operations/operators_calc.cpp
