@@ -34,14 +34,14 @@ namespace flexMC
             if (max_args > 0)
             {
                 msg = fmt::format(
-                        R"(Function "{}" with argument type <{}> takes between {} and {} arguments(s), got {})",
+                        R"(Function "{}" with argument type <{}> takes between {} and {} argument(s), got {})",
                         function.value, Operands::type2Str(arg_type), min_args, max_args, num_args
                 );
             }
             else
             {
                 msg = fmt::format(
-                        R"(Function "{}" with argument type <{}> at least {} arguments(s), got {})",
+                        R"(Function "{}" with argument type <{}> takes at least {} argument(s), got {})",
                         function.value, Operands::type2Str(arg_type), min_args, num_args
                 );
             }

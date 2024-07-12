@@ -88,7 +88,7 @@ namespace flexMC
 
         Token makeAppend(const size_t &num_args, const size_t &at);
 
-        Token makeIndex(const size_t &num_args, const size_t &at);
+        Token makeIndex(const size_t &at);
 
         Token makeOperator(const Token::Type t, const std::string &val, const size_t &at);
 
