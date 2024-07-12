@@ -39,7 +39,7 @@ namespace flexMC
     {
         assert(stacks.tSize() >= num_args);
         const Operands::Type arg_type = stacks.tSize() > 0 ? stacks.typesBack() : Operands::Type::scalar;
-        functions::assertNumberOfArgs(function, 1, num_args, arg_type, report);
+        assertNumberOfArgs(function, 1, num_args, arg_type, report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
@@ -64,7 +64,7 @@ namespace flexMC
         enum Operands::Type;
         assert(stacks.tSize() >= num_args);
         const Operands::Type dummy_arg_type = stacks.tSize() > 0 ? stacks.typesBack() : Operands::Type::scalar;
-        functions::assertNumberOfArgs(function, 1, 0, num_args, dummy_arg_type, report);
+        assertNumberOfArgs(function, 1, 0, num_args, dummy_arg_type, report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
@@ -77,7 +77,7 @@ namespace flexMC
         stacks.popType();
         if (arg_type == scalar)
         {
-            functions::assertNumberOfArgs(function, 2, 0, num_args, arg_type, report);
+            assertNumberOfArgs(function, 2, 0, num_args, arg_type, report);
             if (report.isError())
             {
                 return Operation(std::function<void(CalcStacks &)>({}));
@@ -96,7 +96,7 @@ namespace flexMC
         }
         else
         {
-            functions::assertNumberOfArgs(function, 1, num_args, arg_type, report);
+            assertNumberOfArgs(function, 1, num_args, arg_type, report);
             if (report.isError())
             {
                 return Operation(std::function<void(CalcStacks &)>({}));
@@ -108,6 +108,49 @@ namespace flexMC
             return Operation(functionsReal::reduceArguments::get(function.value, num_args));
         }
         return Operation(functionsReal::reduceVector::get(function.value));
+    }
+
+    void functionCompiler::assertNumberOfArgs(const Token &function,
+                                              const size_t &expected,
+                                              const size_t &num_args,
+                                              const Operands::Type &arg_type,
+                                              MaybeError &report)
+    {
+        if (expected != num_args)
+        {
+            auto msg = fmt::format(R"(Function "{}" with argument type <{}> takes exactly {} argument(s), got {})",
+                                   function.value, Operands::type2Str(arg_type), expected, num_args);
+            report.setError(msg, function.start, function.size);
+        }
+    }
+
+    void functionCompiler::assertNumberOfArgs(const Token &function,
+                                              const size_t &min_args,
+                                              const size_t &max_args,
+                                              const size_t &num_args,
+                                              const Operands::Type &arg_type,
+                                              MaybeError &report)
+    {
+        if ((num_args < min_args) || ((max_args > 0) && (num_args > max_args)))
+        {
+            std::string msg;
+            if (max_args > 0)
+            {
+                msg = fmt::format(
+                        R"(Function "{}" with argument type <{}> takes between {} and {} argument(s), got {})",
+                        function.value, Operands::type2Str(arg_type), min_args, max_args, num_args
+                );
+            }
+            else
+            {
+                msg = fmt::format(
+                        R"(Function "{}" with argument type <{}> takes at least {} argument(s), got {})",
+                        function.value, Operands::type2Str(arg_type), min_args, num_args
+                );
+            }
+            report.setError(msg, function.start, function.size);
+        }
+
     }
 
     Operation operatorCompiler::compile(const Token &token, Operands &stacks, MaybeError &report)
