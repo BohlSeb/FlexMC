@@ -99,10 +99,10 @@ namespace flexMC
         return call;
     }
 
-    Token Tokens::makeIndex(const size_t &num_args, const size_t &at)
+    Token Tokens::makeIndex(const size_t &at)
     {
         auto call = Token(Token::Type::index_, INDEX_, at);
-        call.context.num_args = num_args;
+        call.context.num_args = 1;
         call.context.precedence = 10;
         return call;
     }
@@ -208,7 +208,7 @@ namespace flexMC
         {
             ParsingContext context;
             context.precedence = 0;
-            context.maybe_prefix = true;
+            context.maybe_infix = true;
             return {t, val, at, context};
         }
         if (t == tab)

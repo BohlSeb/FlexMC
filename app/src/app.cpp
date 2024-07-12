@@ -28,8 +28,11 @@ int main()
     if (run_main)
     {
 
+        /*
+         * "3[(3]"
+         */
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "ARGMAX(0, 1, 0, 2, 1, 0, 1, 2, 3, 0, 0)";
+        const std::string program_err = "(1,2])";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -57,7 +60,7 @@ int main()
                 std::cout << "Items parsed: " << parsed.size() << std::endl;
                 for (const auto &token: parsed)
                 {
-                    std::cout << token.value << " ";
+                    std::cout << token.toString() << " ";
                 }
                 std::cout << std::endl;
                 Expression expression;

@@ -32,7 +32,7 @@ namespace flexMC
         {
             using
             enum Token::Type;
-            return (tok.type == op && tok.context.maybe_prefix) || (tok.type == lparen) || (tok.type == lbracket);
+            return (tok.type == op && tok.context.maybe_prefix) || (tok.type == lparen);
         }
 
         State terminate(const Token &tok,
@@ -45,7 +45,7 @@ namespace flexMC
                 Token op = operators.back();
                 if ((op.type == Token::Type::lparen) || (op.type == Token::Type::lbracket))
                 {
-                    auto msg = fmt::format(R"(Unmatched parenthesis or bracket: "(" or "[", got "{}" ({}))",
+                    auto msg = fmt::format(R"(Unmatched parenthesis "(" or bracket "[", got "{}" ({}))",
                                            tok.value,
                                            tok.type2String());
                     report.setError(msg, tok.start, tok.size);
@@ -62,23 +62,21 @@ namespace flexMC
             std::stringstream error_msg("");
             if (operators.empty())
             {
-                error_msg << fmt::format(R"(Expected parenthesis or bracket, got "{}" ({}))",
-                                         tok.value,
-                                         tok.type2String());
-            }
-            else if (operators.back().context.num_args > 0)
-            {
-                error_msg << "Unexpected comma encountered within parentheses or brackets";
-            }
-            else if (operators.back().type == Token::Type::lbracket)
-            {
-                error_msg << R"(Empty list not allowed: "[]")";
+                error_msg << R"_(Expected empty function argument list "()" )_";
             }
             else if (operators.back().type != Token::Type::lparen)
             {
-                error_msg << fmt::format(R"_(Expected empty argument list  "()", got "{}" ({}))_",
-                                         tok.value,
-                                         tok.type2String());
+                error_msg << fmt::format(R"_(Expected left parenthesis "()", got "{})" ({}) )_",
+                                         operators.back().value,
+                                         operators.back().type2String());
+            }
+            else if (!operators.back().context.is_infix)
+            {
+                error_msg << R"_(Empty parentheses "()" not allowed other than for an empty function argument list)_";
+            }
+            else if (operators.back().context.num_args > 0)
+            {
+                error_msg << R"_(Unexpected comma encountered within empty parentheses "()")_";
             }
             if (!error_msg.str().empty())
             {
@@ -116,23 +114,26 @@ namespace flexMC
             return State::want_operand;
         }
 
-        State makeReduceOperator(const Token &tok,
+        State consumeParentheses(const Token &tok,
                                  std::vector<Token> &postfix,
                                  std::vector<Token> &operators,
                                  MaybeError &report)
         {
-            using
-            enum Token::Type;
-            auto msg = fmt::format(R"(Unmatched parenthesis or bracket: "{}")", tok.value);
+            auto msg = R"_(Unmatched parenthesis ")")_";
             if (operators.empty())
             {
                 report.setError(msg, tok.start, tok.size);
                 return State::error;
             }
             Token::Type operator_t = operators.back().type;
-            Token::Type stop = (tok.type == rparen) ? lparen : lbracket;
-            while (operator_t != stop)
+            while (operator_t != Token::Type::lparen)
             {
+                if (operator_t == Token::Type::lbracket)
+                {
+                    report.setError(R"_(While parsing parenthesis ")": Unexpected bracket encountered)_",
+                                    operators.back().start, 1);
+                    return State::error;
+                }
                 postfix.push_back(operators.back());
                 operators.pop_back();
                 if (operators.empty())
@@ -142,20 +143,57 @@ namespace flexMC
                 }
                 operator_t = operators.back().type;
             }
-            Token left_close = operators.back();
-            size_t num_args = left_close.context.num_args + 1;
-            if (left_close.type == lparen && left_close.context.is_infix)
+            Token l_paren = operators.back();
+            size_t num_args = l_paren.context.num_args + 1;
+            if (l_paren.context.is_infix)
             {
                 postfix.push_back(Tokens::makeCall(num_args, tok.start));
             }
-            else if (left_close.type == lbracket && left_close.context.is_prefix)
+            else if (num_args >= 2)
             {
                 postfix.push_back(Tokens::makeAppend(num_args, tok.start));
             }
-            else if (left_close.type == lbracket && left_close.context.is_infix)
+            operators.pop_back();
+            return State::have_operand;
+        }
+
+        State consumeBrackets(const Token &tok,
+                              std::vector<Token> &postfix,
+                              std::vector<Token> &operators,
+                              MaybeError &report)
+        {
+            auto msg = R"(Unmatched bracket "]")";
+            if (operators.empty())
             {
-                postfix.push_back(Tokens::makeIndex(num_args, tok.start));
+                report.setError(msg, tok.start, tok.size);
+                return State::error;
             }
+            Token::Type operator_t = operators.back().type;
+            while (operator_t != Token::Type::lbracket)
+            {
+                if (operator_t == Token::Type::lparen)
+                {
+                    report.setError(R"(While parsing bracket "]": Unexpected parenthesis encountered)",
+                                    operators.back().start, 1);
+                    return State::error;
+                }
+                postfix.push_back(operators.back());
+                operators.pop_back();
+                if (operators.empty())
+                {
+                    report.setError(msg, tok.start, tok.size);
+                    return State::error;
+                }
+                operator_t = operators.back().type;
+            }
+            if (operators.back().context.num_args > 0)
+            {
+                report.setError("Multiple arguments not allowed for <Vector> subscripting",
+                                operators.back().start, 1);
+                return State::error;
+
+            }
+            postfix.push_back(Tokens::makeIndex(tok.start));
             operators.pop_back();
             return State::have_operand;
         }
@@ -268,8 +306,8 @@ namespace flexMC
                 return State::want_operand;
             }
 
-            // Unmatched parenthesis or "()" expected (function with 0 args)
-            if ((t == rparen) || (t == rbracket))
+            // "()" expected (function with 0 args)
+            if (t == rparen)
             {
                 State s = noArgsOrError(next, operators, report);
                 if (s != State::error)
@@ -341,9 +379,19 @@ namespace flexMC
                 return s;
             }
 
-            if ((next.type == rparen) || (next.type == rbracket))
+            if (next.type == rparen)
             {
-                State s = makeReduceOperator(next, postfix, operators, report);
+                State s = consumeParentheses(next, postfix, operators, report);
+                if (s == State::have_operand)
+                {
+                    infix.pop_front();
+                }
+                return s;
+            }
+
+            if (next.type == rbracket)
+            {
+                State s = consumeBrackets(next, postfix, operators, report);
                 if (s == State::have_operand)
                 {
                     infix.pop_front();
