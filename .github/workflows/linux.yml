@@ -8,7 +8,7 @@ jobs:
       matrix:
         preset: [linux-gcc-debug, linux-gcc-release]
 
-    # using ubunti-24.04 for gcc 13, required for std::ranges::zip_view
+    # using ubuntu-24.04 for gcc 13, required for std::ranges::zip_view
 
     runs-on: ubuntu-24.04
 
