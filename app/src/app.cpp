@@ -5,16 +5,26 @@
 #include <algorithm>
 #include "app_config.h"
 
+#include <variant>
+#include <unordered_map>
+
 #include "lexer.h"
 #include "expression_parser.h"
 #include "terminals.h"
-//#include "functions_real.h"
+#include "expression_stacks.h"
+#include "static_variables.h"
 #include "expression_stacks.h"
 #include "expression_compiler.h"
 #include "operators_calc.h"
 #include "expression_profiler.h"
 
 using namespace flexMC;
+
+template<class T>
+struct MyMap {
+    std::unordered_map<std::string, T> data;
+};
+
 
 int main()
 {
@@ -24,7 +34,49 @@ int main()
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
 
-    const bool run_main = true;
+
+
+    StaticVStorage storage;
+
+    SCALAR value = 1.0;
+    const std::vector<double> values{1, 2, 3, 4};
+
+    storage.insert<SCALAR>("x", value);
+    storage.insert<VECTOR>("x", values);
+    storage.insert<SCALAR>("x", 30.0);
+    storage.insert<SCALAR>("z", 40.0);
+
+    std::cout << cType2Str(storage.cType("x")) << std::endl;
+
+    std::cout << storage.get<SCALAR>("x") << std::endl;
+    std::cout << storage.get<SCALAR>("z") << std::endl;
+
+    std::cout << std::boolalpha << storage.containsUnused() << std::endl;
+
+//    storage.insert("x", 2);
+//    storage.insert("y", 3);
+//    storage.insert("z", 4);
+//    storage.insert("myVec", values);
+
+//    std::cout << cType2Str(storage.type("x")) << std::endl;
+//
+//    double value_ = storage.getScalar("x");
+//
+//    const std::vector<double> vector_used = storage.getVector("myVec");
+//
+//    std::cout << "Unused:" << std::endl;
+//    for (const auto &[key, val]: storage.unused())
+//    {
+//        std::cout << key << ": " << "<" << cType2Str(val) << ">" << std::endl;
+//    }
+//    std::cout << "Unused end" << std::endl;
+//
+//
+//    auto vector_used_final = storage.getVector("myVec");
+//    std::cout << "Size: " << vector_used_final.size() << std::endl;
+
+
+    const bool run_main = false;
     if (run_main)
     {
 
@@ -32,7 +84,7 @@ int main()
          * "3[(3]"
          */
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "(1,2])";
+        const std::string program_err = "EXP(0.0)";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -72,19 +124,19 @@ int main()
                 }
                 else
                 {
-                    Operands::Type return_type = reports.second.ret_type;
+                    CType return_type = reports.second.ret_type;
 
-                    std::cout << "Compiled >> Return type: " << Operands::type2Str(return_type) << std::endl;
+                    std::cout << "Compiled >> Return type: " << cType2Str(return_type) << std::endl;
 
                     CalcStacks c_stacks(0, 0, 0, 0);
 
                     expression.evaluate(c_stacks);
-                    if (c_stacks.size(Operands::Type::scalar) == 1)
+                    if (c_stacks.size(CType::scalar) == 1)
                     {
                         std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
                         c_stacks.popScalar();
                     }
-                    else if (c_stacks.size(Operands::Type::vector) == 1)
+                    else if (c_stacks.size(CType::vector) == 1)
                     {
                         std::cout << "Vector result:" << std::endl << "[ ";
                         std::vector<double> res = c_stacks.vectorsBack();

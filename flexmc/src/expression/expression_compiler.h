@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "tokens.h"
+#include "calc_types.h"
 #include "language_error.h"
 #include "expression_stacks.h"
 
@@ -31,12 +32,12 @@ namespace flexMC
 
     struct CompileReport
     {
-        CompileReport(Operands::Type ret_t,
+        CompileReport(CType ret_t,
                       const size_t &max_s,
                       const size_t &max_v) : ret_type(ret_t), max_scalar(max_s), max_vector(max_v)
         {}
 
-        const Operands::Type ret_type;
+        const CType ret_type;
 
         const size_t max_scalar;
 

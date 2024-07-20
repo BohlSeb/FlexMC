@@ -2,10 +2,9 @@
 
 #include <functional>
 #include <numeric>
-#include <string_view>
 
-#include "terminals.h"
 #include "tokens.h"
+#include "calc_types.h"
 #include "language_error.h"
 #include "expression_stacks.h"
 
@@ -13,7 +12,7 @@
 namespace flexMC::functionsReal
 {
 
-    Operands::Type compileArgType(const Token &token, const Operands::Type &arg_type, MaybeError &report);
+    CType compileArgType(const Token &token, const CType &arg_type, MaybeError &report);
 
     const std::vector<std::string> symbols_scalar{
             EXP,
@@ -38,10 +37,10 @@ namespace flexMC::functionsReal
 
         std::function<void(CalcStacks &)> get(const std::string_view key);
 
-        std::string makeKey(const std::string &symbol, const Operands::Type &arg_type);
+        std::string makeKey(const std::string &symbol, const CType &arg_type);
 
         using
-        enum Operands::Type;
+        enum CType;
 
         template<class scalar_function>
         void calculateScalar(CalcStacks &stacks, scalar_function f)
@@ -60,7 +59,7 @@ namespace flexMC::functionsReal
             std::ranges::transform(back, back.begin(), f);
         }
 
-        const std::unordered_map<std::string, std::function<void(CalcStacks &)>, SHash, std::equal_to<>> functions{
+        const StringMap<std::function<void(CalcStacks &)>> functions{
                 {
                         makeKey(flexMC::EXP, scalar),
                         [capture0 = [](const double &val)
@@ -132,27 +131,27 @@ namespace flexMC::functionsReal
 
         void max(CalcStacks &stacks);
 
-        void min(CalcStacks & stacks);
+        void min(CalcStacks &stacks);
 
-        void argmax(CalcStacks & stacks);
+        void argmax(CalcStacks &stacks);
 
-        void argmin(CalcStacks & stacks);
+        void argmin(CalcStacks &stacks);
 
-        void length(CalcStacks & stacks);
+        void length(CalcStacks &stacks);
 
         template<class binary_function>
         void accumulateVector(CalcStacks &stacks,
                               binary_function f,
                               double init)
         {
-            assert(stacks.size(Operands::Type::vector) > 0);
+            assert(stacks.size(CType::vector) > 0);
             const std::vector<double> &back = stacks.vectorsBack();
             const double res = std::accumulate(back.cbegin(), back.cend(), init, f);
             stacks.popVector();
             stacks.pushScalar(res);
         }
 
-        const std::unordered_map<std::string, std::function<void(CalcStacks &)>, SHash, std::equal_to<>> functions{
+        const StringMap<std::function<void(CalcStacks &)>> functions{
                 {
                         flexMC::SUM,
                         [capture0 = [](const double &left, const double &right)
@@ -210,7 +209,7 @@ namespace flexMC::functionsReal
                                double init,
                                const size_t &size)
         {
-            assert(stacks.size(Operands::Type::scalar) >= size);
+            assert(stacks.size(CType::scalar) >= size);
             for (size_t i{0}; i < size; ++i)
             {
                 init = f(init, stacks.scalarsBack());
@@ -224,7 +223,7 @@ namespace flexMC::functionsReal
                     binary_function f,
                     const size_t &size)
         {
-            assert(stacks.size(Operands::Type::scalar) >= size);
+            assert(stacks.size(CType::scalar) >= size);
             double found = stacks.scalarsBack();
             stacks.popScalar();
             for (size_t i{1}; i < size; ++i)
@@ -239,8 +238,7 @@ namespace flexMC::functionsReal
             stacks.pushScalar(found);
         }
 
-        const std::unordered_map
-                <std::string, std::function<void(CalcStacks &, const size_t &size)>, SHash, std::equal_to<>> functions{
+        const StringMap<std::function<void(CalcStacks &, const size_t &size)>> functions{
                 {
                         flexMC::SUM,
                         [capture0 = [](const double &left, const double &right)

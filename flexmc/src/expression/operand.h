@@ -3,6 +3,7 @@
 #include <string>
 
 #include "tokens.h"
+#include "calc_types.h"
 #include "language_error.h"
 #include "expression_stacks.h"
 
@@ -14,7 +15,7 @@ namespace flexMC
 
     double compileNumber(const Token &token, Operands &stacks, MaybeError &report);
 
-    Operands::Type compileVector(const size_t &num_args, Operands &stacks, MaybeError &report);
+    CType compileVector(const size_t &num_args, Operands &stacks, MaybeError &report);
 
     class Number final : public PostFixItem
     {

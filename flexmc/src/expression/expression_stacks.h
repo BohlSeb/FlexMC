@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include "tokens.h"
+#include "calc_types.h"
 
 namespace flexMC
 {
@@ -12,25 +14,16 @@ namespace flexMC
 
     public:
 
-        enum class Type
-        {
-            scalar,
-            date,
-            vector,
-            dateList,
-            undefined
-        };
-
         [[nodiscard]] bool haveCompiled() const
         { return ((types_.size() == 1) && (functions_.empty())); }
 
-        void pushType(const Type &type);
+        void pushType(const CType &type);
 
         void popType();
 
-        void pushArray(const Type &type, const size_t &size);
+        void pushArray(const CType &type, const size_t &size);
 
-        [[nodiscard]] Type typesBack() const
+        [[nodiscard]] CType typesBack() const
         { return types_.back(); }
 
         [[nodiscard]] size_t sizesBack() const
@@ -51,13 +44,11 @@ namespace flexMC
         [[nodiscard]] size_t fSize() const
         { return functions_.size(); }
 
-        [[nodiscard]] size_t maxSize(const Type &type) const;
-
-        static std::string type2Str(const Type &type);
+        [[nodiscard]] size_t maxSize(const CType &type) const;
 
     private:
 
-        std::vector<Type> types_;
+        std::vector<CType> types_;
 
         std::vector<Token> functions_;
 
@@ -82,7 +73,7 @@ namespace flexMC
 
         bool ready() const;
 
-        size_t size(Operands::Type type) const;
+        size_t size(const CType &type) const;
 
         inline void pushScalar(const double &value)
         { scalars_.push_back(value); }

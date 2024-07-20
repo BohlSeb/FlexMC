@@ -22,7 +22,7 @@ namespace flexMC
         std::pair<MaybeError, CompileReport> makeReport(MaybeError &report, const Operands &operands)
         {
             using
-            enum Operands::Type;
+            enum CType;
             if (report.isError())
             {
                 return std::make_pair(report, CompileReport(undefined, 0, 0));
@@ -71,12 +71,12 @@ namespace flexMC
             }
             else if (t == Token::Type::append_)
             {
-                Operands::Type elem_t = compileVector(tok.context.num_args, operands, report);
+                const CType elem_t = compileVector(tok.context.num_args, operands, report);
                 if (report.isError())
                 {
                     report.setPosition(tok.start, 1);
                 }
-                else if (elem_t == Operands::Type::scalar)
+                else if (elem_t == CType::scalar)
                 {
                     auto v = Vector(tok.context.num_args);
                     expression.addItem<Vector>(v);
