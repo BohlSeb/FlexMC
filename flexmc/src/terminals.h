@@ -19,11 +19,11 @@ namespace flexMC {
 	const std::string POW_ASSIGN = "**=";
 
 	// Real functions taking a scalar or vector
-	static const std::string EXP = "EXP";
-	static const std::string LOG = "LOG";
-	static const std::string ABS = "ABS";
-	static const std::string SQRT = "SQRT";
-	static const std::string SQUARE = "SQUARE";
+	const std::string EXP = "EXP";
+	const std::string LOG = "LOG";
+	const std::string ABS = "ABS";
+	const std::string SQRT = "SQRT";
+	const std::string SQUARE = "SQUARE";
 
 	// Real functions taking a vector or positive number of reals
 	const std::string MIN = "MIN";
