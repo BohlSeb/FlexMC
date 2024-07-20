@@ -21,12 +21,12 @@ namespace flexMC
 
         void popType();
 
-        void pushArray(const CType &type, const size_t &size);
+        void pushArray(const CType &type, const std::size_t &size);
 
         [[nodiscard]] CType typesBack() const
         { return types_.back(); }
 
-        [[nodiscard]] size_t sizesBack() const
+        [[nodiscard]] std::size_t sizesBack() const
         { return vector_sizes_.back(); }
 
         void pushFunc(const Token &token)
@@ -38,13 +38,13 @@ namespace flexMC
         void popFunc()
         { functions_.pop_back(); }
 
-        [[nodiscard]] size_t tSize() const
+        [[nodiscard]] std::size_t tSize() const
         { return types_.size(); }
 
-        [[nodiscard]] size_t fSize() const
+        [[nodiscard]] std::size_t fSize() const
         { return functions_.size(); }
 
-        [[nodiscard]] size_t maxSize(const CType &type) const;
+        [[nodiscard]] std::size_t maxSize(const CType &type) const;
 
     private:
 
@@ -54,13 +54,13 @@ namespace flexMC
 
         std::vector<size_t> vector_sizes_;
 
-        size_t vec_size_{0};
+        std::size_t vec_size_{0};
 
-        size_t vec_size_max_{0};
+        std::size_t vec_size_max_{0};
 
-        size_t scalar_size_{0};
+        std::size_t scalar_size_{0};
 
-        size_t scalar_size_max_{0};
+        std::size_t scalar_size_max_{0};
 
     };
 
@@ -69,11 +69,11 @@ namespace flexMC
 
     public:
 
-        CalcStacks(const size_t &s_size, const size_t &v_size, const size_t &d_size, const size_t &d_l_size);
+        CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size, const std::size_t &d_l_size);
 
         bool ready() const;
 
-        size_t size(const CType &type) const;
+        std::size_t size(const CType &type) const;
 
         inline void pushScalar(const double &value)
         { scalars_.push_back(value); }

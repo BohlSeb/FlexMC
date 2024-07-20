@@ -25,7 +25,7 @@ namespace flexMC
         return value_;
     }
 
-    CType compileVector(const size_t &num_args, Operands &stacks, MaybeError &report)
+    CType compileVector(const std::size_t &num_args, Operands &stacks, MaybeError &report)
     {
         assert(num_args > 0);
         assert(stacks.tSize() >= num_args);

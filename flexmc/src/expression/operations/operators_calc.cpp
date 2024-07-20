@@ -59,7 +59,7 @@ namespace flexMC
         enum CType;
         assert(stacks.tSize() >= 2);
         const CType right_t = stacks.typesBack();
-        size_t maybe_right_s = 0;
+        std::size_t maybe_right_s = 0;
         if ((right_t == vector) || (right_t == dateList))
         {
             maybe_right_s += stacks.sizesBack();
@@ -84,7 +84,7 @@ namespace flexMC
 
         if ((left_t == vector) && (right_t == vector))
         {
-            const size_t left_s = stacks.sizesBack();
+            const std::size_t left_s = stacks.sizesBack();
             if (left_s != maybe_right_s)
             {
                 auto msg = fmt::format(
@@ -101,7 +101,7 @@ namespace flexMC
         }
         else if (left_t == vector)
         {
-            const size_t left_s = stacks.sizesBack();
+            const std::size_t left_s = stacks.sizesBack();
             stacks.popType();
             stacks.pushArray(vector, left_s);
         }
