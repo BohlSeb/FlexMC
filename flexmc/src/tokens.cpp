@@ -83,7 +83,7 @@ namespace flexMC
     // currently using python operator precedence
     // https://docs.python.org/3/reference/expressions.html
 
-    Token Tokens::makeCall(const size_t &num_args, const size_t &at)
+    Token Tokens::makeCall(const std::size_t &num_args, const std::size_t &at)
     {
         auto call = Token(Token::Type::call_, CALL_, at);
         call.context.num_args = num_args;
@@ -91,7 +91,7 @@ namespace flexMC
         return call;
     }
 
-    Token Tokens::makeAppend(const size_t &num_args, const size_t &at)
+    Token Tokens::makeAppend(const std::size_t &num_args, const std::size_t &at)
     {
         auto call = Token(Token::Type::append_, APPEND_, at);
         call.context.num_args = num_args;
@@ -99,7 +99,7 @@ namespace flexMC
         return call;
     }
 
-    Token Tokens::makeIndex(const size_t &at)
+    Token Tokens::makeIndex(const std::size_t &at)
     {
         auto call = Token(Token::Type::index_, INDEX_, at);
         call.context.num_args = 1;
@@ -107,7 +107,7 @@ namespace flexMC
         return call;
     }
 
-    Token Tokens::makeOperator(const Token::Type t, const std::string &val, const size_t &at)
+    Token Tokens::makeOperator(const Token::Type t, const std::string &val, const std::size_t &at)
     {
         ParsingContext context;
         if (val == POW)
@@ -179,7 +179,7 @@ namespace flexMC
         return Token(Token::Type::undefined, val, at);
     }
 
-    Token Tokens::makeContextualized(const std::string &val, const size_t &at)
+    Token Tokens::makeContextualized(const std::string &val, const std::size_t &at)
     {
         using
         enum Token::Type;

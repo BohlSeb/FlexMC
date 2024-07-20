@@ -49,7 +49,7 @@ TEST(ExpressionParser, OperatorsAndOperands)
         const auto [parse_report, postfix] = infixToPostfix(infix);
         EXPECT_FALSE(parse_report.isError());
         std::string res;
-        size_t i = 0;
+        std::size_t i = 0;
         auto size = postfix.size();
         for (const auto &it: postfix)
         {

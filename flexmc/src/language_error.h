@@ -12,14 +12,14 @@ namespace flexMC
 
     public:
 
-        void setError(const std::string_view msg, const size_t &at, const size_t &len);
+        void setError(const std::string_view msg, const std::size_t &at, const std::size_t &len);
 
         bool isError() const
         { return !err_msg_.empty(); }
 
         void setMessage(const std::string_view msg);
 
-        void setPosition(const size_t &at, const size_t &len);
+        void setPosition(const std::size_t &at, const std::size_t &len);
 
         std::pair<size_t, size_t> position() const
         { return std::make_pair(err_at_, err_len_); }
@@ -31,9 +31,9 @@ namespace flexMC
 
         std::string err_msg_;
 
-        size_t err_at_{0};
+        std::size_t err_at_{0};
 
-        size_t err_len_{0};
+        std::size_t err_len_{0};
 
     };
 

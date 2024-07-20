@@ -7,7 +7,7 @@
 
 namespace flexMC
 {
-    void MaybeError::setError(const std::string_view msg, const size_t &at, const size_t &len)
+    void MaybeError::setError(const std::string_view msg, const std::size_t &at, const std::size_t &len)
     {
         assert(!isError());
         err_msg_ = msg;
@@ -23,7 +23,7 @@ namespace flexMC
     }
 
 
-    void MaybeError::setPosition(const size_t &at, const size_t &len)
+    void MaybeError::setPosition(const std::size_t &at, const std::size_t &len)
     {
         assert(isError());
         err_at_ = at;

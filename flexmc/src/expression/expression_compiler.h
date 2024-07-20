@@ -33,15 +33,15 @@ namespace flexMC
     struct CompileReport
     {
         CompileReport(const CType &ret_t,
-                      const size_t &max_s,
-                      const size_t &max_v) : ret_type(ret_t), max_scalar(max_s), max_vector(max_v)
+                      const std::size_t &max_s,
+                      const std::size_t &max_v) : ret_type(ret_t), max_scalar(max_s), max_vector(max_v)
         {}
 
         const CType ret_type;
 
-        const size_t max_scalar;
+        const std::size_t max_scalar;
 
-        const size_t max_vector;
+        const std::size_t max_vector;
 
     };
 

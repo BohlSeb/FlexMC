@@ -30,11 +30,11 @@ namespace flexMC
 
     std::deque<Token> Lexer::tokenize(const std::string_view line)
     {
-        const size_t max_line_length = 1000;  // make a setting
+        const std::size_t max_line_length = 1000;  // make a setting
 
         auto [token, suffix] = nextTok(line, 0);
         Token::Type previous = token.type;
-        size_t line_no = token.size;
+        std::size_t line_no = token.size;
         std::deque<Token> out({token});
 
         while ((previous != Token::Type::eof) && (previous != Token::Type::undefined) && (line_no <= max_line_length))
@@ -48,7 +48,7 @@ namespace flexMC
         return out;
     }
 
-    std::pair<Token, std::string> Lexer::nextTok(const std::string_view suffix, const size_t &line_no)
+    std::pair<Token, std::string> Lexer::nextTok(const std::string_view suffix, const std::size_t &line_no)
     {
         using type = Token::Type;
 

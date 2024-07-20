@@ -58,8 +58,8 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
     };
 
     std::vector<Expression> expressions;
-    size_t s_max = 0;
-    size_t v_max = 0;
+    std::size_t s_max = 0;
+    std::size_t v_max = 0;
 
     Lexer lexer;
 
@@ -143,8 +143,8 @@ TEST(ExpressionCompiler, RealOperatorsVector)
     };
 
     std::vector<Expression> expressions;
-    size_t s_max = 0;
-    size_t v_max = 0;
+    std::size_t s_max = 0;
+    std::size_t v_max = 0;
 
     Lexer lexer;
 
@@ -219,8 +219,8 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
     };
 
     std::vector<Expression> expressions;
-    size_t s_max = 0;
-    size_t v_max = 0;
+    std::size_t s_max = 0;
+    std::size_t v_max = 0;
 
     Lexer lexer;
 

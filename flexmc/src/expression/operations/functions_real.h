@@ -197,17 +197,17 @@ namespace flexMC::functionsReal
     namespace reduceArguments
     {
 
-        std::function<void(CalcStacks &)> get(const std::string_view key, const size_t &size);
+        std::function<void(CalcStacks &)> get(const std::string_view key, const std::size_t &size);
 
-        void argMaxScalars(CalcStacks &stacks, const size_t &size);
+        void argMaxScalars(CalcStacks &stacks, const std::size_t &size);
 
-        void argMinScalars(CalcStacks &stacks, const size_t &size);
+        void argMinScalars(CalcStacks &stacks, const std::size_t &size);
 
         template<class binary_function>
         void accumulateScalars(CalcStacks &stacks,
                                binary_function f,
                                double init,
-                               const size_t &size)
+                               const std::size_t &size)
         {
             assert(stacks.size(CType::scalar) >= size);
             for (size_t i{0}; i < size; ++i)
@@ -221,7 +221,7 @@ namespace flexMC::functionsReal
         template<class binary_function>
         void minmax(CalcStacks &stacks,
                     binary_function f,
-                    const size_t &size)
+                    const std::size_t &size)
         {
             assert(stacks.size(CType::scalar) >= size);
             double found = stacks.scalarsBack();
@@ -238,29 +238,29 @@ namespace flexMC::functionsReal
             stacks.pushScalar(found);
         }
 
-        const StringMap<std::function<void(CalcStacks &, const size_t &size)>> functions{
+        const StringMap<std::function<void(CalcStacks &, const std::size_t &size)>> functions{
                 {
                         flexMC::SUM,
                         [capture0 = [](const double &left, const double &right)
-                        { return left + right; }](CalcStacks &stacks, const size_t &size)
+                        { return left + right; }](CalcStacks &stacks, const std::size_t &size)
                         { accumulateScalars(stacks, capture0, 0.0, size); }
                 },
                 {
                         flexMC::PROD,
                         [capture0 = [](const double &left, const double &right)
-                        { return left * right; }](CalcStacks &stacks, const size_t &size)
+                        { return left * right; }](CalcStacks &stacks, const std::size_t &size)
                         { accumulateScalars(stacks, capture0, 1.0, size); }
                 },
                 {
                         flexMC::MAX,
                         [capture0 = [](const double &left, const double &right)
-                        { return left > right ? true : false; }](CalcStacks &stacks, const size_t &size)
+                        { return left > right ? true : false; }](CalcStacks &stacks, const std::size_t &size)
                         { minmax(stacks, capture0, size); }
                 },
                 {
                         flexMC::MIN,
                         [capture0 = [](const double &left, const double &right)
-                        { return left < right ? true : false; }](CalcStacks &stacks, const size_t &size)
+                        { return left < right ? true : false; }](CalcStacks &stacks, const std::size_t &size)
                         { minmax(stacks, capture0, size); }
                 },
                 {

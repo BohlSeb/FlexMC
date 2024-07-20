@@ -44,11 +44,11 @@ namespace flexMC::functionsReal
         return look_up->second;
     }
 
-    std::function<void(CalcStacks &)> reduceArguments::get(const std::string_view key, const size_t &size)
+    std::function<void(CalcStacks &)> reduceArguments::get(const std::string_view key, const std::size_t &size)
     {
         const auto look_up = reduceArguments::functions.find(key);
         assert(look_up != reduceArguments::functions.end());
-        const std::function<void(CalcStacks &, const size_t &)> f = look_up->second;
+        const std::function<void(CalcStacks &, const std::size_t &)> f = look_up->second;
         return [f, size](CalcStacks &stacks)
         { return f(stacks, size); };
     }
@@ -95,7 +95,7 @@ namespace flexMC::functionsReal
         stacks.popVector();
     }
 
-    void reduceArguments::argMaxScalars(CalcStacks &stacks, const size_t &size)
+    void reduceArguments::argMaxScalars(CalcStacks &stacks, const std::size_t &size)
     {
         assert(stacks.size(CType::scalar) >= size);
         const std::vector<double>::const_iterator end = stacks.scalarsEnd();
@@ -106,7 +106,7 @@ namespace flexMC::functionsReal
         stacks.pushScalar(static_cast<double>(res));
     }
 
-    void reduceArguments::argMinScalars(CalcStacks &stacks, const size_t &size)
+    void reduceArguments::argMinScalars(CalcStacks &stacks, const std::size_t &size)
     {
         assert((size > 0) && (stacks.size(CType::scalar) >= size));
         const std::vector<double> temp(stacks.scalarsEnd() - size, stacks.scalarsEnd());

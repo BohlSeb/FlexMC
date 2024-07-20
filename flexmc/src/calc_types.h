@@ -26,7 +26,7 @@ namespace flexMC
 
         using is_transparent [[maybe_unused]] = void;
 
-        inline size_t operator()(const CType &c) const
+        inline std::size_t operator()(const CType &c) const
         {
             return static_cast<size_t>(c);
         }

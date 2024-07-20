@@ -9,7 +9,7 @@
 
 namespace flexMC
 {
-    Operation functionCompiler::compile(const size_t &num_args, Operands &stacks, MaybeError &report)
+    Operation functionCompiler::compile(const std::size_t &num_args, Operands &stacks, MaybeError &report)
     {
         assert(stacks.fSize() > 0);
         const Token fun = stacks.funcsBack();
@@ -33,7 +33,7 @@ namespace flexMC
 
     Operation
     functionCompiler::detail::compileScalar(const Token &function,
-                                            const size_t &num_args,
+                                            const std::size_t &num_args,
                                             const Operands &stacks,
                                             MaybeError &report)
     {
@@ -56,7 +56,7 @@ namespace flexMC
 
     Operation
     functionCompiler::detail::compileReduce(const Token &function,
-                                            const size_t &num_args,
+                                            const std::size_t &num_args,
                                             Operands &stacks,
                                             MaybeError &report)
     {
@@ -111,8 +111,8 @@ namespace flexMC
     }
 
     void functionCompiler::assertNumberOfArgs(const Token &function,
-                                              const size_t &expected,
-                                              const size_t &num_args,
+                                              const std::size_t &expected,
+                                              const std::size_t &num_args,
                                               const CType &arg_type,
                                               MaybeError &report)
     {
@@ -125,9 +125,9 @@ namespace flexMC
     }
 
     void functionCompiler::assertNumberOfArgs(const Token &function,
-                                              const size_t &min_args,
-                                              const size_t &max_args,
-                                              const size_t &num_args,
+                                              const std::size_t &min_args,
+                                              const std::size_t &max_args,
+                                              const std::size_t &num_args,
                                               const CType &arg_type,
                                               MaybeError &report)
     {

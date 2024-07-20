@@ -18,7 +18,7 @@ namespace flexMC
         types_.push_back(type);
     }
 
-    void Operands::pushArray(const CType &type, const size_t &size)
+    void Operands::pushArray(const CType &type, const std::size_t &size)
     {
         using
         enum CType;
@@ -57,7 +57,7 @@ namespace flexMC
         types_.pop_back();
     }
 
-    size_t Operands::maxSize(const CType &type) const
+    std::size_t Operands::maxSize(const CType &type) const
     {
         switch (type)
         {
@@ -71,7 +71,7 @@ namespace flexMC
 
     }
 
-    CalcStacks::CalcStacks(const size_t &s_size, const size_t &v_size, const size_t &d_size, const size_t &d_l_size)
+    CalcStacks::CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size, const std::size_t &d_l_size)
     {
         scalars_.reserve(s_size);
         vectors_.reserve(v_size);
@@ -80,7 +80,7 @@ namespace flexMC
     }
 
 
-    size_t CalcStacks::size(const CType &type) const
+    std::size_t CalcStacks::size(const CType &type) const
     {
         using
         enum CType;
@@ -104,7 +104,7 @@ namespace flexMC
     {
         using
         enum CType;
-        size_t not_ready{0};
+        std::size_t not_ready{0};
         not_ready += size(scalar);
         not_ready += size(vector);
         not_ready += size(date);

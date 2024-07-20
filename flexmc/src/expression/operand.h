@@ -15,7 +15,7 @@ namespace flexMC
 
     double compileNumber(const Token &token, Operands &stacks, MaybeError &report);
 
-    CType compileVector(const size_t &num_args, Operands &stacks, MaybeError &report);
+    CType compileVector(const std::size_t &num_args, Operands &stacks, MaybeError &report);
 
     class Number final : public PostFixItem
     {
@@ -38,14 +38,14 @@ namespace flexMC
 
     public:
 
-        explicit Vector(const size_t &size) : size_(size)
+        explicit Vector(const std::size_t &size) : size_(size)
         {}
 
         void evaluate(CalcStacks &stacks) override;
 
     private:
 
-        const size_t size_;
+        const std::size_t size_;
 
     };
 

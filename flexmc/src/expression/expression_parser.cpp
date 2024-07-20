@@ -144,7 +144,7 @@ namespace flexMC
                 operator_t = operators.back().type;
             }
             Token l_paren = operators.back();
-            size_t num_args = l_paren.context.num_args + 1;
+            std::size_t num_args = l_paren.context.num_args + 1;
             if (l_paren.context.is_infix)
             {
                 postfix.push_back(Tokens::makeCall(num_args, tok.start));

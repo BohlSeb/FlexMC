@@ -21,7 +21,7 @@ namespace flexMC
 
     private:
 
-        std::pair<Token, std::string> nextTok(const std::string_view suffix, const size_t &line_no);
+        std::pair<Token, std::string> nextTok(const std::string_view suffix, const std::size_t &line_no);
 
         std::regex groups_1_;
         std::regex groups_2_;
