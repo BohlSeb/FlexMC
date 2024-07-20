@@ -1,6 +1,5 @@
 #include <cassert>
 #include <stdexcept>
-#include <iostream>
 
 #include "operand.h"
 #include "calc_types.h"
