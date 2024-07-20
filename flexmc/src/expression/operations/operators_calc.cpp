@@ -14,11 +14,10 @@ namespace flexMC
         return look_up != operatorsCalc::binary::symbols.end();
     }
 
-    Operands::Type
-    operatorsCalc::unary::compileArgument(const std::string &symbol, const Operands &stacks, MaybeError &report)
+    CType operatorsCalc::unary::compileArgument(const std::string &symbol, const Operands &stacks, MaybeError &report)
     {
         using
-        enum Operands::Type;
+        enum CType;
         assert(stacks.tSize() >= 1);
         if (symbol != flexMC::MINUS)
         {
@@ -26,12 +25,12 @@ namespace flexMC
             report.setMessage(msg);
             return undefined;
         }
-        const Operands::Type t = stacks.typesBack();
+        const CType t = stacks.typesBack();
         if ((t == date) || (t == dateList))
         {
             auto msg = fmt::format(R"(Unary operator "{}" does not support operand type: "{}")",
                                    symbol,
-                                   Operands::type2Str(t));
+                                   cType2Str(t));
             report.setMessage(msg);
             return undefined;
         }
@@ -40,7 +39,7 @@ namespace flexMC
 
     void operatorsCalc::unary::scMinus(CalcStacks &stacks)
     {
-        assert(stacks.size(Operands::Type::scalar) >= 1);
+        assert(stacks.size(CType::scalar) >= 1);
         auto res = stacks.scalarsBack() * -1;
         stacks.popScalar();
         stacks.pushScalar(res);
@@ -48,7 +47,7 @@ namespace flexMC
 
     void operatorsCalc::unary::vecMinus(CalcStacks &stacks)
     {
-        assert(stacks.size(Operands::Type::vector) >= 1);
+        assert(stacks.size(CType::vector) >= 1);
         std::vector<double> &back = stacks.vectorsBack();
         std::ranges::transform(back, back.begin(), std::negate<double>());
     }
@@ -56,27 +55,28 @@ namespace flexMC
     std::string
     operatorsCalc::binary::compileArgumentsAndKey(const std::string &symbol, Operands &stacks, MaybeError &report)
     {
-        using enum Operands::Type;
+        using
+        enum CType;
         assert(stacks.tSize() >= 2);
-        const Operands::Type right_t = stacks.typesBack();
+        const CType right_t = stacks.typesBack();
         size_t maybe_right_s = 0;
         if ((right_t == vector) || (right_t == dateList))
         {
             maybe_right_s += stacks.sizesBack();
         }
         stacks.popType();
-        const Operands::Type left_t = stacks.typesBack();
+        const CType left_t = stacks.typesBack();
 
         if ((left_t == date) || (left_t == dateList))
         {
-            const std::string t_ = Operands::type2Str(left_t);
+            const std::string t_ = cType2Str(left_t);
             auto msg = fmt::format(R"(Binary operator "{}" does not support left operand type: "{}")", symbol, t_);
             report.setMessage(msg);
             return "";
         }
         if ((right_t == date) || (right_t == dateList))
         {
-            const std::string t_ = Operands::type2Str(right_t);
+            const std::string t_ = cType2Str(right_t);
             auto msg = fmt::format(R"(Binary operator "{}" does not support right operand type: "{}")", symbol, t_);
             report.setMessage(msg);
             return "";
@@ -120,10 +120,10 @@ namespace flexMC
 
     std::string operatorsCalc::binary::makeKey(
             const std::string &symbol,
-            const Operands::Type &left_t,
-            const Operands::Type &right_t)
+            const CType &left_t,
+            const CType &right_t)
     {
-        return symbol + Operands::type2Str(left_t) + Operands::type2Str(right_t);
+        return symbol + cType2Str(left_t) + cType2Str(right_t);
     }
 
     std::function<void(CalcStacks &)> operatorsCalc::binary::get(const std::string &key)

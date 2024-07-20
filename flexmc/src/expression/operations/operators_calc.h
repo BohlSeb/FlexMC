@@ -9,6 +9,7 @@
 
 #include "utils.h"
 #include "terminals.h"
+#include "calc_types.h"
 #include "language_error.h"
 #include "expression_stacks.h"
 
@@ -22,7 +23,7 @@ namespace flexMC::operatorsCalc
     namespace unary
     {
 
-        Operands::Type compileArgument(const std::string &symbol, const Operands &stacks, MaybeError &report);
+        CType compileArgument(const std::string &symbol, const Operands &stacks, MaybeError &report);
 
         void scMinus(CalcStacks &stacks);
 
@@ -44,7 +45,7 @@ namespace flexMC::operatorsCalc
 
         std::function<void(CalcStacks &)> get(const std::string &key);
 
-        std::string makeKey(const std::string &symbol, const Operands::Type &left_t, const Operands::Type &right_t);
+        std::string makeKey(const std::string &symbol, const CType &left_t, const CType &right_t);
 
         template<class binary_operator>
         void scSc(CalcStacks &stacks, const binary_operator f)
@@ -87,7 +88,7 @@ namespace flexMC::operatorsCalc
         template<class binary_operator>
         void vecVec(CalcStacks &stacks, binary_operator f)
         {
-            assert(stacks.size(Operands::Type::vector) >= 2);
+            assert(stacks.size(CType::vector) >= 2);
             const std::vector<double> &right = stacks.vectorsBack();
             std::vector<double> &left = stacks.vectorsBeforeBack();
             std::ranges::transform(
@@ -101,7 +102,7 @@ namespace flexMC::operatorsCalc
         }
 
         using
-        enum Operands::Type;
+        enum CType;
 
         const std::unordered_map<std::string, std::function<void(CalcStacks &)>, SHash, std::equal_to<>> operators = {
                 {

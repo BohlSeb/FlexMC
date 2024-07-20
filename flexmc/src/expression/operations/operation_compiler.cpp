@@ -38,13 +38,13 @@ namespace flexMC
                                             MaybeError &report)
     {
         assert(stacks.tSize() >= num_args);
-        const Operands::Type arg_type = stacks.tSize() > 0 ? stacks.typesBack() : Operands::Type::scalar;
+        const CType arg_type = stacks.tSize() > 0 ? stacks.typesBack() : CType::scalar;
         assertNumberOfArgs(function, 1, num_args, arg_type, report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
-        const Operands::Type return_type = functionsReal::compileArgType(function, arg_type, report);
+        const CType return_type = functionsReal::compileArgType(function, arg_type, report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
@@ -61,15 +61,15 @@ namespace flexMC
                                             MaybeError &report)
     {
         using
-        enum Operands::Type;
+        enum CType;
         assert(stacks.tSize() >= num_args);
-        const Operands::Type dummy_arg_type = stacks.tSize() > 0 ? stacks.typesBack() : Operands::Type::scalar;
+        const CType dummy_arg_type = stacks.tSize() > 0 ? stacks.typesBack() : scalar;
         assertNumberOfArgs(function, 1, 0, num_args, dummy_arg_type, report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
-        const Operands::Type arg_type = functionsReal::compileArgType(function, stacks.typesBack(), report);
+        const CType arg_type = functionsReal::compileArgType(function, stacks.typesBack(), report);
         if (report.isError())
         {
             return Operation(std::function<void(CalcStacks &)>({}));
@@ -113,13 +113,13 @@ namespace flexMC
     void functionCompiler::assertNumberOfArgs(const Token &function,
                                               const size_t &expected,
                                               const size_t &num_args,
-                                              const Operands::Type &arg_type,
+                                              const CType &arg_type,
                                               MaybeError &report)
     {
         if (expected != num_args)
         {
             auto msg = fmt::format(R"(Function "{}" with argument type <{}> takes exactly {} argument(s), got {})",
-                                   function.value, Operands::type2Str(arg_type), expected, num_args);
+                                   function.value, cType2Str(arg_type), expected, num_args);
             report.setError(msg, function.start, function.size);
         }
     }
@@ -128,7 +128,7 @@ namespace flexMC
                                               const size_t &min_args,
                                               const size_t &max_args,
                                               const size_t &num_args,
-                                              const Operands::Type &arg_type,
+                                              const CType &arg_type,
                                               MaybeError &report)
     {
         if ((num_args < min_args) || ((max_args > 0) && (num_args > max_args)))
@@ -138,14 +138,14 @@ namespace flexMC
             {
                 msg = fmt::format(
                         R"(Function "{}" with argument type <{}> takes between {} and {} argument(s), got {})",
-                        function.value, Operands::type2Str(arg_type), min_args, max_args, num_args
+                        function.value, cType2Str(arg_type), min_args, max_args, num_args
                 );
             }
             else
             {
                 msg = fmt::format(
                         R"(Function "{}" with argument type <{}> takes at least {} argument(s), got {})",
-                        function.value, Operands::type2Str(arg_type), min_args, num_args
+                        function.value, cType2Str(arg_type), min_args, num_args
                 );
             }
             report.setError(msg, function.start, function.size);
@@ -169,14 +169,14 @@ namespace flexMC
         if (token.context.is_prefix && operatorsCalc::isBinarySymbol(token.value))
         {
             // reports error if symbol != MINUS, expression compiler ignores PLUS before
-            const Operands::Type t = operatorsCalc::unary::compileArgument(token.value, stacks, report);
+            const CType t = operatorsCalc::unary::compileArgument(token.value, stacks, report);
             if (report.isError())
             {
                 report.setPosition(token.start, token.size);
                 return Operation(std::function<void(CalcStacks &)>({}));
             }
-            assert(t == Operands::Type::scalar || t == Operands::Type::vector);
-            if (t == Operands::Type::scalar)
+            assert(t == CType::scalar || t == CType::vector);
+            if (t == CType::scalar)
             {
                 return Operation(std::function<void(CalcStacks &)>(operatorsCalc::unary::scMinus));
             }

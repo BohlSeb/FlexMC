@@ -1,12 +1,15 @@
 #include <cassert>
 #include <stdexcept>
+#include <iostream>
+
 #include "operand.h"
+#include "calc_types.h"
 
 
 namespace flexMC
 {
 
-    double compileNumber(const Token& token, Operands &stacks, MaybeError &report)
+    double compileNumber(const Token &token, Operands &stacks, MaybeError &report)
     {
         double value_{1.0};
         try
@@ -18,17 +21,18 @@ namespace flexMC
         }
         if (!report.isError())
         {
-            stacks.pushType(Operands::Type::scalar);
+            stacks.pushType(CType::scalar);
         }
         return value_;
     }
 
-    Operands::Type compileVector(const size_t &num_args, Operands &stacks, MaybeError &report)
+    CType compileVector(const size_t &num_args, Operands &stacks, MaybeError &report)
     {
         assert(num_args > 0);
         assert(stacks.tSize() >= num_args);
-        using enum Operands::Type;
-        const Operands::Type last_t = stacks.typesBack();
+        using
+        enum CType;
+        const CType last_t = stacks.typesBack();
         if ((last_t == dateList) || (last_t == vector))
         {
             report.setMessage("List cannot not contain another list (Matrices not allowed)");
@@ -53,7 +57,7 @@ namespace flexMC
 
     void Vector::evaluate(CalcStacks &stacks)
     {
-        assert(stacks.size(Operands::Type::scalar) >= size_);
+        assert(stacks.size(CType::scalar) >= size_);
         std::vector<double> res(stacks.scalarsEnd() - size_, stacks.scalarsEnd());
         for (size_t i{0}; i < size_; ++i)
         {
