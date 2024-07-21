@@ -1,4 +1,4 @@
-name: MSVC build
+name: MSVC Benchmark Test
 on: [pull_request, workflow_dispatch]
 
 # Workaround for
@@ -13,10 +13,6 @@ on: [pull_request, workflow_dispatch]
 jobs:
 
   windows-msvc:
-    strategy:
-      matrix:
-        preset: [windows-msvc-debug, windows-msvc-release]
-
     runs-on: windows-latest
 
     steps:
@@ -25,12 +21,12 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
 
       - name: configure
-        run: cmake --preset ${{ matrix.preset }}
+        run: cmake --preset windows-msvc-release
 
       - name: build
-        working-directory: out/build/${{ matrix.preset }}
+        working-directory: out/build/windows-msvc-release
         run: cmake --build .
 
       - name: benchmark
-        working-directory: out/build/${{ matrix.preset }}/benchmarking/src
-        run: benchmarking.exe
+        working-directory: out/build/windows-msvc-release/benchmarking/src
+        run: .\benchmarking.exe
