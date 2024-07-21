@@ -16,3 +16,4 @@ target_compile_options(flexmc_compiler_flags INTERFACE
 add_subdirectory(flexmc)
 add_subdirectory(app)
 add_subdirectory(tests)
+add_subdirectory(benchmarking)

@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <ranges>
 
 #include "static_variables.h"
 
@@ -62,10 +63,26 @@ TEST(StaticVStorage, SetGetUnused)
     ASSERT_EQ(CType::date, storage.cType(d_l_name));
     ASSERT_EQ(CType::dateList, storage.cType(s_name));
 
-    [[maybe_unused]] SCALAR s_get_ = storage.get<SCALAR>(v_name);
-    [[maybe_unused]] VECTOR v_get_ = storage.get<VECTOR>(d_name);
-    [[maybe_unused]] DATE d_get_ = storage.get<DATE>(d_l_name);
-    [[maybe_unused]] DATE_LIST d_l_get_ = storage.get<DATE_LIST>(s_name);
+    SCALAR s_get_ = storage.get<SCALAR>(v_name);
+    VECTOR v_get_ = storage.get<VECTOR>(d_name);
+    DATE d_get_ = storage.get<DATE>(d_l_name);
+    DATE_LIST d_l_get_ = storage.get<DATE_LIST>(s_name);
+
+    ASSERT_DOUBLE_EQ(s_get_, s);
+
+    ASSERT_EQ(v_get_.size(), v.size());
+    for (const auto &[value, expected]: std::ranges::zip_view(v_get_, v))
+    {
+        ASSERT_DOUBLE_EQ(value, expected);
+    }
+
+    ASSERT_EQ(d_get_, d);
+
+    ASSERT_EQ(d_l_get_.size(), d_l.size());
+    for (const auto &[value, expected]: std::ranges::zip_view(d_l_get_, d_l))
+    {
+        ASSERT_EQ(value, expected);
+    }
 
     ASSERT_EQ(0, storage.unused().size());
 }
