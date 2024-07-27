@@ -23,7 +23,7 @@ jobs:
         run: cmake --preset linux-gcc-release
 
       - name: build
-        working-directory: out/build/linux-gcc-releasee
+        working-directory: out/build/linux-gcc-release
         run: cmake --build .
 
       - name: benchmark
