@@ -13,20 +13,19 @@ on: [pull_request, workflow_dispatch]
 jobs:
 
   windows-msvc:
-    runs-on: windows-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
       - uses: seanmiddleditch/gha-setup-ninja@master
-      - uses: ilammy/msvc-dev-cmd@v1
 
       - name: configure
         run: cmake --preset windows-msvc-release
 
       - name: build
-        working-directory: out/build/windows-msvc-release
+        working-directory: out/build/linux-gcc-release
         run: cmake --build .
 
       - name: benchmark
-        working-directory: out/build/windows-msvc-release/benchmarking/src
+        working-directory: out/build/linux-gcc-release/benchmarking/src
         run: .\benchmarking.exe
