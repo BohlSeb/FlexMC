@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <utility>
 #include <cassert>
@@ -75,14 +74,11 @@ const std::vector<std::string> VECTOR_REDUCE_EXPRESSIONS = {
 };
 
 
-// Find out how to pass vector<Expression > to the benchmark function to void the below
-
-
 static void BM_Scalars(benchmark::State &state)
 {
     std::vector<Expression> expressions(5);
     const auto report = parseExpressions(SCALAR_EXPRESSIONS, expressions);
-    CalcStacks stacks{report.max_scalar, report.max_scalar, 0, 0};
+    CalcStacks stacks{report.max_scalar, report.max_vector, 0, 0};
     for (auto _: state)
     {
         for (const auto &exp: expressions)
@@ -101,7 +97,7 @@ static void BM_Vectors(benchmark::State &state)
 {
     std::vector<Expression> expressions(5);
     const auto report = parseExpressions(VECTOR_EXPRESSIONS, expressions);
-    CalcStacks stacks{report.max_scalar, report.max_scalar, 0, 0};
+    CalcStacks stacks{report.max_scalar, report.max_vector, 0, 0};
     for (auto _: state)
     {
         for (const auto &exp: expressions)
@@ -120,7 +116,7 @@ static void BM_ReduceScalars(benchmark::State &state)
 {
     std::vector<Expression> expressions(6);
     const auto report = parseExpressions(SCALAR_REDUCE_EXPRESSIONS, expressions);
-    CalcStacks stacks{report.max_scalar, report.max_scalar, 0, 0};
+    CalcStacks stacks{report.max_scalar, report.max_vector, 0, 0};
     for (auto _: state)
     {
         for (const auto &exp: expressions)
@@ -139,7 +135,7 @@ static void BM_ReduceVectors(benchmark::State &state)
 {
     std::vector<Expression> expressions(6);
     const auto report = parseExpressions(VECTOR_REDUCE_EXPRESSIONS, expressions);
-    CalcStacks stacks{report.max_scalar, report.max_scalar, 0, 0};
+    CalcStacks stacks{report.max_scalar, report.max_vector, 0, 0};
     for (auto _: state)
     {
         for (const auto &exp: expressions)
