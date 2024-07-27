@@ -28,4 +28,4 @@ jobs:
 
       - name: benchmark
         working-directory: out/build/linux-gcc-release/benchmarking/src
-        run: benchmarking
+        run: ./benchmarking
