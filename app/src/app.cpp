@@ -20,11 +20,6 @@
 
 using namespace flexMC;
 
-template<class T>
-struct MyMap {
-    std::unordered_map<std::string, T> data;
-};
-
 
 int main()
 {
@@ -46,37 +41,8 @@ int main()
     storage.insert<SCALAR>("x", 30.0);
     storage.insert<SCALAR>("z", 40.0);
 
-    std::cout << cType2Str(storage.cType("x")) << std::endl;
 
-    std::cout << storage.get<SCALAR>("x") << std::endl;
-    std::cout << storage.get<SCALAR>("z") << std::endl;
-
-    std::cout << std::boolalpha << storage.containsUnused() << std::endl;
-
-//    storage.insert("x", 2);
-//    storage.insert("y", 3);
-//    storage.insert("z", 4);
-//    storage.insert("myVec", values);
-
-//    std::cout << cType2Str(storage.type("x")) << std::endl;
-//
-//    double value_ = storage.getScalar("x");
-//
-//    const std::vector<double> vector_used = storage.getVector("myVec");
-//
-//    std::cout << "Unused:" << std::endl;
-//    for (const auto &[key, val]: storage.unused())
-//    {
-//        std::cout << key << ": " << "<" << cType2Str(val) << ">" << std::endl;
-//    }
-//    std::cout << "Unused end" << std::endl;
-//
-//
-//    auto vector_used_final = storage.getVector("myVec");
-//    std::cout << "Size: " << vector_used_final.size() << std::endl;
-
-
-    const bool run_main = false;
+    const bool run_main = true;
     if (run_main)
     {
 
@@ -84,7 +50,7 @@ int main()
          * "3[(3]"
          */
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "EXP(0.0)";
+        const std::string program_err = "(1000 / 3) * (7 - (4 + 1)) * 2 + 10 / 2";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -114,7 +80,6 @@ int main()
                 {
                     std::cout << token.toString() << " ";
                 }
-                std::cout << std::endl;
                 Expression expression;
                 const std::pair<const MaybeError, const CompileReport> reports = compileExpression(parsed, expression);
 
@@ -130,7 +95,7 @@ int main()
 
                     CalcStacks c_stacks(0, 0, 0, 0);
 
-                    expression.evaluate(c_stacks);
+                    expression(c_stacks);
                     if (c_stacks.size(CType::scalar) == 1)
                     {
                         std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
@@ -164,18 +129,12 @@ int main()
             {
                 std::cout << "Error:" << std::endl;
                 std::cout << error.what() << std::endl;
-                //throw error;
             }
 
 
         }
 
         std::vector<Token> parsed = std::get<1>(parse_result);
-
-
-//		auto parser = ExpressionParser(lexer);
-//
-
 
     }
 

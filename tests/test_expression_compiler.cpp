@@ -75,7 +75,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
         const auto [error_report, compile_report] = compileExpression(postfix, expression);
         ASSERT_FALSE(error_report.isError());
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
-        expression.evaluate(c_stacks);
+        expression(c_stacks);
 
         const double result = c_stacks.scalarsBack();
         c_stacks.popScalar();
@@ -96,7 +96,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
     {
         for (const auto &expression: expressions)
         {
-            expression.evaluate(c_stacks);
+            expression(c_stacks);
             c_stacks.popScalar();
             ASSERT_TRUE(c_stacks.ready());
         }
@@ -162,7 +162,7 @@ TEST(ExpressionCompiler, RealOperatorsVector)
         ASSERT_FALSE(error_report.isError());
 
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
-        expression.evaluate(c_stacks);
+        expression(c_stacks);
 
         vec result = c_stacks.vectorsBack();
         c_stacks.popVector();
@@ -184,7 +184,7 @@ TEST(ExpressionCompiler, RealOperatorsVector)
     {
         for (const auto &expression: expressions)
         {
-            expression.evaluate(c_stacks);
+            expression(c_stacks);
             c_stacks.popVector();
             ASSERT_TRUE(c_stacks.ready());
         }
@@ -238,7 +238,7 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
         ASSERT_FALSE(error_report.isError());
 
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
-        expression.evaluate(c_stacks);
+        expression(c_stacks);
 
         const double result = c_stacks.scalarsBack();
         c_stacks.popScalar();
@@ -259,7 +259,7 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
     {
         for (const auto &expression: expressions)
         {
-            expression.evaluate(c_stacks);
+            expression(c_stacks);
             c_stacks.popScalar();
             ASSERT_TRUE(c_stacks.ready());
         }

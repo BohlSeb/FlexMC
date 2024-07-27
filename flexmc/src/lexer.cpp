@@ -8,7 +8,8 @@
 namespace flexMC
 {
 
-    Lexer::Lexer() {
+    Lexer::Lexer()
+    {
 
         std::string all_groups_1 = "(";
         for (const auto &s: R_GROUPS_1)
@@ -50,21 +51,22 @@ namespace flexMC
 
     std::pair<Token, std::string> Lexer::nextTok(const std::string_view suffix, const std::size_t &line_no)
     {
-        using type = Token::Type;
+        using
+        enum Token::Type;
 
         if (suffix.empty())
         {
-            return std::make_pair(Token(type::eof, "", line_no), "");
+            return std::make_pair(Token(eof, "", line_no), "");
         }
         if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, id_))
         {
-            auto t = Token(type::id, match_.str(), line_no);
+            auto t = Token(id, match_.str(), line_no);
             return std::make_pair(t, match_.suffix());
         }
 
         if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, num_))
         {
-            auto t = Token(type::num, match_.str(), line_no);
+            auto t = Token(num, match_.str(), line_no);
             return std::make_pair(t, match_.suffix());
         }
 
@@ -77,7 +79,7 @@ namespace flexMC
         {
             return std::make_pair(Tokens::makeContextualized(match_.str(), line_no), match_.suffix());
         }
-        return std::make_pair(Token(type::undefined, suffix.data(), line_no), suffix.data());
+        return std::make_pair(Token(undefined, suffix.data(), line_no), suffix.data());
     }
 
 }

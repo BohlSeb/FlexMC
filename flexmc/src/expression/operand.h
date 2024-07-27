@@ -15,33 +15,21 @@ namespace flexMC
 
     double compileNumber(const Token &token, Operands &stacks, MaybeError &report);
 
+    Operation compileNumberOperation(const double& value);
+
     CType compileVector(const std::size_t &num_args, Operands &stacks, MaybeError &report);
 
-    class Number final : public PostFixItem
+    Operation compileVectorOperation(const std::size_t &size);
+
+    class VectorAppend
     {
 
     public:
 
-        explicit Number(double value) : value_(value)
+        explicit VectorAppend(const std::size_t &size) : size_(size)
         {}
 
-        void evaluate(CalcStacks &stacks) override;
-
-    private:
-
-        const double value_;
-
-    };
-
-    class Vector final : public PostFixItem
-    {
-
-    public:
-
-        explicit Vector(const std::size_t &size) : size_(size)
-        {}
-
-        void evaluate(CalcStacks &stacks) override;
+        void operator()(CalcStacks& stacks) const;
 
     private:
 

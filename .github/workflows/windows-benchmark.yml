@@ -1,0 +1,32 @@
+name: MSVC Benchmark Test
+on: [pull_request, workflow_dispatch]
+
+# Workaround for
+#  CMake Error at CMakeLists.txt:2 (project):
+#  The CMAKE_CXX_COMPILER:
+#
+#    cl.exe
+#
+#  is not a full path and was not found in the PATH.  Perhaps the extension is
+#  missing?
+
+jobs:
+
+  windows-msvc:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: seanmiddleditch/gha-setup-ninja@master
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: configure
+        run: cmake --preset windows-msvc-release
+
+      - name: build
+        working-directory: out/build/windows-msvc-release
+        run: cmake --build .
+
+      - name: benchmark
+        working-directory: out/build/windows-msvc-release/benchmarking/src
+        run: .\benchmarking.exe

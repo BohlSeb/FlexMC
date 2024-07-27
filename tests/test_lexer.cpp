@@ -112,7 +112,7 @@ TEST(Lexer, ValidKeywordsAndSymbols)
     Lexer lexer;
     std::deque<Token> tokens = lexer.tokenize(testStr);
     EXPECT_EQ(expected.size(), tokens.size());
-    for (const auto [exp, res]: std::ranges::zip_view(expected, tokens))
+    for (const auto &[exp, res]: std::ranges::zip_view(expected, tokens))
     {
         EXPECT_EQ(exp.toString(), res.toString());
     }
@@ -291,7 +291,7 @@ TEST(Lexer, ValidNumbersAndIdentifiers)
     Lexer lexer;
     std::deque<Token> tokens = lexer.tokenize(testStr);
     EXPECT_EQ(expected.size(), tokens.size());
-    for (const auto [exp, res]: std::ranges::zip_view(expected, tokens))
+    for (const auto &[exp, res]: std::ranges::zip_view(expected, tokens))
     {
         EXPECT_EQ(exp.toString(), res.toString());
     }

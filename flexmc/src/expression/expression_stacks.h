@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <functional>
 
 #include "tokens.h"
 #include "calc_types.h"
@@ -14,7 +15,7 @@ namespace flexMC
 
     public:
 
-        [[nodiscard]] bool haveCompiled() const
+        bool haveCompiled() const
         { return ((types_.size() == 1) && (functions_.empty())); }
 
         void pushType(const CType &type);
@@ -23,28 +24,28 @@ namespace flexMC
 
         void pushArray(const CType &type, const std::size_t &size);
 
-        [[nodiscard]] CType typesBack() const
+        CType typesBack() const
         { return types_.back(); }
 
-        [[nodiscard]] std::size_t sizesBack() const
+        std::size_t sizesBack() const
         { return vector_sizes_.back(); }
 
         void pushFunc(const Token &token)
         { functions_.push_back(token); }
 
-        [[nodiscard]] Token funcsBack() const
+        Token funcsBack() const
         { return functions_.back(); }
 
         void popFunc()
         { functions_.pop_back(); }
 
-        [[nodiscard]] std::size_t tSize() const
+        std::size_t tSize() const
         { return types_.size(); }
 
-        [[nodiscard]] std::size_t fSize() const
+        std::size_t fSize() const
         { return functions_.size(); }
 
-        [[nodiscard]] std::size_t maxSize(const CType &type) const;
+        std::size_t maxSize(const CType &type) const;
 
     private:
 
@@ -69,7 +70,8 @@ namespace flexMC
 
     public:
 
-        CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size, const std::size_t &d_l_size);
+        CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size,
+                   const std::size_t &d_l_size);
 
         bool ready() const;
 
@@ -135,15 +137,20 @@ namespace flexMC
 
     };
 
-    class PostFixItem
+    class Operation
     {
 
     public:
 
-        virtual ~PostFixItem() = default;
+        explicit Operation(const std::function<void(CalcStacks & stacks)> &call_back) : call_back_(call_back)
+        {}
 
-        virtual void evaluate(CalcStacks & /* stacks */)
-        { /* evaluate operands on the stack */ }
+        void operator()(CalcStacks &stacks) const
+        { call_back_(stacks); }
+
+    private:
+
+        const std::function<void(CalcStacks & stacks)> call_back_;
 
     };
 
