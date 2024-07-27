@@ -4,7 +4,6 @@
 #include "calc_types.h"
 #include "language_error.h"
 #include "expression_stacks.h"
-#include "operation.h"
 
 namespace flexMC
 {

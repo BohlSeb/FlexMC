@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include <utility>
 
 #include "tokens.h"
@@ -18,15 +17,14 @@ namespace flexMC
 
     public:
 
-        template<class T>
-        inline void addItem(T item)
-        { items_.emplace_back(std::make_unique<T>(std::move(item))); }
+        void push_back(const Operation& operation)
+        { items_.push_back(operation); }
 
-        void evaluate(CalcStacks &stacks) const;
+        void operator()(CalcStacks & stacks) const;
 
     private:
 
-        std::vector<std::unique_ptr<PostFixItem>> items_;
+        std::vector<Operation> items_;
 
     };
 

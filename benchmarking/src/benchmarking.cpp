@@ -83,7 +83,7 @@ static void BM_Scalars(benchmark::State &state)
     {
         for (const auto &exp: expressions)
         {
-            exp.evaluate(stacks);
+            exp(stacks);
             auto result = stacks.scalarsBack();
             benchmark::DoNotOptimize(result);
             stacks.popScalar();
@@ -102,7 +102,7 @@ static void BM_Vectors(benchmark::State &state)
     {
         for (const auto &exp: expressions)
         {
-            exp.evaluate(stacks);
+            exp(stacks);
             auto result = stacks.vectorsBack();
             benchmark::DoNotOptimize(result);
             stacks.popVector();
@@ -121,7 +121,7 @@ static void BM_ReduceScalars(benchmark::State &state)
     {
         for (const auto &exp: expressions)
         {
-            exp.evaluate(stacks);
+            exp(stacks);
             auto result = stacks.scalarsBack();
             benchmark::DoNotOptimize(result);
             stacks.popScalar();
@@ -140,7 +140,7 @@ static void BM_ReduceVectors(benchmark::State &state)
     {
         for (const auto &exp: expressions)
         {
-            exp.evaluate(stacks);
+            exp(stacks);
             auto result = stacks.scalarsBack();
             benchmark::DoNotOptimize(result);
             stacks.popScalar();

@@ -25,6 +25,12 @@ namespace flexMC
         return value_;
     }
 
+    Operation compileNumberOperation(const double &value)
+    {
+        return Operation([value](CalcStacks &stacks)
+                         { stacks.pushScalar(value); });
+    }
+
     CType compileVector(const std::size_t &num_args, Operands &stacks, MaybeError &report)
     {
         assert(num_args > 0);
@@ -51,10 +57,14 @@ namespace flexMC
         return last_t;
     }
 
-    void Number::evaluate(CalcStacks &stacks)
-    { stacks.pushScalar(value_); }
+    Operation compileVectorOperation(const std::size_t &size)
+    {
+        const VectorAppend v{size};
+        return Operation([v](CalcStacks &stacks)
+                         { v(stacks); });
+    }
 
-    void Vector::evaluate(CalcStacks &stacks)
+    void VectorAppend::operator()(CalcStacks &stacks) const
     {
         assert(stacks.size(CType::scalar) >= size_);
         std::vector<double> res(stacks.scalarsEnd() - size_, stacks.scalarsEnd());

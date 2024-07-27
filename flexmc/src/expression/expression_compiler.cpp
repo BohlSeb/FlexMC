@@ -9,11 +9,10 @@
 namespace flexMC
 {
 
-    void Expression::evaluate(CalcStacks &stacks) const
-    {
+    void Expression::operator()(CalcStacks & stacks) const {
         for (const auto &item: items_)
         {
-            item->evaluate(stacks);
+            item(stacks);
         }
     }
 
@@ -51,10 +50,10 @@ namespace flexMC
             const Token::Type t = tok.type;
             if (t == Token::Type::num)
             {
-                double v = compileNumber(tok, operands, report);
+                const double v = compileNumber(tok, operands, report);
                 if (!report.isError())
                 {
-                    expression.addItem<Number>(Number(v));
+                    expression.push_back(compileNumberOperation(v));
                 }
             }
             else if (t == Token::Type::fun)
@@ -66,7 +65,7 @@ namespace flexMC
                 Operation function = functionCompiler::compile(tok.context.num_args, operands, report);
                 if (!report.isError())
                 {
-                    expression.addItem<Operation>(function);
+                    expression.push_back(function);
                 }
             }
             else if (t == Token::Type::append_)
@@ -78,8 +77,7 @@ namespace flexMC
                 }
                 else if (elem_t == CType::scalar)
                 {
-                    auto v = Vector(tok.context.num_args);
-                    expression.addItem<Vector>(v);
+                    expression.push_back(compileVectorOperation(tok.context.num_args));
                 }
             }
             else if ((t == Token::Type::op) && !(tok.value == flexMC::PLUS && tok.context.is_prefix))
@@ -87,7 +85,7 @@ namespace flexMC
                 Operation op = operatorCompiler::compile(tok, operands, report);
                 if (!report.isError())
                 {
-                    expression.addItem<Operation>(op);
+                    expression.push_back(op);
                 }
             }
         }

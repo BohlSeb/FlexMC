@@ -81,7 +81,7 @@ void scalarOperations() {
 		int trys = 10;
 		// double average = 0.0;
 		for (int i = 0; i < trys; ++i) {
-			expression.evaluate(c_stacks);
+			expression(c_stacks);
 			// average += c_stacks.scalarsBack() / trys;
 			c_stacks.popScalar();
             assert(c_stacks.ready());

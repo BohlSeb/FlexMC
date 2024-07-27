@@ -95,7 +95,7 @@ int main()
 
                     CalcStacks c_stacks(0, 0, 0, 0);
 
-                    expression.evaluate(c_stacks);
+                    expression(c_stacks);
                     if (c_stacks.size(CType::scalar) == 1)
                     {
                         std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
@@ -129,18 +129,12 @@ int main()
             {
                 std::cout << "Error:" << std::endl;
                 std::cout << error.what() << std::endl;
-                //throw error;
             }
 
 
         }
 
         std::vector<Token> parsed = std::get<1>(parse_result);
-
-
-//		auto parser = ExpressionParser(lexer);
-//
-
 
     }
 
