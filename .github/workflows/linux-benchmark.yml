@@ -1,4 +1,4 @@
-name: MSVC Benchmark Test
+name: Linux Benchmark Test
 on: [pull_request, workflow_dispatch]
 
 # Workaround for
@@ -20,10 +20,10 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: configure
-        run: cmake --preset windows-msvc-release
+        run: cmake --preset linux-gcc-release
 
       - name: build
-        working-directory: out/build/linux-gcc-release
+        working-directory: out/build/linux-gcc-releasee
         run: cmake --build .
 
       - name: benchmark
