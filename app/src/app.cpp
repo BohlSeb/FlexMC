@@ -41,6 +41,12 @@ int main()
     storage.insert<SCALAR>("x", 30.0);
     storage.insert<SCALAR>("z", 40.0);
 
+    Operands empty_stacks;
+    const std::string var = "c";
+    auto [status, maybe_operation] = StaticVCompiler::tryCompile(var, empty_stacks, storage);
+
+    std:: cout << "Found variable " << var << " and compiled it: " << std::boolalpha << (status == StaticVCompiler::Status::found) << "\n";
+
 
     const bool run_main = true;
     if (run_main)
