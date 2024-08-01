@@ -6,6 +6,7 @@
 #include "tokens.h"
 #include "calc_types.h"
 #include "language_error.h"
+#include "static_variables.h"
 #include "expression_stacks.h"
 
 
@@ -17,10 +18,10 @@ namespace flexMC
 
     public:
 
-        void push_back(const Operation& operation)
+        void push_back(const Operation &operation)
         { items_.push_back(operation); }
 
-        void operator()(CalcStacks & stacks) const;
+        void operator()(CalcStacks &stacks) const;
 
     private:
 
@@ -43,6 +44,8 @@ namespace flexMC
 
     };
 
-    std::pair<MaybeError, CompileReport> compileExpression(const std::vector<Token> &post_fix, Expression &expression);
+    // coupling this function with StaticVStorage??
+    std::pair<MaybeError, CompileReport>
+    compileExpression(const std::vector<Token> &post_fix, Expression &expression, StaticVStorage &storage);
 
 }

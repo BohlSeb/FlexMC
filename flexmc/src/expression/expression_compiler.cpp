@@ -5,11 +5,11 @@
 #include "operation_compiler.h"
 #include "expression_compiler.h"
 
-
 namespace flexMC
 {
 
-    void Expression::operator()(CalcStacks & stacks) const {
+    void Expression::operator()(CalcStacks &stacks) const
+    {
         for (const auto &item: items_)
         {
             item(stacks);
@@ -36,8 +36,30 @@ namespace flexMC
         }
     }
 
+    namespace
+    {
+
+        void compileVariable(const Token &tok,
+                             Operands &operands,
+                             Expression &expression,
+                             StaticVStorage &storage,
+                             MaybeError &report)
+        {
+            const auto [s_v_static, optional_v_static] = StaticVCompiler::tryCompile(tok.value, operands, storage);
+            if (s_v_static == StaticVCompiler::Status::found)
+            {
+                expression.push_back(optional_v_static.value());
+            }
+            else
+            {
+                report.setError("Variable is undefined", tok.start, tok.size);
+            }
+        }
+
+    }
+
     std::pair<MaybeError, CompileReport> compileExpression(const std::vector<Token> &post_fix,
-                                                           Expression &expression)
+                                                           Expression &expression, StaticVStorage &storage)
     {
         Operands operands;
         MaybeError report;
@@ -55,6 +77,11 @@ namespace flexMC
                 {
                     expression.push_back(compileNumberOperation(v));
                 }
+            }
+            if (t == Token::Type::id)
+            {
+                compileVariable(tok, operands, expression, storage, report);
+
             }
             else if (t == Token::Type::fun)
             {

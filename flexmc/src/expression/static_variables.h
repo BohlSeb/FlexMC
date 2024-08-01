@@ -41,8 +41,8 @@ namespace flexMC
             eraseOtherTypeIf<T>(name);
             types_[name] = c_type;
             unused_[name] = c_type;
-            std::get<VMap<T>>
-                    (maps_.at(c_type)).data[name] = value;
+            std::get<VMap < T>>
+            (maps_.at(c_type)).data[name] = value;
         }
 
     private:
@@ -140,57 +140,63 @@ namespace flexMC
             stacks.pushArray(c_type, s);
         };
 
+        // Neat way of having template specialized methods which is not trivial (link error in addition to below)
+        // https://stackoverflow.com/questions/3052579/explicit-specialization-in-non-namespace-scope
+        // Answer 2 by Johannes Schaub
+
         template<class T>
-        Operation compile(const std::string &);
+        struct TAlias
+        {
+            using type = T;
+        };
+
+        template<class T>
+        Operation compile(const std::string &name)
+        {
+            return compile_(name, TAlias<T>());
+        }
+
+        template<class T>
+        Operation compile_(const std::string &, TAlias<T>)
+        {
+            static_assert(getCType<T>() != CType::undefined, "No template specialisation for the given type T");
+            return Operation([](const CalcStacks &)
+                             {/* must be overwritten by template specialization */});
+        }
+
+        Operation compile_(const std::string &name, TAlias<SCALAR>)
+        {
+            const SCALAR value = get<SCALAR>(name);
+            return Operation([value](CalcStacks &stacks)
+                             { stacks.pushScalar(value); });
+        }
+
+        Operation compile_(const std::string &name, TAlias<VECTOR>)
+        {
+            const VECTOR value = get<VECTOR>(name);
+            return Operation([value](CalcStacks &stacks)
+                             { stacks.pushVector(value); });
+        }
+
+        Operation compile_(const std::string &name, TAlias<DATE>)
+        {
+            const DATE value = get<DATE>(name);
+            return Operation([value](CalcStacks &stacks)
+                             { stacks.pushDate(value); });
+        }
+
+        Operation compile_(const std::string &name, TAlias<DATE_LIST>)
+        {
+            const DATE_LIST value = get<DATE_LIST>(name);
+            return Operation([value](CalcStacks &stacks)
+                             { stacks.pushDateList(value); });
+        }
 
     };
 
-    // Declaring/defining template specialized methods within class body raises
-    // error: explicit specialization in non-namespace scope 'class flexMC::StaticVStorage',
-    // doing it below instead
-
-    template<class T>
-    Operation StaticVStorage::compile(const std::string &)
-    {
-        static_assert(getCType<T>() != CType::undefined, "No template specialisation for the given type T");
-        return Operation([](const CalcStacks &)
-                         {/* must be overwritten by template specialization */});
-    }
-
-    template<>
-    Operation StaticVStorage::compile<SCALAR>(const std::string &name)
-    {
-        const SCALAR value = get<SCALAR>(name);
-        return Operation([value](CalcStacks &stacks)
-                         { stacks.pushScalar(value); });
-    }
-
-    template<>
-    Operation StaticVStorage::compile<VECTOR>(const std::string &name)
-    {
-        const VECTOR value = get<VECTOR>(name);
-        return Operation([value](CalcStacks &stacks)
-                         { stacks.pushVector(value); });
-    }
-
-    template<>
-    Operation StaticVStorage::compile<DATE>(const std::string &name)
-    {
-        const DATE value = get<DATE>(name);
-        return Operation([value](CalcStacks &stacks)
-                         { stacks.pushDate(value); });
-    }
-
-    template<>
-    Operation StaticVStorage::compile<DATE_LIST>(const std::string &name)
-    {
-        const DATE_LIST value = get<DATE_LIST>(name);
-        return Operation([value](CalcStacks &stacks)
-                         { stacks.pushDateList(value); });
-    }
-
     class StaticVCompiler
     {
+
     public:
 
         enum class Status
@@ -199,8 +205,6 @@ namespace flexMC
             not_found
         };
 
-        // use std::optional
-        // coupling of Operands and StaticVStorage?
         static std::pair<Status, std::optional<Operation>>
         tryCompile(const std::string &name, Operands &stacks, StaticVStorage &storage)
         {
