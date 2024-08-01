@@ -26,3 +26,7 @@ jobs:
     - name: test
       working-directory: out/build/${{ matrix.preset }}/tests
       run: ctest -V
+
+    - name: benchmark
+      working-directory: out/build/${{ matrix.preset }}/benchmarking/src
+      run: ./benchmarking
