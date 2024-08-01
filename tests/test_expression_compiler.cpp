@@ -62,6 +62,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
     std::size_t v_max = 0;
 
     Lexer lexer;
+    StaticVStorage storage;
 
     for (const auto &c: test_data)
     {
@@ -72,7 +73,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
         EXPECT_FALSE(parse_report.isError());
 
         Expression expression;
-        const auto [error_report, compile_report] = compileExpression(postfix, expression);
+        const auto [error_report, compile_report] = compileExpression(postfix, expression, storage);
         ASSERT_FALSE(error_report.isError());
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression(c_stacks);
@@ -147,6 +148,7 @@ TEST(ExpressionCompiler, RealOperatorsVector)
     std::size_t v_max = 0;
 
     Lexer lexer;
+    StaticVStorage storage;
 
     for (const auto &c: test_data)
     {
@@ -157,7 +159,7 @@ TEST(ExpressionCompiler, RealOperatorsVector)
         EXPECT_FALSE(parse_report.isError());
 
         Expression expression;
-        const auto [error_report, compile_report] = compileExpression(postfix, expression);
+        const auto [error_report, compile_report] = compileExpression(postfix, expression, storage);
 
         ASSERT_FALSE(error_report.isError());
 
@@ -223,6 +225,7 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
     std::size_t v_max = 0;
 
     Lexer lexer;
+    StaticVStorage storage;
 
     for (const auto &c: test_data)
     {
@@ -233,8 +236,102 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
         EXPECT_FALSE(parse_report.isError());
 
         Expression expression;
-        const auto [error_report, compile_report] = compileExpression(postfix, expression);
+        const auto [error_report, compile_report] = compileExpression(postfix, expression, storage);
 
+        ASSERT_FALSE(error_report.isError());
+
+        CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
+        expression(c_stacks);
+
+        const double result = c_stacks.scalarsBack();
+        c_stacks.popScalar();
+        ASSERT_TRUE(c_stacks.ready());
+        EXPECT_DOUBLE_EQ(c.result, result);
+
+        s_max = std::max<size_t>(s_max, compile_report.max_scalar);
+        v_max = std::max<size_t>(v_max, compile_report.max_vector);
+
+        expressions.push_back(std::move(expression));
+    }
+
+
+    int trys = 10000;
+    CalcStacks c_stacks(s_max, v_max, 0, 0);
+
+    for (int i = 0; i < trys; ++i)
+    {
+        for (const auto &expression: expressions)
+        {
+            expression(c_stacks);
+            c_stacks.popScalar();
+            ASSERT_TRUE(c_stacks.ready());
+        }
+    }
+
+}
+
+
+TEST(ExpressionCompiler, ScalarStaticVariables)
+{
+
+    struct TestCase
+    {
+        std::string infix;
+        const double result;
+    };
+
+    std::vector<TestCase> test_data = {
+            {"2 + x + y",                                     7.0},
+            {"z * w - v",                                     13.0},
+            {"a + b * c",                                     98.0},
+            {"EXP(e) * y * (w + x)",                          21.0},
+            {"(z + u) * a / a",                               10.0},
+            {"x * (y + z)",                                   14.0},
+            {"u * v + a",                                     50.0},
+            {"b * c - d",                                     79.0},
+            {"2 * MAX(-x, y, z) + 1",                         9},
+            {"2 * MAX((-x, y, z)) + 1",                       9},
+            {"2 * MIN(performances / 1) + 1",                 -3},
+            {"2 * ARGMAX( (x, y, z, y, z) * 3 + 1) + 1",      5},
+            {"2 * ARGMAX(SQUARE(ABS(basketValues)) / 1) + 1", 5},
+            {"2 * ARGMIN(1 / basketValues) + 1",              1},
+            {"2 * SUM(performances) + 1",                     11},
+            {"2 * SUM(ABS((basketValues))) + 1",              33},
+    };
+
+    std::vector<Expression> expressions;
+    std::size_t s_max = 0;
+    std::size_t v_max = 0;
+
+    StaticVStorage storage;
+    storage.insert<SCALAR>("x", 2);
+    storage.insert<SCALAR>("y", 3);
+    storage.insert<SCALAR>("z", 4);
+    storage.insert<SCALAR>("w", 5);
+    storage.insert<SCALAR>("u", 6);
+    storage.insert<SCALAR>("v", 7);
+    storage.insert<SCALAR>("a", 8);
+    storage.insert<SCALAR>("b", 9);
+    storage.insert<SCALAR>("c", 10);
+    storage.insert<SCALAR>("d", 11);
+    storage.insert<SCALAR>("e", 0.0);
+    storage.insert<VECTOR>("performances", {-2, 3, 4});
+    storage.insert<VECTOR>("basketValues", {-2, -3, -4, -3, 4});
+
+
+    Lexer lexer;
+
+    for (const auto &c: test_data)
+    {
+
+        const std::deque<Token> infix = lexer.tokenize(c.infix);
+        const auto [parse_report, postfix] = infixToPostfix(infix);
+
+        EXPECT_FALSE(parse_report.isError());
+
+        Expression expression;
+
+        const auto [error_report, compile_report] = compileExpression(postfix, expression, storage);
         ASSERT_FALSE(error_report.isError());
 
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);

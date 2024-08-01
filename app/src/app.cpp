@@ -16,7 +16,6 @@
 #include "expression_stacks.h"
 #include "expression_compiler.h"
 #include "operators_calc.h"
-#include "expression_profiler.h"
 
 using namespace flexMC;
 
@@ -40,7 +39,13 @@ int main()
     storage.insert<VECTOR>("x", values);
     storage.insert<SCALAR>("x", 30.0);
     storage.insert<SCALAR>("z", 40.0);
+    storage.insert<SCALAR>("x", 5);
 
+    Operands empty_stacks;
+    const std::string var = "c";
+    auto [status, maybe_operation] = StaticVCompiler::tryCompile(var, empty_stacks, storage);
+
+    std:: cout << "Found variable " << var << " and compiled it: " << std::boolalpha << (status == StaticVCompiler::Status::found) << "\n";
 
     const bool run_main = true;
     if (run_main)
@@ -50,7 +55,7 @@ int main()
          * "3[(3]"
          */
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "(1000 / 3) * (7 - (4 + 1)) * 2 + 10 / 2";
+        const std::string program_err = "(1000 / 3) * (7 - (4 + 1)) * 2 + 10 / x";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -81,7 +86,7 @@ int main()
                     std::cout << token.toString() << " ";
                 }
                 Expression expression;
-                const std::pair<const MaybeError, const CompileReport> reports = compileExpression(parsed, expression);
+                const std::pair<const MaybeError, const CompileReport> reports = compileExpression(parsed, expression, storage);
 
                 if (reports.first.isError())
                 {

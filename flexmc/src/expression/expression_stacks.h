@@ -142,6 +142,7 @@ namespace flexMC
 
     public:
 
+        // std::function may allocate
         explicit Operation(const std::function<void(CalcStacks & stacks)> &call_back) : call_back_(call_back)
         {}
 
