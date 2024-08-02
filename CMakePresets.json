@@ -159,25 +159,26 @@
       ]
     },
     {
-      "name": "gcc-asan",
+      "name": "asan-flags",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;-Werror;-fsanitize=address"
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wshadow -Wformat=2 -Wunused -Werror -fsanitize=adress"
       }
     },
     {
-      "name": "linux-gcc-debug-asan",
+      "name": "asan-linux-gcc-debug",
       "inherits": [
         "linux-gcc-base",
         "_debug",
-        "gcc-asan"
+        "asan-flags"
       ]
     },
     {
-      "name": "linux-gcc-release-asan",
+      "name": "asan-linux-gcc-release",
       "inherits": [
         "linux-gcc-base",
         "_release",
-        "gcc-asan"
+        "asan-flags"
       ]
     }
   ]
