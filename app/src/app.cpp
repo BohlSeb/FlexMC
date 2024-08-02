@@ -21,7 +21,10 @@ using namespace flexMC;
 
 #include <iostream>
 
-int triggerAsan() {
+static int number = 0;
+
+[[maybe_unused]] int triggerAsan() {
+    number++
     int* array = new int[100];
     delete[] array;
     std::cout << array[0] << std::endl;  // Use after free
@@ -38,7 +41,7 @@ int main()
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
 
-
+    std::cout << number << "\n";
 
     StaticVStorage storage;
 
