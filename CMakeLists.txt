@@ -12,8 +12,8 @@ target_compile_options(flexmc_compiler_flags INTERFACE
         # "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wformat=2>>"
         "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
-#add_link_options(-fsanitize=address)
-#target_link_options(flexmc_compiler_flags INTERFACE -fsanitize=address)
+add_link_options(-fsanitize=address)
+target_link_options(flexmc_compiler_flags INTERFACE -fsanitize=address)
 
 add_subdirectory(flexmc)
 add_subdirectory(app)
