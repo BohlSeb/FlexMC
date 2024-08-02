@@ -41,6 +41,8 @@ int main()
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
 
+    auto int bad = triggerAsan();
+
     std::cout << number << "\n";
 
     StaticVStorage storage;
