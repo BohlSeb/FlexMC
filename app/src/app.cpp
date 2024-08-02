@@ -19,6 +19,16 @@
 
 using namespace flexMC;
 
+#include <iostream>
+
+int triggerAsan() {
+    int* array = new int[100];
+    delete[] array;
+    std::cout << array[0] << std::endl;  // Use after free
+    return 0;
+}
+
+
 
 int main()
 {
