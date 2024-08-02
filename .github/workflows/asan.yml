@@ -6,7 +6,7 @@ jobs:
   cmake-gcc:
     strategy:
       matrix:
-        preset: [linux-gcc-debug-asan, linux-gcc-release-asan]
+        preset: [asan-linux-gcc-debug, asan-linux-gcc-release]
 
     # using ubuntu-24.04 for gcc 13, required for std::ranges::zip_view
 
