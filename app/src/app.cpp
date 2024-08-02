@@ -19,19 +19,6 @@
 
 using namespace flexMC;
 
-#include <iostream>
-
-static int number = 0;
-
-[[maybe_unused]] int triggerAsan() {
-    number++;
-    int* array = new int[100];
-    delete[] array;
-    std::cout << array[0] << std::endl;  // Use after free
-    return 0;
-}
-
-
 
 int main()
 {
@@ -40,10 +27,6 @@ int main()
     std::cout << "Version: " << APP_VERSION_MAJOR << "."
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
-
-    auto bad = triggerAsan();
-
-    std::cout << number << "\n";
 
     StaticVStorage storage;
 
