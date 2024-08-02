@@ -1,0 +1,32 @@
+name: ASAN gcc build
+on: [pull_request, workflow_dispatch]
+
+jobs:
+
+  cmake-gcc:
+    strategy:
+      matrix:
+        preset: [linux-gcc-debug-asan, linux-gcc-release-asan]
+
+    # using ubuntu-24.04 for gcc 13, required for std::ranges::zip_view
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: configure
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: build
+        working-directory: out/build/${{ matrix.preset }}
+        run: cmake --build .
+
+      - name: test
+        working-directory: out/build/${{ matrix.preset }}/tests
+        run: ctest -V
+
+      - name: benchmark
+        working-directory: out/build/${{ matrix.preset }}/benchmarking/src
+        run: ./benchmarking
