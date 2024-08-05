@@ -1,0 +1,29 @@
+name: ASAN gcc build
+on: [pull_request, workflow_dispatch]
+
+jobs:
+
+  cmake-asan-gcc-debug:
+
+    # using ubuntu-24.04 for gcc 13, required for std::ranges::zip_view
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: configure
+        run: cmake --preset asan-linux-gcc-debug -DLINK_ASAN=ON
+
+      - name: build
+        working-directory: out/build/asan-linux-gcc-debug
+        run: cmake --build .
+
+      - name: test
+        working-directory: out/build/asan-linux-gcc-debug/tests
+        run: ctest -V
+
+      - name: app
+        working-directory: out/build/asan-linux-gcc-debug/app/src
+        run: ./app

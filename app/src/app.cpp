@@ -28,8 +28,6 @@ int main()
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
 
-
-
     StaticVStorage storage;
 
     SCALAR value = 1.0;
