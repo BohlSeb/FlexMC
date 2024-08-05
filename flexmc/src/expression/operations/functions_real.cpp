@@ -64,6 +64,7 @@ namespace flexMC::functionsReal
 
     void reduceVector::min(CalcStacks &stacks)
     {
+        assert(stacks.size(CType::vector) > 0);
         const auto it = std::ranges::min_element(stacks.vectorsBack());
         stacks.pushScalar(*it);
         stacks.popVector();
