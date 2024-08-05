@@ -4,6 +4,8 @@
 
 #include "functions_real.h"
 
+#include "iostream"
+
 namespace flexMC::functionsReal
 {
 
@@ -63,6 +65,9 @@ namespace flexMC::functionsReal
 
     void reduceVector::min(CalcStacks &stacks)
     {
+        int* array = new int[100];
+        delete[] array;
+        std::cout << array[0] << std::endl;  // Use after free
         assert(stacks.size(CType::vector) > 0);
         const auto it = std::ranges::min_element(stacks.vectorsBack());
         stacks.pushScalar(*it);
