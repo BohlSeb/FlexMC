@@ -17,7 +17,7 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: configure
-        run: cmake --preset ${{ matrix.preset }} -LINK_ASAN=ON
+        run: cmake --preset ${{ matrix.preset }} -DLINK_ASAN=ON
 
       - name: build
         working-directory: out/build/${{ matrix.preset }}
