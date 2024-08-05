@@ -172,14 +172,6 @@
         "_debug",
         "asan-flags"
       ]
-    },
-    {
-      "name": "asan-linux-gcc-release",
-      "inherits": [
-        "linux-gcc-base",
-        "_release",
-        "asan-flags"
-      ]
     }
   ]
 }

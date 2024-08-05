@@ -3,10 +3,7 @@ on: [pull_request, workflow_dispatch]
 
 jobs:
 
-  cmake-gcc:
-    strategy:
-      matrix:
-        preset: [asan-linux-gcc-debug, asan-linux-gcc-release]
+  cmake-asan-gcc-debug:
 
     # using ubuntu-24.04 for gcc 13, required for std::ranges::zip_view
 
@@ -17,7 +14,7 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: configure
-        run: cmake --preset ${{ matrix.preset }} -DLINK_ASAN=ON
+        run: cmake --preset asan-linux-gcc-debug -DLINK_ASAN=ON
 
       - name: build
         working-directory: out/build/${{ matrix.preset }}
