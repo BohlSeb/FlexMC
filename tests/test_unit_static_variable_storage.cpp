@@ -65,7 +65,7 @@ TEST(StaticVStorage, SetGetUnused)
                 calc_stacks.popScalar();
                 break;
             case vector:
-                ASSERT_EQ(v, calc_stacks.vectorsBack());
+                ASSERT_EQ(v, calc_stacks.vectorResult());
                 calc_stacks.popVector();
                 break;
             case date:

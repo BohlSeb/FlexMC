@@ -117,8 +117,8 @@ static void BM_Scalars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-                auto result = stacks.scalarsBack();
-                benchmark::DoNotOptimize(result);
+//                auto result = stacks.scalarsBack();
+//                benchmark::DoNotOptimize(result);
                 stacks.popScalar();
                 assert(stacks.ready());
             }
@@ -141,8 +141,8 @@ static void BM_Vectors(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-                auto result = stacks.vectorsBack();
-                benchmark::DoNotOptimize(result);
+//                auto result = stacks.vectorResult();
+//                benchmark::DoNotOptimize(result);
                 stacks.popVector();
                 assert(stacks.ready());
             }
@@ -165,8 +165,8 @@ static void BM_ReduceScalars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-                auto result = stacks.scalarsBack();
-                benchmark::DoNotOptimize(result);
+//                auto result = stacks.scalarsBack();
+//                benchmark::DoNotOptimize(result);
                 stacks.popScalar();
                 assert(stacks.ready());
             }
@@ -189,8 +189,8 @@ static void BM_ReduceVectors(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-                auto result = stacks.scalarsBack();
-                benchmark::DoNotOptimize(result);
+//                auto result = stacks.scalarsBack();
+//                benchmark::DoNotOptimize(result);
                 stacks.popScalar();
                 assert(stacks.ready());
             }
@@ -222,8 +222,8 @@ static void BM_StaticScalarVars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-                auto result = stacks.scalarsBack();
-                benchmark::DoNotOptimize(result);
+//                auto result = stacks.scalarsBack();
+//                benchmark::DoNotOptimize(result);
                 stacks.popScalar();
                 assert(stacks.ready());
             }
@@ -261,8 +261,8 @@ static void BM_StaticVectorVars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-                auto result = stacks.vectorsBack();
-                benchmark::DoNotOptimize(result);
+//                auto result = stacks.vectorResult();
+//                benchmark::DoNotOptimize(result);
                 stacks.popVector();
                 assert(stacks.ready());
             }

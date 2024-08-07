@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <string>
 #include <functional>
@@ -77,32 +78,72 @@ namespace flexMC
 
         std::size_t size(const CType &type) const;
 
+        // refactor this to get closer to vectors()
         inline void pushScalar(const double &value)
         { scalars_.push_back(value); }
 
         inline void pushVector(const std::vector<double> &value)
-        { vectors_.push_back(value); }
+        {
+            for (const auto &v: value)
+            { vecs_2.push_back(v); }
+            v_sizes_.push_back(value.size());
+        }
+
 
         inline const double &scalarsBack() const
         { return scalars_.back(); }
 
-        inline const std::vector<double> &vectorsBack() const
-        { return vectors_.back(); }
+        inline std::vector<double> vectorResult() const
+        {
+            std::vector<double> out;
+            assert(!vectorSizes().empty());
+            const std::size_t s = vectorSizes().back();
+            assert(vectors().size() >= s);
+            const auto end = vectors().end();
+            const auto begin = end - s;
+            for (VECTOR::const_iterator it = begin; it != end; ++it) {
+                out.push_back(*it);
+            }
+            return out;
+        }
 
-        inline std::vector<double> &vectorsBack()
-        { return vectors_.back(); }
+        inline void popVector()
+        {
+            assert(vectorSizes().size() == 1);
+            const std::size_t s = vectorSizes().back();
+            assert(vectors().size() == s);
+            popVector2(s);
+            vectorSizes().pop_back(); }
 
-        inline std::vector<double> &vectorsBeforeBack()
-        { return vectors_.end()[-2]; }
+        inline std::vector<double> &vectors()
+        { return vecs_2; };
 
-        inline const std::vector<double> &vectorsBeforeBack() const
-        { return vectors_.end()[-2]; }
+        inline const std::vector<double> &vectors() const
+        { return vecs_2; };
+
+        inline std::vector<std::size_t> &vectorSizes()
+        { return v_sizes_; };
+
+        inline const std::vector<std::size_t> &vectorSizes() const
+        { return v_sizes_; };
+
+
+//        inline std::vector<double> &vectorsBeforeBack()
+//        { return vectors_.end()[-2]; }
+//
+//        inline const std::vector<double> &vectorsBeforeBack() const
+//        { return vectors_.end()[-2]; }
 
         inline void popScalar()
         { scalars_.pop_back(); }
 
-        inline void popVector()
-        { vectors_.pop_back(); }
+        inline void popVector2(const std::size_t size)
+        {
+            for (size_t s{0}; s < size; ++s)
+            { vecs_2.pop_back(); }
+        }
+
+        //
 
         inline std::vector<double>::const_iterator scalarsEnd() const
         { return scalars_.cend(); }
@@ -131,6 +172,10 @@ namespace flexMC
 
         std::vector<std::vector<double>> vectors_;
 
+        std::vector<double> vecs_2;
+
+        std::vector<std::size_t> v_sizes_;
+
         std::vector<int> dates_;
 
         std::vector<std::vector<int>> date_lists_;
@@ -143,7 +188,7 @@ namespace flexMC
     public:
 
         // std::function may allocate
-        explicit Operation(const std::function<void(CalcStacks & stacks)> &call_back) : call_back_(call_back)
+        explicit Operation(const std::function<void(CalcStacks &stacks)> &call_back) : call_back_(call_back)
         {}
 
         void operator()(CalcStacks &stacks) const
@@ -151,7 +196,7 @@ namespace flexMC
 
     private:
 
-        const std::function<void(CalcStacks & stacks)> call_back_;
+        const std::function<void(CalcStacks &stacks)> call_back_;
 
     };
 

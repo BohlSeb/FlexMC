@@ -60,12 +60,17 @@ namespace flexMC::operatorsCalc
         template<class binary_operator>
         void scVec(CalcStacks &stacks, const binary_operator f)
         {
-            std::vector<double> &right = stacks.vectorsBack();
+            assert(stacks.vectorSizes().size() > 0);
+            const std::size_t s = stacks.vectorSizes().back();
+            assert(stacks.vectors().size() >= s);
+            const auto right_end = stacks.vectors().end();
+            const auto right_begin = right_end - s;
             const double left = stacks.scalarsBack();
             stacks.popScalar();
-            std::ranges::transform(
-                    right,
-                    right.begin(),
+            std::transform(
+                    right_begin,
+                    right_end,
+                    right_begin,
                     [f, left](auto &right_)
                     { return f(left, right_); }
             );
@@ -74,12 +79,17 @@ namespace flexMC::operatorsCalc
         template<class binary_operator>
         void vecSc(CalcStacks &stacks, const binary_operator f)
         {
+            assert(stacks.vectorSizes().size() > 0);
+            const std::size_t s = stacks.vectorSizes().back();
+            assert(stacks.vectors().size() >= s);
+            const auto left_end = stacks.vectors().end();
+            const auto left_begin = left_end - s;
             const double right = stacks.scalarsBack();
-            std::vector<double> &left = stacks.vectorsBack();
             stacks.popScalar();
-            std::ranges::transform(
-                    left,
-                    left.begin(),
+            std::transform(
+                    left_begin,
+                    left_end,
+                    left_end,
                     [f, right](auto &left_)
                     { return f(left_, right); }
             );
@@ -88,17 +98,23 @@ namespace flexMC::operatorsCalc
         template<class binary_operator>
         void vecVec(CalcStacks &stacks, binary_operator f)
         {
-            assert(stacks.size(CType::vector) >= 2);
-            const std::vector<double> &right = stacks.vectorsBack();
-            std::vector<double> &left = stacks.vectorsBeforeBack();
-            std::ranges::transform(
-                    left,
-                    right,
-                    left.begin(),
+            assert(stacks.vectorSizes().size() > 0);
+            const std::size_t s = stacks.vectorSizes().back();
+            assert(stacks.vectors().size() >= s + s);
+            stacks.vectorSizes().pop_back();
+            assert(stacks.vectorSizes().back() == s);
+            const auto right_end = stacks.vectors().end();
+            const auto right_begin = right_end - s;
+            const auto left_begin = right_begin - s;
+            std::transform(
+                    right_begin,
+                    right_end,
+                    left_begin,
+                    left_begin,
                     [f](auto &left_, auto &right_)
                     { return f(left_, right_); }
             );
-            stacks.popVector();
+            stacks.popVector2(s);
         }
 
         using

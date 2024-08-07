@@ -166,7 +166,7 @@ TEST(ExpressionCompiler, RealOperatorsVector)
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression(c_stacks);
 
-        vec result = c_stacks.vectorsBack();
+        vec result = c_stacks.vectorResult();
         c_stacks.popVector();
 
         ASSERT_TRUE(c_stacks.ready());

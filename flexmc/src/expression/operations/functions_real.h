@@ -8,6 +8,8 @@
 #include "language_error.h"
 #include "expression_stacks.h"
 
+// #include <iostream>
+
 
 namespace flexMC::functionsReal
 {
@@ -54,9 +56,13 @@ namespace flexMC::functionsReal
         template<class scalar_function>
         void calculateVector(CalcStacks &stacks, scalar_function f)
         {
-            assert(stacks.size(vector) > 0);
-            std::vector<double> &back = stacks.vectorsBack();
-            std::ranges::transform(back, back.begin(), f);
+            assert(stacks.vectorSizes().size() > 0);
+            const std::size_t s = stacks.vectorSizes().back();
+            assert(stacks.vectors().size() >= s);
+            auto end = stacks.vectors().end();
+            std::vector<SCALAR>::iterator begin = end - s;
+            std::transform(begin, end, begin, f);
+            // std::cout << "debug" << "\n";
         }
 
         const StringMap<std::function<void(CalcStacks &)>> functions{
@@ -144,10 +150,14 @@ namespace flexMC::functionsReal
                               binary_function f,
                               double init)
         {
-            assert(stacks.size(CType::vector) > 0);
-            const std::vector<double> &back = stacks.vectorsBack();
-            const double res = std::accumulate(back.cbegin(), back.cend(), init, f);
-            stacks.popVector();
+            assert(!stacks.vectorSizes().empty());
+            const std::size_t s = stacks.vectorSizes().back();
+            assert(stacks.vectors().size() >= s);
+            const auto end = stacks.vectors().end();
+            const auto begin = end - s;
+            const double res = std::accumulate(begin, end, init, f);
+            stacks.popVector2(s);
+            stacks.vectorSizes().pop_back();
             stacks.pushScalar(res);
         }
 
@@ -204,10 +214,10 @@ namespace flexMC::functionsReal
         void argMinScalars(CalcStacks &stacks, const std::size_t &size);
 
         template<class binary_function>
-        void accumulateScalars(CalcStacks &stacks,
-                               binary_function f,
-                               double init,
-                               const std::size_t &size)
+        void accumulate(CalcStacks &stacks,
+                        binary_function f,
+                        double init,
+                        const std::size_t &size)
         {
             assert(stacks.size(CType::scalar) >= size);
             for (size_t i{0}; i < size; ++i)
@@ -243,13 +253,13 @@ namespace flexMC::functionsReal
                         flexMC::SUM,
                         [capture0 = [](const double &left, const double &right)
                         { return left + right; }](CalcStacks &stacks, const std::size_t &size)
-                        { accumulateScalars(stacks, capture0, 0.0, size); }
+                        { accumulate(stacks, capture0, 0.0, size); }
                 },
                 {
                         flexMC::PROD,
                         [capture0 = [](const double &left, const double &right)
                         { return left * right; }](CalcStacks &stacks, const std::size_t &size)
-                        { accumulateScalars(stacks, capture0, 1.0, size); }
+                        { accumulate(stacks, capture0, 1.0, size); }
                 },
                 {
                         flexMC::MAX,

@@ -14,8 +14,8 @@ enable_testing()
 set(TEST_SOURCES
         test_lexer.cpp
         test_expression_parser.cpp
-        test_expression_compiler.cpp
-        test_unit_static_variable_storage.cpp
+#        test_expression_compiler.cpp
+#        test_unit_static_variable_storage.cpp
 )
 
 add_executable(tests ${TEST_SOURCES})

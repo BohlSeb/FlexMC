@@ -21,6 +21,7 @@ TEST(ExpressionParser, OperatorsAndOperands)
 
     std::vector<TestCase> test_data = {
             {"2 + 3",                 "2 3 +"},
+            {"3 - 4 + 5",             "3 4 - 5 +"},
             {"a * b - c",             "a b * c -"},
             {"a + b * c",             "a b c * +"},
             {"3 * (5 + 2)",           "3 5 2 + *"},

@@ -66,13 +66,19 @@ namespace flexMC
 
     void VectorAppend::operator()(CalcStacks &stacks) const
     {
+
         assert(stacks.size(CType::scalar) >= size_);
-        std::vector<double> res(stacks.scalarsEnd() - size_, stacks.scalarsEnd());
+        // bottleneck (bug?):
+        // operators to pop are in the form of stack([x, y, z]) after removing/calling VectorAppend on stack([x, y, z, VectorAppend])
+        // [x, y, z] -> x y z APPEND
+        // similar to how 2 + 3 in infix is 2 3 + in postfix
+        // or 1 + (1, 2, 3) -> 1 1 2 3 APPEND_ +
         for (size_t i{0}; i < size_; ++i)
         {
+            stacks.vectors().push_back(stacks.scalarsBack());
             stacks.popScalar();
         }
-        stacks.pushVector(res);
+        stacks.vectorSizes().push_back(size_);
     }
 
 }
