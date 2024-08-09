@@ -150,7 +150,6 @@ namespace flexMC
 
     void CalcStacks::popVectorResult()
     {
-
         assert(vectorSizes().size() == 1);
         assert(vectors().size() == vectorSizes().back());
         vectors_.erase(vectors_.end() - v_sizes_.back(), vectors_.end());

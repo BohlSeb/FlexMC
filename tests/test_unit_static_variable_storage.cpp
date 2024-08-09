@@ -13,9 +13,9 @@ TEST(StaticVStorage, SetGetUnused)
     enum CType;
 
     SCALAR s{1.0};
-    VECTOR v{1.0, 2.0};
-    DATE d{1};
-    DATE_LIST d_l{1, 2};
+    VECTOR v{2.0, 3.0};
+    DATE d{4};
+    DATE_LIST d_l{1, 0};
 
     std::string s_name{"s"};
     std::string v_name{"v"};
@@ -69,7 +69,7 @@ TEST(StaticVStorage, SetGetUnused)
                 calc_stacks.popVectorResult();
                 break;
             case date:
-                ASSERT_EQ(d, calc_stacks.scalars().back());
+                ASSERT_EQ(d, calc_stacks.dates().back());
                 calc_stacks.dates().pop_back();
                 break;
             case dateList:
