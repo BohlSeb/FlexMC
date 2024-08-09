@@ -103,8 +103,7 @@ namespace flexMC::operatorsCalc
             stacks.vectorSizes().pop_back();
             assert(stacks.vectorSizes().back() == s);
             assert(stacks.vectors().size() >= s + s);
-            const auto right_end = stacks.vectors().end();
-            const auto right_begin = right_end - s;
+            const auto right_begin = stacks.vectors().end() - s;
             const auto left_begin = right_begin - s;
             std::transform(
                     left_begin,
@@ -114,7 +113,7 @@ namespace flexMC::operatorsCalc
                     [f](auto &left_, auto &right_)
                     { return f(left_, right_); }
             );
-            stacks.vectors().erase(right_begin, right_end);
+            stacks.vectors().erase(right_begin, stacks.vectors().end());
         }
 
         using
