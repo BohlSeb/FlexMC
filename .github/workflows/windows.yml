@@ -1,5 +1,5 @@
 name: MSVC build
-on: [pull_request, workflow_dispatch]
+on: [push, workflow_dispatch]
 
 # Workaround for
 #  CMake Error at CMakeLists.txt:2 (project):
