@@ -13,7 +13,7 @@ namespace flexMC
         if (type == scalar)
         {
             ++scalar_size_;
-            scalar_size_max_ = std::max<size_t>(scalar_size_, scalar_size_max_);
+            scalar_size_max_ = std::max<std::size_t>(scalar_size_, scalar_size_max_);
         }
         types_.push_back(type);
     }
@@ -28,7 +28,7 @@ namespace flexMC
         if (type == vector)
         {
             ++vec_size_;
-            vec_size_max_ = std::max<size_t>(vec_size_, vec_size_max_);
+            vec_size_max_ = std::max<std::size_t>(vec_size_, vec_size_max_);
         }
     }
 
@@ -71,14 +71,14 @@ namespace flexMC
 
     }
 
-    CalcStacks::CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size, const std::size_t &d_l_size)
+    CalcStacks::CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size,
+                           const std::size_t &d_l_size)
     {
         scalars_.reserve(s_size);
         vectors_.reserve(v_size);
         dates_.reserve(d_size);
         date_lists_.reserve(d_l_size);
     }
-
 
     std::size_t CalcStacks::size(const CType &type) const
     {
@@ -105,11 +105,63 @@ namespace flexMC
         using
         enum CType;
         std::size_t not_ready{0};
-        not_ready += size(scalar);
-        not_ready += size(vector);
-        not_ready += size(date);
-        not_ready += size(dateList);
-        return (not_ready == 0);
+        not_ready += scalars_.size();
+        not_ready += vectors_.size();
+        not_ready += dates_.size();
+        not_ready += date_lists_.size();
+        not_ready += v_sizes_.size();
+        not_ready += d_l_sizes_.size();
+        return not_ready == 0;
+    }
+
+    void CalcStacks::pushVector(const std::vector<SCALAR> &value)
+    {
+        for (const auto &v: value)
+        {
+            vectors_.push_back(v);
+        }
+        v_sizes_.push_back(value.size());
+    }
+
+    void CalcStacks::pushDateList(const std::vector<DATE> &value)
+    {
+        for (const auto &v: value)
+        {
+            date_lists_.push_back(v);
+        }
+        d_l_sizes_.push_back(value.size());
+    }
+
+    std::vector<SCALAR> CalcStacks::vectorResult() const
+    {
+        assert(v_sizes_.size() == 1);
+        const std::size_t s = v_sizes_.back();
+        assert(vectors_.size() == s);
+        return {vectors_.end() - s, vectors_.end()};
+    }
+
+    std::vector<DATE> CalcStacks::dateListResult() const
+    {
+        assert(d_l_sizes_.size() == 1);
+        const std::size_t s = d_l_sizes_.back();
+        assert(date_lists_.size() == s);
+        return {date_lists_.end() - s, date_lists_.end()};
+    }
+
+    void CalcStacks::popVectorResult()
+    {
+        assert(vectorSizes().size() == 1);
+        assert(vectors().size() == vectorSizes().back());
+        vectors_.erase(vectors_.end() - v_sizes_.back(), vectors_.end());
+        v_sizes_.pop_back();
+    }
+
+    void CalcStacks::popDateListResult()
+    {
+        assert(d_l_sizes_.size() == 1);
+        assert(date_lists_.size() == d_l_sizes_.back());
+        date_lists_.erase(date_lists_.end() - d_l_sizes_.back(), date_lists_.end());
+        d_l_sizes_.pop_back();
     }
 
 }

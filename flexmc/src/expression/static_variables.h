@@ -140,7 +140,7 @@ namespace flexMC
             stacks.pushArray(c_type, s);
         };
 
-        // Neat way of having template specialized methods which is not trivial (link error in addition to below)
+        // One way of having template specialized class methods which is not trivial (link error in addition to below)
         // https://stackoverflow.com/questions/3052579/explicit-specialization-in-non-namespace-scope
         // Answer 2 by Johannes Schaub
 
@@ -156,6 +156,7 @@ namespace flexMC
             return compile_(name, TAlias<T>());
         }
 
+        // SonarLint "this function should be declared const"
         template<class T>
         Operation compile_(const std::string &, TAlias<T>)
         {
@@ -168,7 +169,7 @@ namespace flexMC
         {
             const SCALAR value = get<SCALAR>(name);
             return Operation([value](CalcStacks &stacks)
-                             { stacks.pushScalar(value); });
+                             { stacks.scalars().emplace_back(value); });
         }
 
         Operation compile_(const std::string &name, TAlias<VECTOR>)
@@ -182,7 +183,7 @@ namespace flexMC
         {
             const DATE value = get<DATE>(name);
             return Operation([value](CalcStacks &stacks)
-                             { stacks.pushDate(value); });
+                             { stacks.dates().emplace_back(value); });
         }
 
         Operation compile_(const std::string &name, TAlias<DATE_LIST>)

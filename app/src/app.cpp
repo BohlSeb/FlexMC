@@ -20,6 +20,14 @@
 using namespace flexMC;
 
 
+template<class scalar_function>
+void calculateVector(std::vector<double> &vectors, const std::size_t size, scalar_function f)
+{
+    assert(vectors.size() >= size);
+    std::ranges::transform(vectors.end() - size, vectors.end(), vectors.end() - size, f);
+}
+
+
 int main()
 {
 
@@ -31,21 +39,39 @@ int main()
     StaticVStorage storage;
 
     SCALAR value = 1.0;
-    const std::vector<double> values{1, 2, 3, 4};
+//    const std::vector<double> values{1, 2, 3, 4};
 
     storage.insert<SCALAR>("x", value);
-    storage.insert<VECTOR>("x", values);
-    storage.insert<SCALAR>("x", 30.0);
-    storage.insert<SCALAR>("z", 40.0);
-    storage.insert<SCALAR>("x", 5);
+//    storage.insert<VECTOR>("x", values);
+    storage.insert<VECTOR>("x", {30.0, 40.0});
+//    storage.insert<SCALAR>("z", 40.0);
+//    storage.insert<SCALAR>("x", 5);
 
-    Operands empty_stacks;
-    const std::string var = "c";
-    auto [status, maybe_operation] = StaticVCompiler::tryCompile(var, empty_stacks, storage);
+    std::vector<double> values{1, 2, 3, 4};
 
-    std:: cout << "Found variable " << var << " and compiled it: " << std::boolalpha << (status == StaticVCompiler::Status::found) << "\n";
+    const auto f = [](const SCALAR &value)
+    { return value * value; };
+
+    std::cout << "Values before" << "\n";
+
+    for (const auto &v: values)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << "\n";
+
+    calculateVector(values, 4, f);
+
+    std::cout << "Values before" << "\n";
+
+    for (const auto &v: values)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << "\n";
 
     const bool run_main = true;
+
     if (run_main)
     {
 
@@ -53,7 +79,7 @@ int main()
          * "3[(3]"
          */
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "(1000 / 3) * (7 - (4 + 1)) * 2 + 10 / x";
+        const std::string program_err = "(-1, -1) - (1, 1)";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -81,10 +107,12 @@ int main()
                 std::cout << "Items parsed: " << parsed.size() << std::endl;
                 for (const auto &token: parsed)
                 {
-                    std::cout << token.toString() << " ";
+                    std::cout << token.value << " ";
                 }
+                std::cout << "\n";
                 Expression expression;
-                const std::pair<const MaybeError, const CompileReport> reports = compileExpression(parsed, expression, storage);
+                const std::pair<const MaybeError, const CompileReport> reports = compileExpression(parsed, expression,
+                                                                                                   storage);
 
                 if (reports.first.isError())
                 {
@@ -101,19 +129,19 @@ int main()
                     expression(c_stacks);
                     if (c_stacks.size(CType::scalar) == 1)
                     {
-                        std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
-                        c_stacks.popScalar();
+                        std::cout << "Double result: " << c_stacks.scalars().back() << std::endl;
+                        c_stacks.scalars().pop_back();
                     }
-                    else if (c_stacks.size(CType::vector) == 1)
+                    else if (c_stacks.vectorSizes().size() == 1)
                     {
                         std::cout << "Vector result:" << std::endl << "[ ";
-                        std::vector<double> res = c_stacks.vectorsBack();
+                        std::vector<double> res = c_stacks.vectorResult();
                         for (auto r: res)
                         {
                             std::cout << r << ", ";
                         }
                         std::cout << "]" << std::endl;
-                        c_stacks.popVector();
+                        c_stacks.popVectorResult();
                     }
                     else
                     {
@@ -130,7 +158,7 @@ int main()
             }
             catch (const std::runtime_error &error)
             {
-                std::cout << "Error:" << std::endl;
+                std::cout << "Error 2:" << std::endl;
                 std::cout << error.what() << std::endl;
             }
 

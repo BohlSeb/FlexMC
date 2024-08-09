@@ -56,65 +56,84 @@ namespace flexMC::functionsReal
 
     void reduceVector::max(CalcStacks &stacks)
     {
-        assert(stacks.size(CType::vector) > 0);
-        const auto it = std::ranges::max_element(stacks.vectorsBack());
-        stacks.pushScalar(*it);
-        stacks.popVector();
+        assert(stacks.vectorSizes().size() > 0);
+        const std::size_t s = stacks.vectorSizes().back();
+        assert(stacks.vectors().size() >= s);
+        const auto end = stacks.vectors().end();
+        const auto begin = end - s;
+        const auto it = std::max_element(begin, end);
+        stacks.scalars().push_back(*it);
+        stacks.vectors().erase(begin, end);
+        stacks.vectorSizes().pop_back();
     }
 
     void reduceVector::min(CalcStacks &stacks)
     {
-        assert(stacks.size(CType::vector) > 0);
-        const auto it = std::ranges::min_element(stacks.vectorsBack());
-        stacks.pushScalar(*it);
-        stacks.popVector();
+        assert(stacks.vectorSizes().size() > 0);
+        const std::size_t s = stacks.vectorSizes().back();
+        assert(stacks.vectors().size() >= s);
+        const auto end = stacks.vectors().end();
+        const auto begin = end - s;
+        const auto it = std::min_element(begin, end);
+        stacks.scalars().push_back(*it);
+        stacks.vectors().erase(begin, end);
+        stacks.vectorSizes().pop_back();
     }
 
     void reduceVector::argmax(CalcStacks &stacks)
     {
-        assert(stacks.size(CType::vector) > 0);
-        const std::vector<double> &back = stacks.vectorsBack();
-        const auto res = std::ranges::distance(back.cbegin(), std::ranges::max_element(back));
-        stacks.pushScalar(static_cast<double>(res));
-        stacks.popVector();
+        assert(stacks.vectorSizes().size() > 0);
+        const std::size_t s = stacks.vectorSizes().back();
+        assert(stacks.vectors().size() >= s);
+        const auto end = stacks.vectors().end();
+        const auto begin = end - s;
+        const auto res = std::distance(begin, std::max_element(begin, end));
+        stacks.scalars().push_back(static_cast<double>(res));
+        stacks.vectors().erase(begin, end);
+        stacks.vectorSizes().pop_back();
     }
 
     void reduceVector::argmin(CalcStacks &stacks)
     {
-        assert(stacks.size(CType::vector) > 0);
-        const std::vector<double> &back = stacks.vectorsBack();
-        const auto res = std::ranges::distance(back.cbegin(), std::ranges::min_element(back));
-        stacks.pushScalar(static_cast<double>(res));
-        stacks.popVector();
+        assert(stacks.vectorSizes().size() > 0);
+        const std::size_t s = stacks.vectorSizes().back();
+        assert(stacks.vectors().size() >= s);
+        const auto end = stacks.vectors().end();
+        const auto begin = end - s;
+        const auto res = std::distance(begin, std::min_element(begin, end));
+        stacks.scalars().push_back(static_cast<double>(res));
+        stacks.vectors().erase(begin, end);
+        stacks.vectorSizes().pop_back();
     }
 
     void reduceVector::length(CalcStacks &stacks)
     {
-        assert(stacks.size(CType::vector) > 0);
-        const auto res = stacks.vectorsBack().size();
-        stacks.pushScalar(static_cast<double>(res));
-        stacks.popVector();
+        assert(stacks.vectorSizes().size() > 0);
+        const std::size_t s = stacks.vectorSizes().back();
+        assert(stacks.vectors().size() >= s);
+        stacks.scalars().push_back(static_cast<double>(s));
+        stacks.vectors().erase(stacks.vectors().end() - s, stacks.vectors().end());
+        stacks.vectorSizes().pop_back();
     }
 
     void reduceArguments::argMaxScalars(CalcStacks &stacks, const std::size_t &size)
     {
         assert(stacks.size(CType::scalar) >= size);
-        const std::vector<double>::const_iterator end = stacks.scalarsEnd();
-        const std::vector<double>::const_iterator begin = end - size;
+        const auto end = stacks.scalars().end();
+        const auto begin = end - size;
         const auto res = std::distance(begin, std::max_element(begin, end));
-        for (size_t i{0}; i < size; ++i)
-        { stacks.popScalar(); }
-        stacks.pushScalar(static_cast<double>(res));
+        stacks.scalars().erase(begin, end);
+        stacks.scalars().push_back(static_cast<double>(res));
     }
 
     void reduceArguments::argMinScalars(CalcStacks &stacks, const std::size_t &size)
     {
         assert((size > 0) && (stacks.size(CType::scalar) >= size));
-        const std::vector<double> temp(stacks.scalarsEnd() - size, stacks.scalarsEnd());
-        const auto res = std::distance(temp.cbegin(), std::ranges::min_element(temp));
-        for (size_t i{0}; i < size; ++i)
-        { stacks.popScalar(); }
-        stacks.pushScalar(static_cast<double>(res));
+        const auto end = stacks.scalars().end();
+        const auto begin = end - size;
+        const auto res = std::distance(begin, std::min_element(begin, end));
+        stacks.scalars().erase(begin, end);
+        stacks.scalars().push_back(static_cast<double>(res));
     }
 
 }

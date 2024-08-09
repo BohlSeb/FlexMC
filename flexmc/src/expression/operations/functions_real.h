@@ -8,6 +8,8 @@
 #include "language_error.h"
 #include "expression_stacks.h"
 
+// #include <iostream>
+
 
 namespace flexMC::functionsReal
 {
@@ -46,17 +48,20 @@ namespace flexMC::functionsReal
         void calculateScalar(CalcStacks &stacks, scalar_function f)
         {
             assert(stacks.size(scalar) > 0);
-            const double res = f(stacks.scalarsBack());
-            stacks.popScalar();
-            stacks.pushScalar(res);
+            stacks.scalars().back() = f(stacks.scalars().back());
+//            stacks.scalars().pop_back();
+//            stacks.scalars().push_back(res);
         }
 
         template<class scalar_function>
         void calculateVector(CalcStacks &stacks, scalar_function f)
         {
-            assert(stacks.size(vector) > 0);
-            std::vector<double> &back = stacks.vectorsBack();
-            std::ranges::transform(back, back.begin(), f);
+            assert(stacks.vectorSizes().size() > 0);
+            const std::size_t s = stacks.vectorSizes().back();
+            assert(stacks.vectors().size() >= s);
+            const auto end = stacks.vectors().end();
+            const auto begin = end - s;
+            std::transform(begin, end, begin, f);
         }
 
         const StringMap<std::function<void(CalcStacks &)>> functions{
@@ -144,11 +149,15 @@ namespace flexMC::functionsReal
                               binary_function f,
                               double init)
         {
-            assert(stacks.size(CType::vector) > 0);
-            const std::vector<double> &back = stacks.vectorsBack();
-            const double res = std::accumulate(back.cbegin(), back.cend(), init, f);
-            stacks.popVector();
-            stacks.pushScalar(res);
+            assert(!stacks.vectorSizes().empty());
+            const std::size_t s = stacks.vectorSizes().back();
+            assert(stacks.vectors().size() >= s);
+            const auto end = stacks.vectors().end();
+            const auto begin = end - s;
+            const double res = std::accumulate(begin, end, init, f);
+            stacks.vectors().erase(begin, end);
+            stacks.vectorSizes().pop_back();
+            stacks.scalars().push_back(res);
         }
 
         const StringMap<std::function<void(CalcStacks &)>> functions{
@@ -204,18 +213,18 @@ namespace flexMC::functionsReal
         void argMinScalars(CalcStacks &stacks, const std::size_t &size);
 
         template<class binary_function>
-        void accumulateScalars(CalcStacks &stacks,
-                               binary_function f,
-                               double init,
-                               const std::size_t &size)
+        void accumulate(CalcStacks &stacks,
+                        binary_function f,
+                        double init,
+                        const std::size_t &size)
         {
             assert(stacks.size(CType::scalar) >= size);
             for (size_t i{0}; i < size; ++i)
             {
-                init = f(init, stacks.scalarsBack());
-                stacks.popScalar();
+                init = f(init, stacks.scalars().back());
+                stacks.scalars().pop_back();
             }
-            stacks.pushScalar(init);
+            stacks.scalars().push_back(init);
         }
 
         template<class binary_function>
@@ -224,18 +233,18 @@ namespace flexMC::functionsReal
                     const std::size_t &size)
         {
             assert(stacks.size(CType::scalar) >= size);
-            double found = stacks.scalarsBack();
-            stacks.popScalar();
+            double found = stacks.scalars().back();
+            stacks.scalars().pop_back();
             for (size_t i{1}; i < size; ++i)
             {
-                const double next = stacks.scalarsBack();
+                const double next = stacks.scalars().back();
                 if (f(next, found))
                 {
                     found = next;
                 }
-                stacks.popScalar();
+                stacks.scalars().pop_back();
             }
-            stacks.pushScalar(found);
+            stacks.scalars().push_back(found);
         }
 
         const StringMap<std::function<void(CalcStacks &, const std::size_t &size)>> functions{
@@ -243,13 +252,13 @@ namespace flexMC::functionsReal
                         flexMC::SUM,
                         [capture0 = [](const double &left, const double &right)
                         { return left + right; }](CalcStacks &stacks, const std::size_t &size)
-                        { accumulateScalars(stacks, capture0, 0.0, size); }
+                        { accumulate(stacks, capture0, 0.0, size); }
                 },
                 {
                         flexMC::PROD,
                         [capture0 = [](const double &left, const double &right)
                         { return left * right; }](CalcStacks &stacks, const std::size_t &size)
-                        { accumulateScalars(stacks, capture0, 1.0, size); }
+                        { accumulate(stacks, capture0, 1.0, size); }
                 },
                 {
                         flexMC::MAX,

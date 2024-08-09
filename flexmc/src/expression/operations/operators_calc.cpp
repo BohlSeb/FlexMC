@@ -40,16 +40,19 @@ namespace flexMC
     void operatorsCalc::unary::scMinus(CalcStacks &stacks)
     {
         assert(stacks.size(CType::scalar) >= 1);
-        auto res = stacks.scalarsBack() * -1;
-        stacks.popScalar();
-        stacks.pushScalar(res);
+        auto res = stacks.scalars().back() * -1;
+        stacks.scalars().pop_back();
+        stacks.scalars().push_back(res);
     }
 
     void operatorsCalc::unary::vecMinus(CalcStacks &stacks)
     {
-        assert(stacks.size(CType::vector) >= 1);
-        std::vector<double> &back = stacks.vectorsBack();
-        std::ranges::transform(back, back.begin(), std::negate<double>());
+        assert(stacks.vectorSizes().size() > 0);
+        const std::size_t s = stacks.vectorSizes().back();
+        assert(stacks.vectors().size() >= s);
+        const auto end = stacks.vectors().end();
+        const auto begin = end - s;
+        std::transform(begin, end, begin, std::negate<double>());
     }
 
     std::string

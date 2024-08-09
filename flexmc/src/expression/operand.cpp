@@ -1,5 +1,7 @@
 #include <cassert>
 #include <stdexcept>
+#include <algorithm>
+#include <iterator>
 
 #include "operand.h"
 #include "calc_types.h"
@@ -28,7 +30,7 @@ namespace flexMC
     Operation compileNumberOperation(const double &value)
     {
         return Operation([value](CalcStacks &stacks)
-                         { stacks.pushScalar(value); });
+                         { stacks.scalars().emplace_back(value); });
     }
 
     CType compileVector(const std::size_t &num_args, Operands &stacks, MaybeError &report)
@@ -66,13 +68,22 @@ namespace flexMC
 
     void VectorAppend::operator()(CalcStacks &stacks) const
     {
-        assert(stacks.size(CType::scalar) >= size_);
-        std::vector<double> res(stacks.scalarsEnd() - size_, stacks.scalarsEnd());
-        for (size_t i{0}; i < size_; ++i)
-        {
-            stacks.popScalar();
-        }
-        stacks.pushVector(res);
+        assert(stacks.scalars().size() >= size_);
+        // bottleneck / bug?:
+        // we have the stack of the form stack([x, y, z, append_callback(3)]) which should result in [x, y, y] so the
+        // callback cannot pop_back() the values that it is done using.
+        // possible fix:
+        // making CalcStacks::vectors_ a std::deque instead of a std::vector, replacing push_back by
+        // push_front etc (this would also replace the slightly awkward iterators end = end(); begin = end - size;
+        // everywhere by the (faster?) begin = begin(); end = begin + size;)
+        // On the other hand, vector/dateList variables would have to be pushed back in reverse order.
+        // current fix:
+        // iterating twice below, not introducing std::deque
+        const auto end = stacks.scalars().end();
+        const auto begin = end - size_;
+        std::move(begin, end, std::back_inserter(stacks.vectors()));
+        stacks.scalars().erase(begin, end);
+        stacks.vectorSizes().push_back(size_);
     }
 
 }

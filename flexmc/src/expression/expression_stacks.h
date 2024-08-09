@@ -73,67 +73,71 @@ namespace flexMC
         CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size,
                    const std::size_t &d_l_size);
 
+        inline std::vector<SCALAR> &scalars()
+        { return scalars_; };
+
+        inline const std::vector<SCALAR> &scalars() const
+        { return scalars_; };
+
+        inline std::vector<SCALAR> &vectors()
+        { return vectors_; };
+
+        inline const std::vector<SCALAR> &vectors() const
+        { return vectors_; };
+
+        inline std::vector<DATE> &dates()
+        { return dates_; };
+
+        inline const std::vector<DATE> &dates() const
+        { return dates_; };
+
+        inline std::vector<DATE> &datesLists()
+        { return date_lists_; };
+
+        inline const std::vector<DATE> &datesLists() const
+        { return date_lists_; };
+
+        inline std::vector<std::size_t> &vectorSizes()
+        { return v_sizes_; };
+
+        inline const std::vector<std::size_t> &vectorSizes() const
+        { return v_sizes_; };
+
+        inline std::vector<std::size_t> &dateListSizes()
+        { return d_l_sizes_; };
+
+        inline const std::vector<std::size_t> &dateListSizes() const
+        { return d_l_sizes_; };
+
+        void pushVector(const std::vector<SCALAR> &value);
+
+        void pushDateList(const std::vector<DATE> &value);
+
+        std::vector<SCALAR> vectorResult() const;
+
+        std::vector<DATE> dateListResult() const;
+
+        void popVectorResult();
+
+        void popDateListResult();
+
         bool ready() const;
 
         std::size_t size(const CType &type) const;
 
-        inline void pushScalar(const double &value)
-        { scalars_.push_back(value); }
-
-        inline void pushVector(const std::vector<double> &value)
-        { vectors_.push_back(value); }
-
-        inline const double &scalarsBack() const
-        { return scalars_.back(); }
-
-        inline const std::vector<double> &vectorsBack() const
-        { return vectors_.back(); }
-
-        inline std::vector<double> &vectorsBack()
-        { return vectors_.back(); }
-
-        inline std::vector<double> &vectorsBeforeBack()
-        { return vectors_.end()[-2]; }
-
-        inline const std::vector<double> &vectorsBeforeBack() const
-        { return vectors_.end()[-2]; }
-
-        inline void popScalar()
-        { scalars_.pop_back(); }
-
-        inline void popVector()
-        { vectors_.pop_back(); }
-
-        inline std::vector<double>::const_iterator scalarsEnd() const
-        { return scalars_.cend(); }
-
-        inline void pushDate(const int &value)
-        { dates_.push_back(value); }
-
-        inline void pushDateList(const std::vector<int> &value)
-        { date_lists_.push_back(value); }
-
-        inline void popDate()
-        { dates_.pop_back(); };
-
-        inline void popDateList()
-        { date_lists_.pop_back(); }
-
-        [[nodiscard]] inline const int &datesBack() const
-        { return dates_.back(); }
-
-        inline std::vector<int> &dateListsBack()
-        { return date_lists_.back(); }
-
     private:
 
-        std::vector<double> scalars_;
+        std::vector<SCALAR> scalars_;
 
-        std::vector<std::vector<double>> vectors_;
+        std::vector<DATE> dates_;
 
-        std::vector<int> dates_;
+        std::vector<SCALAR> vectors_;
 
-        std::vector<std::vector<int>> date_lists_;
+        std::vector<DATE> date_lists_;
+
+        std::vector<std::size_t> v_sizes_;
+
+        std::vector<std::size_t> d_l_sizes_;
 
     };
 
@@ -143,7 +147,7 @@ namespace flexMC
     public:
 
         // std::function may allocate
-        explicit Operation(const std::function<void(CalcStacks & stacks)> &call_back) : call_back_(call_back)
+        explicit Operation(const std::function<void(CalcStacks &stacks)> &call_back) : call_back_(call_back)
         {}
 
         void operator()(CalcStacks &stacks) const
@@ -151,7 +155,7 @@ namespace flexMC
 
     private:
 
-        const std::function<void(CalcStacks & stacks)> call_back_;
+        const std::function<void(CalcStacks &stacks)> call_back_;
 
     };
 

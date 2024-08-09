@@ -1,5 +1,5 @@
 name: ASAN gcc build
-on: [pull_request, workflow_dispatch]
+on: [push, workflow_dispatch]
 
 jobs:
 
