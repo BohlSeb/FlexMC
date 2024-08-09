@@ -74,52 +74,29 @@ namespace flexMC
         CalcStacks(const std::size_t &s_size, const std::size_t &v_size, const std::size_t &d_size,
                    const std::size_t &d_l_size);
 
-        bool ready() const;
+        inline std::vector<SCALAR> &scalars()
+        { return scalars_; };
 
-        std::size_t size(const CType &type) const;
+        inline const std::vector<SCALAR> &scalars() const
+        { return scalars_; };
 
-        // refactor this to get closer to vectors()
-        inline void pushScalar(const double &value)
-        { scalars_.push_back(value); }
+        inline std::vector<SCALAR> &vectors()
+        { return vectors_; };
 
-        inline void pushVector(const std::vector<double> &value)
-        {
-            for (const auto &v: value)
-            { vecs_2.push_back(v); }
-            v_sizes_.push_back(value.size());
-        }
+        inline const std::vector<SCALAR> &vectors() const
+        { return vectors_; };
 
+        inline std::vector<DATE> &dates()
+        { return dates_; };
 
-        inline const double &scalarsBack() const
-        { return scalars_.back(); }
+        inline const std::vector<DATE> &dates() const
+        { return dates_; };
 
-        inline std::vector<double> vectorResult() const
-        {
-            std::vector<double> out;
-            assert(!vectorSizes().empty());
-            const std::size_t s = vectorSizes().back();
-            assert(vectors().size() >= s);
-            const auto end = vectors().end();
-            const auto begin = end - s;
-            for (VECTOR::const_iterator it = begin; it != end; ++it) {
-                out.push_back(*it);
-            }
-            return out;
-        }
+        inline std::vector<DATE> &datesLists()
+        { return date_lists_; };
 
-        inline void popVector()
-        {
-            assert(vectorSizes().size() == 1);
-            const std::size_t s = vectorSizes().back();
-            assert(vectors().size() == s);
-            popVector2(s);
-            vectorSizes().pop_back(); }
-
-        inline std::vector<double> &vectors()
-        { return vecs_2; };
-
-        inline const std::vector<double> &vectors() const
-        { return vecs_2; };
+        inline const std::vector<DATE> &datesLists() const
+        { return date_lists_; };
 
         inline std::vector<std::size_t> &vectorSizes()
         { return v_sizes_; };
@@ -127,58 +104,41 @@ namespace flexMC
         inline const std::vector<std::size_t> &vectorSizes() const
         { return v_sizes_; };
 
+        inline std::vector<std::size_t> &dateListSizes()
+        { return d_l_sizes_; };
 
-//        inline std::vector<double> &vectorsBeforeBack()
-//        { return vectors_.end()[-2]; }
-//
-//        inline const std::vector<double> &vectorsBeforeBack() const
-//        { return vectors_.end()[-2]; }
+        inline const std::vector<std::size_t> &dateListSizes() const
+        { return d_l_sizes_; };
 
-        inline void popScalar()
-        { scalars_.pop_back(); }
+        void pushVector(const std::vector<SCALAR> &value);
 
-        inline void popVector2(const std::size_t size)
-        {
-            for (size_t s{0}; s < size; ++s)
-            { vecs_2.pop_back(); }
-        }
+        void pushDateList(const std::vector<DATE> &value);
 
-        //
+        std::vector<SCALAR> vectorResult() const;
 
-        inline std::vector<double>::const_iterator scalarsEnd() const
-        { return scalars_.cend(); }
+        std::vector<DATE> dateListResult() const;
 
-        inline void pushDate(const int &value)
-        { dates_.push_back(value); }
+        void popVectorResult();
 
-        inline void pushDateList(const std::vector<int> &value)
-        { date_lists_.push_back(value); }
+        void popDateListResult();
 
-        inline void popDate()
-        { dates_.pop_back(); };
+        bool ready() const;
 
-        inline void popDateList()
-        { date_lists_.pop_back(); }
-
-        [[nodiscard]] inline const int &datesBack() const
-        { return dates_.back(); }
-
-        inline std::vector<int> &dateListsBack()
-        { return date_lists_.back(); }
+        std::size_t size(const CType &type) const;
 
     private:
 
-        std::vector<double> scalars_;
+        std::vector<SCALAR> scalars_;
 
-        std::vector<std::vector<double>> vectors_;
+        std::vector<DATE> dates_;
 
-        std::vector<double> vecs_2;
+        std::vector<SCALAR> vectors_;
+
+        std::vector<DATE> date_lists_;
 
         std::vector<std::size_t> v_sizes_;
 
-        std::vector<int> dates_;
-
-        std::vector<std::vector<int>> date_lists_;
+        std::vector<std::size_t> d_l_sizes_;
 
     };
 

@@ -61,20 +61,20 @@ TEST(StaticVStorage, SetGetUnused)
         switch (return_type)
         {
             case scalar:
-                ASSERT_EQ(s, calc_stacks.scalarsBack());
-                calc_stacks.popScalar();
+                ASSERT_EQ(s, calc_stacks.scalars().back());
+                calc_stacks.scalars().pop_back();
                 break;
             case vector:
                 ASSERT_EQ(v, calc_stacks.vectorResult());
-                calc_stacks.popVector();
+                calc_stacks.popVectorResult();
                 break;
             case date:
-                ASSERT_EQ(d, calc_stacks.datesBack());
-                calc_stacks.popDate();
+                ASSERT_EQ(d, calc_stacks.scalars().back());
+                calc_stacks.dates().pop_back();
                 break;
             case dateList:
-                ASSERT_EQ(d_l, calc_stacks.dateListsBack());
-                calc_stacks.popDateList();
+                ASSERT_EQ(d_l, calc_stacks.dateListResult());
+                calc_stacks.popDateListResult();
                 break;
             default:
                 break;

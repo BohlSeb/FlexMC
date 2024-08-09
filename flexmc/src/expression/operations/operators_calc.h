@@ -50,11 +50,11 @@ namespace flexMC::operatorsCalc
         template<class binary_operator>
         void scSc(CalcStacks &stacks, const binary_operator f)
         {
-            const double right = stacks.scalarsBack();
-            stacks.popScalar();
-            const double left = stacks.scalarsBack();
-            stacks.popScalar();
-            stacks.pushScalar(f(left, right));
+            const double right = stacks.scalars().back();
+            stacks.scalars().pop_back();
+            const double left = stacks.scalars().back();
+            stacks.scalars().pop_back();
+            stacks.scalars().push_back(f(left, right));
         }
 
         template<class binary_operator>
@@ -65,8 +65,8 @@ namespace flexMC::operatorsCalc
             assert(stacks.vectors().size() >= s);
             const auto right_end = stacks.vectors().end();
             const auto right_begin = right_end - s;
-            const double left = stacks.scalarsBack();
-            stacks.popScalar();
+            const double left = stacks.scalars().back();
+            stacks.scalars().pop_back();
             std::transform(
                     right_begin,
                     right_end,
@@ -84,12 +84,12 @@ namespace flexMC::operatorsCalc
             assert(stacks.vectors().size() >= s);
             const auto left_end = stacks.vectors().end();
             const auto left_begin = left_end - s;
-            const double right = stacks.scalarsBack();
-            stacks.popScalar();
+            const double right = stacks.scalars().back();
+            stacks.scalars().pop_back();
             std::transform(
                     left_begin,
                     left_end,
-                    left_end,
+                    left_begin,
                     [f, right](auto &left_)
                     { return f(left_, right); }
             );
@@ -107,14 +107,14 @@ namespace flexMC::operatorsCalc
             const auto right_begin = right_end - s;
             const auto left_begin = right_begin - s;
             std::transform(
-                    right_begin,
-                    right_end,
                     left_begin,
+                    right_end,
+                    right_begin,
                     left_begin,
                     [f](auto &left_, auto &right_)
                     { return f(left_, right_); }
             );
-            stacks.popVector2(s);
+            stacks.vectors().erase(right_begin, right_end);
         }
 
         using

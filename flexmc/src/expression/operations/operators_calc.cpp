@@ -40,9 +40,9 @@ namespace flexMC
     void operatorsCalc::unary::scMinus(CalcStacks &stacks)
     {
         assert(stacks.size(CType::scalar) >= 1);
-        auto res = stacks.scalarsBack() * -1;
-        stacks.popScalar();
-        stacks.pushScalar(res);
+        auto res = stacks.scalars().back() * -1;
+        stacks.scalars().pop_back();
+        stacks.scalars().push_back(res);
     }
 
     void operatorsCalc::unary::vecMinus(CalcStacks &stacks)

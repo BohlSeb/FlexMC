@@ -79,7 +79,7 @@ int main()
          * "3[(3]"
          */
         const std::string program = "1 / EXP ([0.0, 1.0, 2.0] ) - 1";
-        const std::string program_err = "1 + (1, 2, 3)";
+        const std::string program_err = "(-1, -1) - (1, 1)";
         auto current = program_err;
         std::cout << "Program to parse >>" << std::endl;
         std::cout << current << std::endl << std::endl;
@@ -129,8 +129,8 @@ int main()
                     expression(c_stacks);
                     if (c_stacks.size(CType::scalar) == 1)
                     {
-                        std::cout << "Double result: " << c_stacks.scalarsBack() << std::endl;
-                        c_stacks.popScalar();
+                        std::cout << "Double result: " << c_stacks.scalars().back() << std::endl;
+                        c_stacks.scalars().pop_back();
                     }
                     else if (c_stacks.vectorSizes().size() == 1)
                     {
@@ -141,7 +141,7 @@ int main()
                             std::cout << r << ", ";
                         }
                         std::cout << "]" << std::endl;
-                        c_stacks.popVector();
+                        c_stacks.popVectorResult();
                     }
                     else
                     {

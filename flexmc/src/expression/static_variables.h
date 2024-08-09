@@ -169,7 +169,7 @@ namespace flexMC
         {
             const SCALAR value = get<SCALAR>(name);
             return Operation([value](CalcStacks &stacks)
-                             { stacks.pushScalar(value); });
+                             { stacks.scalars().emplace_back(value); });
         }
 
         Operation compile_(const std::string &name, TAlias<VECTOR>)
@@ -183,7 +183,7 @@ namespace flexMC
         {
             const DATE value = get<DATE>(name);
             return Operation([value](CalcStacks &stacks)
-                             { stacks.pushDate(value); });
+                             { stacks.scalars().emplace_back(value); });
         }
 
         Operation compile_(const std::string &name, TAlias<DATE_LIST>)

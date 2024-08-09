@@ -62,8 +62,8 @@ namespace flexMC::functionsReal
         const auto end = stacks.vectors().end();
         const auto begin = end - s;
         const auto it = std::max_element(begin, end);
-        stacks.pushScalar(*it);
-        stacks.popVector2(s);
+        stacks.scalars().push_back(*it);
+        stacks.vectors().erase(begin, end);
         stacks.vectorSizes().pop_back();
     }
 
@@ -75,8 +75,8 @@ namespace flexMC::functionsReal
         const auto end = stacks.vectors().end();
         const auto begin = end - s;
         const auto it = std::min_element(begin, end);
-        stacks.pushScalar(*it);
-        stacks.popVector2(s);
+        stacks.scalars().push_back(*it);
+        stacks.vectors().erase(begin, end);
         stacks.vectorSizes().pop_back();
     }
 
@@ -88,8 +88,8 @@ namespace flexMC::functionsReal
         const auto end = stacks.vectors().end();
         const auto begin = end - s;
         const auto res = std::distance(begin, std::max_element(begin, end));
-        stacks.pushScalar(static_cast<double>(res));
-        stacks.popVector2(s);
+        stacks.scalars().push_back(static_cast<double>(res));
+        stacks.vectors().erase(begin, end);
         stacks.vectorSizes().pop_back();
     }
 
@@ -101,8 +101,8 @@ namespace flexMC::functionsReal
         const auto end = stacks.vectors().end();
         const auto begin = end - s;
         const auto res = std::distance(begin, std::min_element(begin, end));
-        stacks.pushScalar(static_cast<double>(res));
-        stacks.popVector2(s);
+        stacks.scalars().push_back(static_cast<double>(res));
+        stacks.vectors().erase(begin, end);
         stacks.vectorSizes().pop_back();
     }
 
@@ -111,30 +111,29 @@ namespace flexMC::functionsReal
         assert(stacks.vectorSizes().size() > 0);
         const std::size_t s = stacks.vectorSizes().back();
         assert(stacks.vectors().size() >= s);
-        stacks.pushScalar(static_cast<double>(s));
-        stacks.popVector2(s);
+        stacks.scalars().push_back(static_cast<double>(s));
+        stacks.vectors().erase(stacks.vectors().end() - s, stacks.vectors().end());
         stacks.vectorSizes().pop_back();
     }
 
     void reduceArguments::argMaxScalars(CalcStacks &stacks, const std::size_t &size)
     {
         assert(stacks.size(CType::scalar) >= size);
-        const std::vector<double>::const_iterator end = stacks.scalarsEnd();
-        const std::vector<double>::const_iterator begin = end - size;
+        const auto end = stacks.scalars().end();
+        const auto begin = end - size;
         const auto res = std::distance(begin, std::max_element(begin, end));
-        for (size_t i{0}; i < size; ++i)
-        { stacks.popScalar(); }
-        stacks.pushScalar(static_cast<double>(res));
+        stacks.scalars().erase(begin, end);
+        stacks.scalars().push_back(static_cast<double>(res));
     }
 
     void reduceArguments::argMinScalars(CalcStacks &stacks, const std::size_t &size)
     {
         assert((size > 0) && (stacks.size(CType::scalar) >= size));
-        const std::vector<double> temp(stacks.scalarsEnd() - size, stacks.scalarsEnd());
-        const auto res = std::distance(temp.cbegin(), std::ranges::min_element(temp));
-        for (size_t i{0}; i < size; ++i)
-        { stacks.popScalar(); }
-        stacks.pushScalar(static_cast<double>(res));
+        const auto end = stacks.scalars().end();
+        const auto begin = end - size;
+        const auto res = std::distance(begin, std::min_element(begin, end));
+        stacks.scalars().erase(begin, end);
+        stacks.scalars().push_back(static_cast<double>(res));
     }
 
 }

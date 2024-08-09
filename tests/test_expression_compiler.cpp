@@ -78,8 +78,8 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression(c_stacks);
 
-        const double result = c_stacks.scalarsBack();
-        c_stacks.popScalar();
+        const double result = c_stacks.scalars().back();
+        c_stacks.scalars().pop_back();
         ASSERT_TRUE(c_stacks.ready());
         EXPECT_DOUBLE_EQ(c.result, result);
 
@@ -98,7 +98,7 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
         for (const auto &expression: expressions)
         {
             expression(c_stacks);
-            c_stacks.popScalar();
+            c_stacks.scalars().pop_back();
             ASSERT_TRUE(c_stacks.ready());
         }
     }
@@ -107,11 +107,11 @@ TEST(ExpressionCompiler, RealOperatorsScalar)
 
 void areEqualVector(const std::vector<double> &expected, const std::vector<double> &result)
 {
-    auto res = result.cbegin();
-    for (const double it: expected)
+    auto calculated = result.cbegin();
+    for (const double expected_result: expected)
     {
-        EXPECT_DOUBLE_EQ(it, *res);
-        ++res;
+        EXPECT_DOUBLE_EQ(expected_result, *calculated);
+        ++calculated;
     }
 }
 
@@ -167,7 +167,7 @@ TEST(ExpressionCompiler, RealOperatorsVector)
         expression(c_stacks);
 
         vec result = c_stacks.vectorResult();
-        c_stacks.popVector();
+        c_stacks.popVectorResult();
 
         ASSERT_TRUE(c_stacks.ready());
 
@@ -187,7 +187,7 @@ TEST(ExpressionCompiler, RealOperatorsVector)
         for (const auto &expression: expressions)
         {
             expression(c_stacks);
-            c_stacks.popVector();
+            c_stacks.popVectorResult();
             ASSERT_TRUE(c_stacks.ready());
         }
     }
@@ -243,8 +243,8 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression(c_stacks);
 
-        const double result = c_stacks.scalarsBack();
-        c_stacks.popScalar();
+        const double result = c_stacks.scalars().back();
+        c_stacks.scalars().pop_back();
         ASSERT_TRUE(c_stacks.ready());
         EXPECT_DOUBLE_EQ(c.result, result);
 
@@ -263,7 +263,7 @@ TEST(ExpressionCompiler, RealOperatorsReduce)
         for (const auto &expression: expressions)
         {
             expression(c_stacks);
-            c_stacks.popScalar();
+            c_stacks.scalars().pop_back();
             ASSERT_TRUE(c_stacks.ready());
         }
     }
@@ -337,8 +337,8 @@ TEST(ExpressionCompiler, ScalarStaticVariables)
         CalcStacks c_stacks(compile_report.max_scalar, compile_report.max_vector, 0, 0);
         expression(c_stacks);
 
-        const double result = c_stacks.scalarsBack();
-        c_stacks.popScalar();
+        const double result = c_stacks.scalars().back();
+        c_stacks.scalars().pop_back();
         ASSERT_TRUE(c_stacks.ready());
         EXPECT_DOUBLE_EQ(c.result, result);
 
@@ -357,7 +357,7 @@ TEST(ExpressionCompiler, ScalarStaticVariables)
         for (const auto &expression: expressions)
         {
             expression(c_stacks);
-            c_stacks.popScalar();
+            c_stacks.scalars().pop_back();
             ASSERT_TRUE(c_stacks.ready());
         }
     }

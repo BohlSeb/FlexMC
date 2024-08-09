@@ -73,7 +73,7 @@ const std::vector<std::string> VECTOR_EXPRESSIONS = {
 };
 
 
-const std::vector<std::string> VECTOR_S_SCALARS = {
+const std::vector<std::string> VECTOR_S_VARIABLES = {
         "ABS((twos) / ((twos) - (fours))) * ones / ones + minus_one_two - two_minus_one",
         "longRange / (longRange + 1)",
         "SQUARE(SQRT(ABS(-1 * LOG(EXP((range))))))",
@@ -117,9 +117,7 @@ static void BM_Scalars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-//                auto result = stacks.scalarsBack();
-//                benchmark::DoNotOptimize(result);
-                stacks.popScalar();
+                stacks.scalars().pop_back();
                 assert(stacks.ready());
             }
         }
@@ -141,9 +139,7 @@ static void BM_Vectors(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-//                auto result = stacks.vectorResult();
-//                benchmark::DoNotOptimize(result);
-                stacks.popVector();
+                stacks.popVectorResult();
                 assert(stacks.ready());
             }
         }
@@ -165,9 +161,7 @@ static void BM_ReduceScalars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-//                auto result = stacks.scalarsBack();
-//                benchmark::DoNotOptimize(result);
-                stacks.popScalar();
+                stacks.scalars().pop_back();
                 assert(stacks.ready());
             }
         }
@@ -189,9 +183,7 @@ static void BM_ReduceVectors(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-//                auto result = stacks.scalarsBack();
-//                benchmark::DoNotOptimize(result);
-                stacks.popScalar();
+                stacks.scalars().pop_back();
                 assert(stacks.ready());
             }
         }
@@ -222,9 +214,7 @@ static void BM_StaticScalarVars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-//                auto result = stacks.scalarsBack();
-//                benchmark::DoNotOptimize(result);
-                stacks.popScalar();
+                stacks.scalars().pop_back();
                 assert(stacks.ready());
             }
         }
@@ -251,7 +241,7 @@ static void BM_StaticVectorVars(benchmark::State &state)
                    { return previous + 1; });
     s_variables.insert<VECTOR>("longRange", c);
 
-    const auto report = parseExpressions(VECTOR_S_SCALARS, expressions, s_variables);
+    const auto report = parseExpressions(VECTOR_S_VARIABLES, expressions, s_variables);
     CalcStacks stacks{report.max_scalar, report.max_vector, 0, 0};
     for (auto _: state)
     {
@@ -261,9 +251,7 @@ static void BM_StaticVectorVars(benchmark::State &state)
             for (const auto &exp: expressions)
             {
                 exp(stacks);
-//                auto result = stacks.vectorResult();
-//                benchmark::DoNotOptimize(result);
-                stacks.popVector();
+                stacks.popVectorResult();
                 assert(stacks.ready());
             }
         }
