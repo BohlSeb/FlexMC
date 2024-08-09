@@ -98,17 +98,17 @@ namespace flexMC::operatorsCalc
         template<class binary_operator>
         void vecVec(CalcStacks &stacks, binary_operator f)
         {
-            assert(stacks.vectorSizes().size() > 0);
+            assert(stacks.vectorSizes().size() > 1);
             const std::size_t s = stacks.vectorSizes().back();
-            assert(stacks.vectors().size() >= s + s);
             stacks.vectorSizes().pop_back();
             assert(stacks.vectorSizes().back() == s);
+            assert(stacks.vectors().size() >= s + s);
             const auto right_end = stacks.vectors().end();
             const auto right_begin = right_end - s;
             const auto left_begin = right_begin - s;
             std::transform(
                     left_begin,
-                    right_end,
+                    right_begin,
                     right_begin,
                     left_begin,
                     [f](auto &left_, auto &right_)
