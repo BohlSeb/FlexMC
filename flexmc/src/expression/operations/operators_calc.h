@@ -53,8 +53,7 @@ namespace flexMC::operatorsCalc
             const double right = stacks.scalars().back();
             stacks.scalars().pop_back();
             const double left = stacks.scalars().back();
-            stacks.scalars().pop_back();
-            stacks.scalars().push_back(f(left, right));
+            stacks.scalars().back() = f(left, right);
         }
 
         template<class binary_operator>

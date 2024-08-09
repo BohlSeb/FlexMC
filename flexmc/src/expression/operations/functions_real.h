@@ -48,9 +48,9 @@ namespace flexMC::functionsReal
         void calculateScalar(CalcStacks &stacks, scalar_function f)
         {
             assert(stacks.size(scalar) > 0);
-            const double res = f(stacks.scalars().back());
-            stacks.scalars().pop_back();
-            stacks.scalars().push_back(res);
+            stacks.scalars().back() = f(stacks.scalars().back());
+//            stacks.scalars().pop_back();
+//            stacks.scalars().push_back(res);
         }
 
         template<class scalar_function>
