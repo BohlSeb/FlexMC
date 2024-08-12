@@ -21,6 +21,9 @@ namespace flexMC
         void push_back(const Operation &operation)
         { items_.push_back(operation); }
 
+        void clear()
+        { items_.clear(); };
+
         void operator()(CalcStacks &stacks) const;
 
     private:

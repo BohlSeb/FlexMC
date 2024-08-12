@@ -5,11 +5,12 @@ set(SOURCES
         lexer.cpp
         calc_types.cpp
         language_error.cpp
+        expression/operand.cpp
         expression/static_variables.h
         expression/expression_parser.cpp
         expression/expression_compiler.cpp
         expression/expression_stacks.cpp
-        expression/operand.cpp
+        expression/expression_calculator.cpp
         expression/operations/operation_compiler.cpp
         expression/operations/functions_real.cpp
         expression/operations/operators_calc.cpp

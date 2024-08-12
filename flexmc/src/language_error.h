@@ -37,6 +37,6 @@ namespace flexMC
 
     };
 
-    std::string printError(const std::string_view err_prefix, const std::string_view line, const MaybeError &report);
+    std::string printError(const std::string_view err_prefix, const std::string_view line, const MaybeError &report);  // line_no default 0
 
 }

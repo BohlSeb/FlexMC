@@ -16,6 +16,7 @@
 #include "expression_stacks.h"
 #include "expression_compiler.h"
 #include "operators_calc.h"
+#include "expression_calculator.h"
 
 using namespace flexMC;
 
@@ -38,39 +39,27 @@ int main()
 
     StaticVStorage storage;
 
-    SCALAR value = 1.0;
-//    const std::vector<double> values{1, 2, 3, 4};
+    const std::string expr = "SQRT(SUM((x, y) * (x, y)))";
 
-    storage.insert<SCALAR>("x", value);
-//    storage.insert<VECTOR>("x", values);
-    storage.insert<VECTOR>("x", {30.0, 40.0});
-//    storage.insert<SCALAR>("z", 40.0);
-//    storage.insert<SCALAR>("x", 5);
-
-    std::vector<double> values{1, 2, 3, 4};
-
-    const auto f = [](const SCALAR &value)
-    { return value * value; };
-
-    std::cout << "Values before" << "\n";
-
-    for (const auto &v: values)
+    try
     {
-        std::cout << v << " ";
-    }
-    std::cout << "\n";
+        StaticExpressionCalculator calculator(expr);
 
-    calculateVector(values, 4, f);
-
-    std::cout << "Values before" << "\n";
-
-    for (const auto &v: values)
+        calculator.setVariable<SCALAR>("x", 2);
+        calculator.setVariable<SCALAR>("y", 2);
+        SCALAR result = calculator.calculateScalar();
+        std::cout << "Result: " << result << "\n";
+        calculator.setVariable<SCALAR>("x", 4);
+        calculator.setVariable<SCALAR>("y", 4);
+        result = calculator.calculateScalar();
+        std::cout << "Result: " << result << "\n";
+    } catch (const std::runtime_error &e)
     {
-        std::cout << v << " ";
+        std::cout << e.what() << "\n";
     }
-    std::cout << "\n";
 
-    const bool run_main = true;
+
+    const bool run_main = false;
 
     if (run_main)
     {

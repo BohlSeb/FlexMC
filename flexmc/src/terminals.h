@@ -108,4 +108,6 @@ namespace flexMC {
 		R"(^\t)",
 		R"(^\s)",
 	};
+
+    const std::size_t MAX_LINE_LEN = 1000;
 };
