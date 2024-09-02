@@ -128,7 +128,10 @@
       "inherits": [
         "windows-gcc-base",
         "_release"
-      ]
+      ],
+      "cacheVariables": {
+        "BENCHMARK_ENABLE_GTEST_TESTS": false
+      }
     },
     {
       "name": "windows-msvc-debug",
