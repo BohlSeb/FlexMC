@@ -10,7 +10,6 @@ namespace flexMC
 
     Lexer::Lexer()
     {
-
         std::string all_groups_1 = "(";
         for (const auto &s: R_GROUPS_1)
         {
@@ -31,14 +30,12 @@ namespace flexMC
 
     std::deque<Token> Lexer::tokenize(const std::string_view line)
     {
-        const std::size_t max_line_length = 1000;  // make a setting
-
         auto [token, suffix] = nextTok(line, 0);
         Token::Type previous = token.type;
         std::size_t line_no = token.size;
         std::deque<Token> out({token});
 
-        while ((previous != Token::Type::eof) && (previous != Token::Type::undefined) && (line_no <= max_line_length))
+        while ((previous != Token::Type::eof) && (previous != Token::Type::undefined) && (line_no <= MAX_LINE_LEN))
         {
             auto [next, suffix_] = nextTok(suffix, line_no);
             previous = next.type;
