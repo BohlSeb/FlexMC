@@ -52,7 +52,7 @@ namespace flexMC
             }
             else
             {
-                report.setError("Variable is undefined", tok.start, tok.size);
+                report.setError("Variable is undefined", tok);
             }
         }
 

@@ -4,6 +4,8 @@
 #include <string>
 #include <string_view>
 
+#include "tokens.h"
+
 namespace flexMC
 {
 
@@ -11,6 +13,8 @@ namespace flexMC
     {
 
     public:
+
+        void setError(const std::string_view msg, const Token& token);
 
         void setError(const std::string_view msg, const std::size_t &at, const std::size_t &len);
 

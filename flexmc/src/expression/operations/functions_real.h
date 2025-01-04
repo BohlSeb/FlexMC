@@ -49,8 +49,6 @@ namespace flexMC::functionsReal
         {
             assert(stacks.size(scalar) > 0);
             stacks.scalars().back() = f(stacks.scalars().back());
-//            stacks.scalars().pop_back();
-//            stacks.scalars().push_back(res);
         }
 
         template<class scalar_function>

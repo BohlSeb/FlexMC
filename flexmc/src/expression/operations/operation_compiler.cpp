@@ -120,7 +120,7 @@ namespace flexMC
         {
             auto msg = fmt::format(R"(Function "{}" with argument type <{}> takes exactly {} argument(s), got {})",
                                    function.value, cType2Str(arg_type), expected, num_args);
-            report.setError(msg, function.start, function.size);
+            report.setError(msg, function);
         }
     }
 
@@ -148,7 +148,7 @@ namespace flexMC
                         function.value, cType2Str(arg_type), min_args, num_args
                 );
             }
-            report.setError(msg, function.start, function.size);
+            report.setError(msg, function);
         }
 
     }
@@ -182,7 +182,7 @@ namespace flexMC
             }
             return Operation(std::function<void(CalcStacks &)>(operatorsCalc::unary::vecMinus));
         }
-        report.setError("Internal Error: Unknown operator", 1, 1);
+        report.setError("Internal Error: Unknown operator", token.start, 1);
         return Operation(std::function<void(CalcStacks &)>({}));
     }
 

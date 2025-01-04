@@ -18,7 +18,7 @@ namespace flexMC
             value_ = std::stod(token.value);
         } catch (const std::invalid_argument &error)
         {
-            report.setError(error.what(), token.start, token.size);
+            report.setError(error.what(), token);
         }
         if (!report.isError())
         {
@@ -74,8 +74,8 @@ namespace flexMC
         // callback cannot pop_back() the values that it is done using.
         // possible fix:
         // making CalcStacks::vectors_ a std::deque instead of a std::vector, replacing push_back by
-        // push_front etc (this would also replace the slightly awkward iterators end = end(); begin = end - size;
-        // everywhere by the (faster?) begin = begin(); end = begin + size;)
+        // push_front etc. This would also replace the slightly awkward iterators end = end(); begin = end - size;
+        // everywhere by the (faster?) begin = begin(); end = begin + size;
         // On the other hand, vector/dateList variables would have to be pushed back in reverse order.
         // current fix:
         // iterating twice below, not introducing std::deque

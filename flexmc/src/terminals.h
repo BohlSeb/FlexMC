@@ -8,9 +8,9 @@ namespace flexMC
 
     // Keywords
     const std::string PAY = "PAY";
-    const std::string STOP = "STOP";
+    const std::string TERMINATE = "TERMINATE";
     const std::string IF = "IF";
-    const std::string THEN = "THEN";
+    const std::string CONTINUOUS = "CONTINUOUS";
     const std::string ELSE = "ELSE";
     const std::string ASSIGN = ":=";
     const std::string PLUS_ASSIGN = "+=";
@@ -74,13 +74,13 @@ namespace flexMC
 
     const std::array<std::string, 35> R_GROUPS_2 = {
             R"(^IF)",
-            R"(^THEN)",
+            R"(^CONTINUOUS)",
             R"(^ELSE)",
             R"(^AND)",
             R"(^OR)",
             R"(^NOT)",
             R"(^PAY)",
-            R"(^STOP)",
+            R"(^TERMINATE)",
             R"(^EXP)",
             R"(^LOG)",
             R"(^ABS)",

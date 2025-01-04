@@ -7,12 +7,16 @@
 
 namespace flexMC
 {
+
+    void MaybeError::setError(const std::string_view msg, const Token &token)
+    {
+        setError(msg, token.start, token.size);
+    }
+
     void MaybeError::setError(const std::string_view msg, const std::size_t &at, const std::size_t &len)
     {
-        assert(!isError());
-        err_msg_ = msg;
-        err_at_ = at;
-        err_len_ = len;
+        setMessage(msg);
+        setPosition(at, len);
     }
 
 

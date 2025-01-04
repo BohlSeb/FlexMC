@@ -67,6 +67,11 @@ namespace flexMC
         return "Tok(t=" + type2String() + ", v=" + out + ")";
     }
 
+    std::string Tokens::printType(const Token::Type &t) {
+        Token tok(t, "", 0);
+        return tok.type2String();
+    }
+
     Token::Type Tokens::getType(const std::string &symbol)
     {
         auto lookUp = Tokens::TYPES.find(symbol);
@@ -107,7 +112,7 @@ namespace flexMC
         return call;
     }
 
-    Token Tokens::makeOperator(const Token::Type t, const std::string &val, const std::size_t &at)
+    Token Tokens::makeOperator(const Token::Type &t, const std::string &val, const std::size_t &at)
     {
         ParsingContext context;
         if (val == POW)

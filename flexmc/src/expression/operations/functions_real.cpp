@@ -22,7 +22,7 @@ namespace flexMC::functionsReal
                     cType2Str(vector),
                     cType2Str(arg_type)
             );
-            report.setError(msg, token.start, token.size);
+            report.setError(msg, token);
             return undefined;
         }
         return arg_type;
