@@ -9,6 +9,6 @@
 namespace flexMC
 {
 
-    std::pair<MaybeError, std::deque<Token>> parseLineStart(const std::deque<Token> &line);
+    std::pair<MaybeError, std::deque<Token>> stripStartOfLine(std::deque<Token> line);
 
 }

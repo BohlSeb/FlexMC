@@ -23,12 +23,12 @@ int main()
               << APP_VERSION_MINOR << "."
               << APP_VERSION_PATCH << std::endl;
 
-    std::string program = "    myVar += ";
+    std::string program = "myVariableDate PAY *= ";
 
     Lexer l;
     std::deque<Token> infix = l.tokenize(program);
 
-    const auto [parse_report, line_start] = parseLineStart(infix);
+    const auto [parse_report, line_start] = stripStartOfLine(infix);
 
     std::cout << std::boolalpha << parse_report.isError() << "\n";
     if (parse_report.isError()) {

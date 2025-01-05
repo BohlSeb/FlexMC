@@ -83,7 +83,7 @@ namespace flexMC
         {
             return std::make_pair(Tokens::makeContextualized(match_.str(), line_no), match_.suffix());
         }
-        return std::make_pair(Token(undefined, suffix.data(), line_no), suffix.data());
+        return std::make_pair(Token(undefined, suffix.data(), line_no, 0), suffix.data());
     }
 
 }

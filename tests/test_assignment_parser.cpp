@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <ranges>
-
 #include "lexer.h"
 #include "assignment_parser.h"
 
@@ -16,8 +14,6 @@ TEST(StatementParser, AssignmentParser)
         const int n_tokens;
         const std::string infix;
     };
-
-    // Test cases from chat gbt
 
     std::vector<TestCase> valid_cases = {
         {3, "myDate myVar := "},
@@ -45,15 +41,19 @@ TEST(StatementParser, AssignmentParser)
         {2, "    TERMINATE "},
     };
 
-    std::vector<TestCase> bad_cases = {
-        {3, "myDate myVar myVar := "},
-        {3, "myDate := "},
-        {3, "PAY myDate PAY := "},
-        {3, "myDate CONTINUOUS"},
-        {3, "BAD_SYMBOL myVar *= "},
-        {3, "        myVar := "},
-        {3, "TERMINATE"},
-        {3, "IF xxx"},
+    std::vector<std::string> bad_cases = {
+        "myDate myVar myVar := ",
+        "myDate := ",
+        "PAY myDate PAY := ",
+        "myDate CONTINUOUS",
+        "BAD_SYMBOL myVar *= ",
+        "myVar BAD_SYMBOL *= ",
+        "        myVar := ",
+        "TERMINATE",
+        "IF xxx",
+        "",
+        "    ",
+        "   ",
     };
 
     Lexer lexer;
@@ -62,19 +62,19 @@ TEST(StatementParser, AssignmentParser)
     {
 
         const std::deque<Token> tokens = lexer.tokenize(c.infix);
-        const auto [parse_report, tokens_front] = parseLineStart(tokens);
+        const auto [parse_report, tokens_front] = stripStartOfLine(tokens);
         EXPECT_FALSE(parse_report.isError());
         EXPECT_EQ(tokens_front.size(), c.n_tokens);
 
     }
 
-    for (const auto &c: bad_cases)
+    for (const auto &infix: bad_cases)
     {
 
-        const std::deque<Token> tokens = lexer.tokenize(c.infix);
-        const auto [parse_report, tokens_front] = parseLineStart(tokens);
+        const std::deque<Token> tokens = lexer.tokenize(infix);
+        const auto [parse_report, tokens_front] = stripStartOfLine(tokens);
         EXPECT_TRUE(parse_report.isError());
-        std::cout << printError("Assignment Parser", c.infix, parse_report) << "\n";
+        std::cout << printError("Assignment Parser", infix, parse_report) << "\n";
 
     }
 
