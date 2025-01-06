@@ -155,7 +155,7 @@ namespace flexMC
         }
         if (spaces != 0 && spaces != 4)
         {
-            auto tok = Token(Token::Type::id, std::string(" ", spaces), 0);
+            auto tok = Token(Token::Type::id, std::string(spaces, ' '), 0);
             setError(report, 3, tok, c_beg, c_end);
             return {report, {}};
         }
