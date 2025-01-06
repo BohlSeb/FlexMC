@@ -24,18 +24,18 @@ namespace flexMC
 
             const std::vector<Option> options;
 
-            Option(std::string token_value, Token::Type token_type, bool check_with_type) :
-                value(std::move(token_value)),
-                type(token_type),
-                check_type(check_with_type)
-            {};
-
             Option(std::string token_value, Token::Type token_type, bool check_with_type,
-                   const std::vector<Option> &next_options) :
+                   const std::vector<Option>& next_options) :
                 value(std::move(token_value)),
                 type(token_type),
                 check_type(check_with_type),
                 options(next_options)
+            {};
+
+            Option(std::string token_value, Token::Type token_type, bool check_with_type) :
+                value(std::move(token_value)),
+                type(token_type),
+                check_type(check_with_type)
             {};
 
         };
