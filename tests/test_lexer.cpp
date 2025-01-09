@@ -23,7 +23,9 @@ TEST(Lexer, ValidKeywordsAndSymbols)
             Token(kW, "IF", 0),
             Token(kW, "CONTINUOUS", 0),
             Token(kW, "ELSE", 0),
-            Token(kW, "PAY", 0),
+            Token(fun, "PAY", 0),
+            Token(fun, "PAY_AT", 0),
+            Token(fun, "PAY", 0),
             Token(kW, "TERMINATE", 0),
             Token(kW, ":=", 0),
             Token(kW, "+=", 0),
@@ -68,6 +70,8 @@ TEST(Lexer, ValidKeywordsAndSymbols)
     std::string testStr = "IF";
     testStr += "CONTINUOUS";
     testStr += "ELSE";
+    testStr += "PAY";
+    testStr += "PAY_AT";
     testStr += "PAY";
     testStr += "TERMINATE";
     testStr += ":=";

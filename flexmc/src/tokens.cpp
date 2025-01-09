@@ -74,14 +74,14 @@ namespace flexMC
 
     Token::Type Tokens::getType(const std::string &symbol)
     {
-        auto lookUp = Tokens::TYPES.find(symbol);
-        if (lookUp == Tokens::TYPES.end())
+        auto it = Tokens::TYPES.find(symbol);
+        if (it == Tokens::TYPES.end())
         {
             return Token::Type::undefined;
         }
         else
         {
-            return lookUp->second;
+            return it->second;
         }
     }
 
@@ -181,7 +181,7 @@ namespace flexMC
             context.is_infix = true;
             return {t, val, at, context};
         }
-        return Token(Token::Type::undefined, val, at);
+        return {Token::Type::undefined, val, at};
     }
 
     Token Tokens::makeContextualized(const std::string &val, const std::size_t &at)

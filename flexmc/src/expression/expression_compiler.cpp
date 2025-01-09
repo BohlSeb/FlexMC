@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <ranges>
 
 #include "operand.h"
 #include "operation_compiler.h"

@@ -6,10 +6,9 @@
 #include "terminals.h"
 #include "tokens.h"
 
-namespace flexMC
-{
 
-    namespace assignment
+
+    namespace flexMC::statement
     {
 
         using
@@ -52,8 +51,11 @@ namespace flexMC
                 }),
                 Option(IF, undefined, false),
                 Option(PAY, undefined, false, {
-                    Option(ASSIGN, undefined, false),
+                    Option(L_PAREN, undefined, false),
                 }),
+                Option(PAY_AT, undefined, false, {
+                    Option(L_PAREN, undefined, false),
+                })
             }),
             Option(CONTINUOUS, undefined, false, {
                 Option("", id, true, {
@@ -76,11 +78,13 @@ namespace flexMC
                     Option(POW_ASSIGN, undefined, false),
                 }),
                 Option(PAY, undefined, false, {
-                    Option(ASSIGN, undefined, false),
+                    Option(L_PAREN, undefined, false),
+                }),
+                Option(PAY_AT, undefined, false, {
+                    Option(L_PAREN, undefined, false),
                 }),
                 Option(TERMINATE, undefined, false),
             }),
             Option(ELSE, undefined, false),
         };
     }
-}
