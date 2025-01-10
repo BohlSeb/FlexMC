@@ -17,34 +17,34 @@ TEST(StatementParser, StartOfLineStripper)
     };
 
     std::vector<TestCase> valid_cases = {
-        {3, "myDate myVar := "},
-        {3, "myDate PAY("},
-        {3, "myDate PAY ("},
-        {3, "myDate PAY_AT("},
-        {3, "myDate PAY_AT ("},
-        {3, "myDate myVar += "},
-        {3, "myDate myVar -= "},
-        {3, "myDate myVar *= "},
-        {3, "myDate myVar /= "},
-        {3, "myDate myVar **= "},
-        {3, "CONTINUOUS myVar := "},
-        {3, "CONTINUOUS myVar += "},
-        {3, "CONTINUOUS myVar -= "},
-        {3, "CONTINUOUS myVar *= "},
-        {3, "CONTINUOUS myVar /= "},
-        {3, "CONTINUOUS myVar **= "},
-        {2, "myDate IF "},
-        {2, "CONTINUOUS IF "},
-        {3, "    myVar := "},
-        {3, "    myVar += "},
-        {3, "    myVar -= "},
-        {3, "    myVar *= "},
-        {3, "    myVar /= "},
-        {3, "    myVar **= "},
-        {3, "    PAY ( "},
-        {3, "    PAY( "},
-        {3, "    PAY_AT ( "},
-        {3, "    PAY_AT( "},
+        {3, "myDate myVar := x"},
+        {2, "myDate PAY() := x"},
+        {2, "myDate PAY () := x"},
+        {2, "myDate PAY_AT() := x"},
+        {2, "myDate PAY_AT () := x"},
+        {3, "myDate myVar += x"},
+        {3, "myDate myVar -= x"},
+        {3, "myDate myVar *= x"},
+        {3, "myDate myVar /= x"},
+        {3, "myDate myVar **= x"},
+        {3, "CONTINUOUS myVar := x"},
+        {3, "CONTINUOUS myVar += x"},
+        {3, "CONTINUOUS myVar -= x"},
+        {3, "CONTINUOUS myVar *= x"},
+        {3, "CONTINUOUS myVar /= x"},
+        {3, "CONTINUOUS myVar **= x"},
+        {2, "myDate IF x"},
+        {2, "CONTINUOUS IF x"},
+        {3, "    myVar := x"},
+        {3, "    myVar += x"},
+        {3, "    myVar -= x"},
+        {3, "    myVar *= x"},
+        {3, "    myVar /= x"},
+        {3, "    myVar **= x"},
+        {2, "    PAY () := x "},
+        {2, "    PAY() := x "},
+        {2, "    PAY_AT () := x "},
+        {2, "    PAY_AT() := x "},
         {2, "    TERMINATE "},
     };
 
@@ -72,22 +72,17 @@ TEST(StatementParser, StartOfLineStripper)
 
     for (const auto &c: valid_cases)
     {
-
         std::deque<Token> tokens = lexer.tokenize(c.infix);
-        const auto [parse_report, tokens_front] = statementPUtils::stripStartOfLine(tokens);
+        const auto [parse_report, parse_result] = parseLine(tokens);
         EXPECT_FALSE(parse_report.isError()) << "Expected no error for valid case: " << c.infix;
-        EXPECT_EQ(tokens_front.size(), c.n_tokens) << "Token size mismatch for valid case: " << c.infix;
-
+        EXPECT_EQ(parse_result.statement_begin.size(), c.n_tokens) << "Token size mismatch for valid case: " << c.infix;
     }
 
     for (const auto &infix: bad_cases)
     {
-
         std::deque<Token> tokens = lexer.tokenize(infix);
-        const auto [parse_report, tokens_front] = statementPUtils::stripStartOfLine(tokens);
+        const auto [parse_report, _] = parseLine(tokens);
         EXPECT_TRUE(parse_report.isError()) << "Expected error for bad case: " << infix;
-        std::cout << printError("Assignment Parser", infix, parse_report) << "\n";
-
     }
 
 }

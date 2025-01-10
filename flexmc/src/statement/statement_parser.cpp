@@ -1,7 +1,10 @@
 #include <cassert>
 #include <sstream>
 #include <fmt/format.h>
+#include <ranges>
 #include <algorithm>
+#include <numeric>
+#include <functional>
 #include <iostream>
 
 #include "statement_definitions.h"
@@ -17,60 +20,22 @@ namespace flexMC
         using
         enum Token::Type;
 
-        bool isSpace(const Token::Type &t)
-        { return ((t == wsp) || (t == tab)); }
+        auto IS_NOT_SPACE = [](const Token &t)
+        { return ((t.type != wsp) && (t.type != tab)); };
+
+        auto UNDEFINED = [](const Token &t)
+        { return t.type == undefined; };
 
         std::size_t countFrontSpaces(const std::deque<Token> &line)
         {
-
-            std::size_t spaces = 0;
-            for (const auto &token: line)
+            auto end = std::ranges::find_if(line, IS_NOT_SPACE);
+            return std::accumulate(line.begin(), end, 0, [](std::size_t acc, const Token &t)
             {
-                if (token.type == wsp)
-                {
-                    spaces += 1;
-                }
-                else if (token.type == tab)
-                {
-                    spaces += 4;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            return spaces;
+                return acc + (t.type == wsp ? 1 : 4);
+            });
         }
 
-        // returns error code 1: end of line reached, 2: undefined token, 0: OK
-        int stripFront(std::deque<Token> &line)
-        {
-            assert(!line.empty());
-            Token::Type start = line.front().type;
-
-            while (start != eof)
-            {
-                if (isSpace(start))
-                {
-                    line.pop_front();
-                    assert(!line.empty());  // type != eof cannot be last
-                    start = line.front().type;
-                }
-                else if (start == undefined)
-                {
-                    return 2;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            return 1;
-        }
-
-        using stdReadOnlyItOpt = std::vector<statement::Option>::const_iterator;
-
-        stdReadOnlyItOpt lookUp(const stdReadOnlyItOpt &begin, const stdReadOnlyItOpt &end, const Token &token)
+        auto findStatementOption(const auto &begin, const auto &end, const Token &token)
         {
             return std::ranges::find_if(
                 begin, end,
@@ -79,32 +44,24 @@ namespace flexMC
             );
         }
 
-        std::string printOptions(stdReadOnlyItOpt begin, stdReadOnlyItOpt end, const std::string &context)
+        std::string printOptions(auto begin, const auto &end, const std::string &context)
         {
             std::vector<std::string> options_out;
-            while (begin != end)
+            for (const auto &option: std::ranges::subrange(begin, end))
             {
-                if (begin->check_type)
-                {
-                    options_out.emplace_back(fmt::format("<{}>", Tokens::printType(begin->type)));
-                }
-                else
-                {
-                    options_out.emplace_back(fmt::format(R"_("{}")_", begin->value));
-                }
-                ++begin;
+                options_out.emplace_back(option.check_type ? fmt::format("<{}>", Tokens::printType(option.type))
+                                                           : fmt::format(R"_("{}")_", option.value));
             }
-            std::stringstream msg;
-            msg << context << ", " << R"_(admissible <type> or "value" options are: [)_";
-            msg << fmt::to_string(fmt::join(options_out, ", ")) << "]";
-            return msg.str();
+            return fmt::format("{}, admissible <type> or \"value\" options are: [{}]",
+                               context,
+                               fmt::join(options_out, ", "));
         }
 
         void setOptionContextError(MaybeError &report,
                                    const int &err_code,
                                    const Token &token,
-                                   const stdReadOnlyItOpt &options_begin,
-                                   const stdReadOnlyItOpt &options_end)
+                                   const auto &options_begin,
+                                   const auto &options_end)
         {
             assert(!report.isError());
             assert((1 <= err_code) && (err_code <= 5));
@@ -163,60 +120,45 @@ namespace flexMC
     }
 
 
-    std::pair<MaybeError, std::deque<Token>> statementPUtils::stripStartOfLine(std::deque<Token> &line)
+    std::tuple<MaybeError, std::deque<Token>, std::deque<Token>> statementPUtils::stripStartOfLine(
+        const std::size_t &spaces, auto line)
     {
-        assert(!line.empty());
         MaybeError report;
         auto c_beg = statement::OPTIONS.begin();
         auto c_end = statement::OPTIONS.end();
 
-        const std::size_t spaces = countFrontSpaces(line);
-        const int err_code = stripFront(line);
-
-        if (err_code > 0)  // 1 or 2
-        {
-            setOptionContextError(report, err_code, line.front(), c_beg, c_end);
-            return {report, {}};
-        }
-        if (spaces != 0 && spaces != 4)
-        {
-            auto tok = Token(Token::Type::id, std::string(spaces, ' '), 0);
-            setOptionContextError(report, 3, tok, c_beg, c_end);
-            return {report, {}};
-        }
-
-        std::deque<Token> line_first_part;
+        std::deque<Token> expression_infix(line.begin(), line.end());
+        std::deque<Token> statement_begin;
 
         if (spaces == 4)
         {
-            auto tok = Token(Token::Type::tab, "    ", 0);
-            auto tab_look_up = lookUp(c_beg, c_end, tok);
-            if (tab_look_up == c_end)
+            auto indent = Token(Token::Type::tab, "    ", 0);
+            auto indent_it = findStatementOption(c_beg, c_end, indent);
+            if (indent_it == c_end)
             {
-                setOptionContextError(report, 4, tok, c_beg, c_end);
-                return {report, {}};
+                setOptionContextError(report, 4, indent, c_beg, c_end);
+                return {report, {}, {}};
             }
-            line_first_part.push_back(tok);
-            c_beg = tab_look_up->options.begin();
-            c_end = tab_look_up->options.end();
+            statement_begin.push_back(indent);
+            c_beg = indent_it->options.begin();
+            c_end = indent_it->options.end();
         }
 
         while ((!report.isError()) && (c_beg != c_end))
         {
-            int e_code = stripFront(line);
-            if (e_code > 0)
+            const Token &next = expression_infix.front();
+            if (next.type == eof)
             {
-                setOptionContextError(report, e_code, line.front(), c_beg, c_end);
+                setOptionContextError(report, 1, line.front(), c_beg, c_end);
                 break;
             }
-            Token next = line.front();
-            auto look_up = lookUp(c_beg, c_end, next);
-            if (look_up != c_end)
+            auto option_it = findStatementOption(c_beg, c_end, next);
+            if (option_it != c_end)
             {
-                c_beg = look_up->options.begin();
-                c_end = look_up->options.end();
-                line_first_part.push_back(next);
-                line.pop_front();
+                c_beg = option_it->options.begin();
+                c_end = option_it->options.end();
+                statement_begin.push_back(next);
+                expression_infix.pop_front();
                 continue;
             }
             else
@@ -225,7 +167,7 @@ namespace flexMC
             }
         }
 
-        return {report, line_first_part};
+        return {report, statement_begin, expression_infix};
     }
 
 
@@ -314,24 +256,42 @@ namespace flexMC
     };
 
 
-    std::pair<MaybeError, LineParseResult> parseLine(std::deque<Token> line)
+    std::pair<MaybeError, LineParseResult> parseLine(const std::deque<Token> &line)
     {
-        auto [rep, line_start] = statementPUtils::stripStartOfLine(line);
-        if (rep.isError())
+        auto undefined = std::ranges::find_if(line, UNDEFINED);
+        if (undefined != line.end())
         {
-            return {rep, {}};
+            MaybeError report;
+            setOptionContextError(report, 2, *undefined, statement::OPTIONS.begin(), statement::OPTIONS.end());
+            return {report, {}};
+        }
+        const std::size_t spaces = countFrontSpaces(line);
+        if ((spaces != 0) && (spaces != 4))
+        {
+            MaybeError report;
+            auto tok = Token(Token::Type::id, std::string(spaces, ' '), 0);
+            setOptionContextError(report, 3, tok, statement::OPTIONS.begin(), statement::OPTIONS.end());
+            return {report, {}};
+        }
+        auto spaces_filtered = line | std::ranges::views::filter(IS_NOT_SPACE);
+
+        auto [split_rep, statement_begin, expression] = statementPUtils::stripStartOfLine(spaces,
+                                                                                          std::move(spaces_filtered));
+        if (split_rep.isError())
+        {
+            return {split_rep, {}};
         }
         MaybeError report;
-        if (isPayLine(line_start))
+        if (isPayLine(statement_begin))
         {
-            std::deque<Token> new_line = statementPUtils::makePaymentExpression(report, line_start, line);
+            std::deque<Token> pay_expr = statementPUtils::makePaymentExpression(report, statement_begin, expression);
             if (report.isError())
             {
                 return {report, {}};
             }
-            return {report, LineParseResult(line_start, new_line)};
+            return {report, LineParseResult(statement_begin, pay_expr)};
         }
-        return {report, LineParseResult(line_start, line)};
+        return {report, LineParseResult(statement_begin, expression)};
     }
 
 }

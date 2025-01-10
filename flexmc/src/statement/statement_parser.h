@@ -22,9 +22,15 @@ namespace flexMC
         {}
     };
 
-    namespace statementPUtils {
+    namespace statementPUtils
+    {
 
-        std::pair<MaybeError, std::deque<Token>> stripStartOfLine(std::deque<Token> &line);
+        // Can use auto in function declaration in C++20 according to the accepted answer in the link below.
+        // It's an abbreviation for function template.
+        // https://stackoverflow.com/questions/29944985/is-there-a-way-to-pass-auto-as-an-argument-in-c
+        // type is meant to be the return type of >> std::deque<Token> | std::ranges::views::filter <<.
+        std::tuple<MaybeError, std::deque<Token>, std::deque<Token>> stripStartOfLine(const std::size_t &spaces,
+                                                                                      auto line);
 
         std::deque<Token> makePaymentExpression(MaybeError &report,
                                                 std::deque<Token> &line_start,
@@ -32,6 +38,6 @@ namespace flexMC
 
     }
 
-    std::pair<MaybeError, LineParseResult> parseLine(std::deque<Token> line_infix);
+    std::pair<MaybeError, LineParseResult> parseLine(const std::deque<Token>& line_infix);
 
 }
