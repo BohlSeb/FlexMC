@@ -26,7 +26,7 @@ int main()
 //    Lexer l;
 //    std::deque<Token> infix = l.tokenize(program);
 //
-//    const auto [parse_report, line_start] = stripStartOfLine(infix);
+//    const auto [parse_report, line_start] = splitLine(infix);
 //
 //    std::cout << std::boolalpha << parse_report.isError() << "\n";
 //    if (parse_report.isError()) {

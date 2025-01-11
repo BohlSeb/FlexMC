@@ -73,7 +73,7 @@ TEST(StatementParser, StartOfLineStripper)
     for (const auto &c: valid_cases)
     {
         std::deque<Token> tokens = lexer.tokenize(c.infix);
-        const auto [parse_report, parse_result] = parseLine(tokens);
+        const auto [parse_report, parse_result] = parseStartOfLine(tokens);
         EXPECT_FALSE(parse_report.isError()) << "Expected no error for valid case: " << c.infix;
         EXPECT_EQ(parse_result.statement_begin.size(), c.n_tokens) << "Token size mismatch for valid case: " << c.infix;
     }
@@ -81,7 +81,7 @@ TEST(StatementParser, StartOfLineStripper)
     for (const auto &infix: bad_cases)
     {
         std::deque<Token> tokens = lexer.tokenize(infix);
-        const auto [parse_report, _] = parseLine(tokens);
+        const auto [parse_report, _] = parseStartOfLine(tokens);
         EXPECT_TRUE(parse_report.isError()) << "Expected error for bad case: " << infix;
     }
 
@@ -117,7 +117,7 @@ TEST(StatementParser, MakePaymentExpressionValid)
 
     MaybeError report;
 
-    std::deque<Token> result = statementPUtils::makePaymentExpression(report, start_of_line, rest_of_line);
+    std::deque<Token> result = lineParseUtils::makePaymentExpression(report, start_of_line, rest_of_line);
 
     ASSERT_FALSE(report.isError()) << "Expected no error for valid payment expression";
     ASSERT_EQ(result.size(), expected.size()) << "Token size mismatch for valid payment expression";
@@ -144,7 +144,7 @@ TEST(StatementParser, PaymentMissingClosingParenthesis)
         Token(Token::Type::eof, "", 22)
     };
 
-    std::deque<Token> result = statementPUtils::makePaymentExpression(report, start_of_line, rest_of_line);
+    std::deque<Token> result = lineParseUtils::makePaymentExpression(report, start_of_line, rest_of_line);
 
     ASSERT_TRUE(report.isError()) << "Expected error for missing closing parenthesis";
 }
@@ -158,7 +158,7 @@ TEST(StatementParser, EmptyRestOfLine)
     };
     std::deque<Token> rest_of_line = {};
 
-    std::deque<Token> result = statementPUtils::makePaymentExpression(report, start_of_line, rest_of_line);
+    std::deque<Token> result = lineParseUtils::makePaymentExpression(report, start_of_line, rest_of_line);
 
     ASSERT_TRUE(report.isError()) << "Expected error for empty rest of line";
     ASSERT_TRUE(result.empty()) << "Expected empty result for empty rest of line";
@@ -179,7 +179,7 @@ TEST(StatementParser, NoAssignmentOperator)
         Token(Token::Type::eof, "", 19)
     };
 
-    std::deque<Token> result = statementPUtils::makePaymentExpression(report, start_of_line, rest_of_line);
+    std::deque<Token> result = lineParseUtils::makePaymentExpression(report, start_of_line, rest_of_line);
 
     ASSERT_TRUE(report.isError()) << "Expected error for missing assignment operator";
     ASSERT_TRUE(result.empty()) << "Expected empty result for missing assignment operator";
@@ -201,7 +201,7 @@ TEST(StatementParser, NoTokensAfterAssignmentOperator)
         Token(Token::Type::eof, "", 22)
     };
 
-    std::deque<Token> result = statementPUtils::makePaymentExpression(report, start_of_line, rest_of_line);
+    std::deque<Token> result = lineParseUtils::makePaymentExpression(report, start_of_line, rest_of_line);
 
     ASSERT_TRUE(report.isError()) << "Expected error for no tokens after assignment operator";
     ASSERT_TRUE(result.empty()) << "Expected empty result for no tokens after assignment operator";
@@ -225,7 +225,7 @@ TEST(StatementParser, UnexpectedTokenBetweenParenAndAssignment)
         Token(Token::Type::eof, "", 30)
     };
 
-    std::deque<Token> result = statementPUtils::makePaymentExpression(report, start_of_line, rest_of_line);
+    std::deque<Token> result = lineParseUtils::makePaymentExpression(report, start_of_line, rest_of_line);
 
     ASSERT_TRUE(report.isError()) << "Expected error for unexpected token between parenthesis and assignment";
     ASSERT_TRUE(result.empty()) << "Expected empty result for unexpected token between parenthesis and assignment";
@@ -277,7 +277,7 @@ TEST(StatementParser, LineParser)
     {
         std::deque<Token> line_infix = l.tokenize(v_case.line);
 
-        auto [report, result] = parseLine(line_infix);
+        auto [report, result] = parseStartOfLine(line_infix);
 
         ASSERT_FALSE(report.isError()) << "Expected no error for valid line: " << v_case.line;
         ASSERT_EQ(result.statement_begin.size(), v_case.length_statement_begin)

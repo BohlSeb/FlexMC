@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <ranges>
-#include <utility>
 
 #include "lexer.h"
 

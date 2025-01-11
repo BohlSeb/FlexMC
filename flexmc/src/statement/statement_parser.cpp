@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "statement_definitions.h"
+#include "expression_parser.h"
 #include "statement_parser.h"
 
 
@@ -120,7 +121,7 @@ namespace flexMC
     }
 
 
-    std::tuple<MaybeError, std::deque<Token>, std::deque<Token>> statementPUtils::stripStartOfLine(
+    std::tuple<MaybeError, std::deque<Token>, std::deque<Token>> lineParseUtils::splitLine(
         const std::size_t &spaces, auto line)
     {
         MaybeError report;
@@ -182,57 +183,56 @@ namespace flexMC
     *    PAY_AT([date expression], enum_1, enum_2, ..., enum_N, myDoubleVar)
     *    PAY_AT([int expression], enum_1, enum_2, ..., enum_N, myDoubleVar)
     */
-    std::deque<Token> statementPUtils::makePaymentExpression(MaybeError &report,
-                                                             std::deque<Token> &start_of_line,
-                                                             const std::deque<Token> &rest_of_line)
+
+    std::string paymentError(const int &error_code)
+    {
+        std::string context;
+        switch (error_code)
+        {
+            case 1:
+                return R"_(Missing assignment operator \":=\" after \"PAY()\" or \"PAY_AT()\" statement)_";
+            case 2:
+                return R"_(Missing closing parenthesis ")" before ":=" in "PAY or "PAY_AT" statement)_";
+            case 3:
+                return R"_(Unexpected token between closing parenthesis \")\" and \":=\" in \"PAY\" or \"PAY_AT\" statement)_";
+            default:
+                return "Internal Error";
+        }
+    }
+
+    std::deque<Token> lineParseUtils::makePaymentExpression(MaybeError &report,
+                                                            std::deque<Token> &start_of_line,
+                                                            const std::deque<Token> &rest_of_line)
     {
         // start_of_line is [..., "PAY" or "PAY_AT", "("] at this point
         // The "(" will be removed from start_of_line
 
-        // All kind of checks have to be made, otherwise the expression parser will fail with bad error messages
-
-        auto l_r_paren = [](const Token &t)
-        { return t.value == R_PAREN; };
-        auto l_assign = [](const Token &t)
-        { return t.value == ASSIGN; };
-
-        if (std::ranges::find_if(rest_of_line, l_r_paren) == rest_of_line.end())
-        {
-            report.setError(R"_(Missing closing parenthesis ")" for "PAY" or "PAY_AT" statement)_",
-                            0, 1);
-            return {};
-        }
-
-        auto it_assign = std::ranges::find_if(rest_of_line, l_assign);
+        auto it_assign = std::ranges::find_if(rest_of_line, [](const Token &t)
+        { return t.value == ASSIGN; });
         if (it_assign == rest_of_line.end())
         {
-            report.setError(R"_(Missing assignment operator ":=" after "PAY()" or "PAY_AT()" statement)_",
-                            0, 1);
+            report.setError(paymentError(1), 0, 1);
             return {};
         }
 
-        auto is_not_empty = [](const Token &t)
-        { return (t.type != eof && t.type != wsp && t.type != tab && t.type != undefined); };
-        if (std::ranges::find_if(it_assign + 1, rest_of_line.end(), is_not_empty) == rest_of_line.end())
-        {
-            auto at = it_assign->start + it_assign->size;
-            report.setError(R"_(No valid token found after ":=" in "PAY" or "PAY_AT" statement)_", at, 0);
-            return {};
-        }
-
-        auto it_r_paren = std::ranges::find_last_if(rest_of_line.begin(), it_assign, l_r_paren).begin();
+        auto it_r_paren = std::ranges::find_last_if(rest_of_line.begin(), it_assign, [](const Token &t)
+        { return t.value == R_PAREN; }).begin();
         if (it_r_paren == it_assign)
         {
-            report.setError(R"_(Missing closing parenthesis ")" before ":=" in "PAY or "PAY_AT" statement)_",
-                            it_assign->start, it_assign->size);
+            report.setError(paymentError(2), it_assign->start, it_assign->size);
             return {};
         }
 
-        if (std::ranges::find_if(it_r_paren + 1, it_assign, is_not_empty) != it_assign)
+        if (std::ranges::find_if(it_r_paren + 1, it_assign, IS_NOT_SPACE) != it_assign)
         {
-            report.setError(
-                R"_(Unexpected token between closing parenthesis ")" and ":=" in "PAY" or "PAY_AT" statement)_",
-                it_assign->start, it_assign->size);
+            report.setError(paymentError(3), it_assign->start, it_assign->size);
+            return {};
+        }
+
+        const auto [expression_report, _] = infixToPostfix(std::deque<Token>(it_assign + 1, rest_of_line.end()));
+        if (expression_report.isError())
+        {
+            report = expression_report;
             return {};
         }
 
@@ -256,7 +256,7 @@ namespace flexMC
     };
 
 
-    std::pair<MaybeError, LineParseResult> parseLine(const std::deque<Token> &line)
+    std::pair<MaybeError, LineParseResult> parseStartOfLine(const std::deque<Token> &line)
     {
         auto undefined = std::ranges::find_if(line, UNDEFINED);
         if (undefined != line.end())
@@ -275,8 +275,8 @@ namespace flexMC
         }
         auto spaces_filtered = line | std::ranges::views::filter(IS_NOT_SPACE);
 
-        auto [split_rep, statement_begin, expression] = statementPUtils::stripStartOfLine(spaces,
-                                                                                          std::move(spaces_filtered));
+        auto [split_rep, statement_begin, expression] = lineParseUtils::splitLine(spaces,
+                                                                                  std::move(spaces_filtered));
         if (split_rep.isError())
         {
             return {split_rep, {}};
@@ -284,7 +284,7 @@ namespace flexMC
         MaybeError report;
         if (isPayLine(statement_begin))
         {
-            std::deque<Token> pay_expr = statementPUtils::makePaymentExpression(report, statement_begin, expression);
+            std::deque<Token> pay_expr = lineParseUtils::makePaymentExpression(report, statement_begin, expression);
             if (report.isError())
             {
                 return {report, {}};
