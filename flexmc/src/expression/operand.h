@@ -15,7 +15,7 @@ namespace flexMC
 
     double compileNumber(const Token &token, Operands &stacks, MaybeError &report);
 
-    Operation compileNumberOperation(const double& value);
+    Operation compileNumberOperation(const double &value);
 
     CType compileVector(const std::size_t &num_args, Operands &stacks, MaybeError &report);
 
@@ -29,7 +29,7 @@ namespace flexMC
         explicit VectorAppend(const std::size_t &size) : size_(size)
         {}
 
-        void operator()(CalcStacks& stacks) const;
+        void operator()(CalcStacks &stacks) const;
 
     private:
 

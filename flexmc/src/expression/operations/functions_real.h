@@ -17,21 +17,21 @@ namespace flexMC::functionsReal
     CType compileArgType(const Token &token, const CType &arg_type, MaybeError &report);
 
     const std::vector<std::string> symbols_scalar{
-            EXP,
-            LOG,
-            ABS,
-            SQRT,
-            SQUARE,
+        EXP,
+        LOG,
+        ABS,
+        SQRT,
+        SQUARE,
     };
 
     const std::vector<std::string> symbols_reduce{
-            SUM,
-            PROD,
-            MAX,
-            MIN,
-            ARGMAX,
-            ARGMIN,
-            LEN,
+        SUM,
+        PROD,
+        MAX,
+        MIN,
+        ARGMAX,
+        ARGMIN,
+        LEN,
     };
 
     namespace scalar
@@ -63,66 +63,66 @@ namespace flexMC::functionsReal
         }
 
         const StringMap<std::function<void(CalcStacks &)>> functions{
-                {
-                        makeKey(flexMC::EXP, scalar),
-                        [capture0 = [](const double &val)
-                        { return std::exp(val); }](CalcStacks &stacks)
-                        { calculateScalar(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::EXP, vector),
-                        [capture0 = [](const double &val)
-                        { return std::exp(val); }](CalcStacks &stacks)
-                        { calculateVector(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::LOG, scalar),
-                        [capture0 = [](const double &val)
-                        { return std::log(val); }](CalcStacks &stacks)
-                        { calculateScalar(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::LOG, vector),
-                        [capture0 = [](const double &val)
-                        { return std::log(val); }](CalcStacks &stacks)
-                        { calculateVector(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::ABS, scalar),
-                        [capture0 = [](const double &val)
-                        { return std::fabs(val); }](CalcStacks &stacks)
-                        { calculateScalar(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::ABS, vector),
-                        [capture0 = [](const double &val)
-                        { return std::fabs(val); }](CalcStacks &stacks)
-                        { calculateVector(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::SQRT, scalar),
-                        [capture0 = [](const double &val)
-                        { return std::sqrt(val); }](CalcStacks &stacks)
-                        { calculateScalar(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::SQRT, vector),
-                        [capture0 = [](const double &val)
-                        { return std::sqrt(val); }](CalcStacks &stacks)
-                        { calculateVector(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::SQUARE, scalar),
-                        [capture0 = [](const double &val)
-                        { return val * val; }](CalcStacks &stacks)
-                        { calculateScalar(stacks, capture0); }
-                },
-                {
-                        makeKey(flexMC::SQUARE, vector),
-                        [capture0 = [](const double &val)
-                        { return val * val; }](CalcStacks &stacks)
-                        { calculateVector(stacks, capture0); }
-                },
+            {
+                makeKey(flexMC::EXP, scalar),
+                [capture0 = [](const double &val) { return std::exp(val); }](CalcStacks &stacks) {
+                    calculateScalar(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::EXP, vector),
+                [capture0 = [](const double &val) { return std::exp(val); }](CalcStacks &stacks) {
+                    calculateVector(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::LOG, scalar),
+                [capture0 = [](const double &val) { return std::log(val); }](CalcStacks &stacks) {
+                    calculateScalar(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::LOG, vector),
+                [capture0 = [](const double &val) { return std::log(val); }](CalcStacks &stacks) {
+                    calculateVector(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::ABS, scalar),
+                [capture0 = [](const double &val) { return std::fabs(val); }](CalcStacks &stacks) {
+                    calculateScalar(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::ABS, vector),
+                [capture0 = [](const double &val) { return std::fabs(val); }](CalcStacks &stacks) {
+                    calculateVector(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::SQRT, scalar),
+                [capture0 = [](const double &val) { return std::sqrt(val); }](CalcStacks &stacks) {
+                    calculateScalar(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::SQRT, vector),
+                [capture0 = [](const double &val) { return std::sqrt(val); }](CalcStacks &stacks) {
+                    calculateVector(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::SQUARE, scalar),
+                [capture0 = [](const double &val) { return val * val; }](CalcStacks &stacks) {
+                    calculateScalar(stacks, capture0);
+                }
+            },
+            {
+                makeKey(flexMC::SQUARE, vector),
+                [capture0 = [](const double &val) { return val * val; }](CalcStacks &stacks) {
+                    calculateVector(stacks, capture0);
+                }
+            },
         };
 
     }
@@ -159,43 +159,36 @@ namespace flexMC::functionsReal
         }
 
         const StringMap<std::function<void(CalcStacks &)>> functions{
-                {
-                        flexMC::SUM,
-                        [capture0 = [](const double &left, const double &right)
-                        { return left + right; }](CalcStacks &stacks)
-                        { accumulateVector(stacks, capture0, 0.0); }
-                },
-                {
-                        flexMC::PROD,
-                        [capture0 = [](const double &left, const double &right)
-                        { return left * right; }](CalcStacks &stacks)
-                        { accumulateVector(stacks, capture0, 1.0); }
-                },
-                {
-                        flexMC::MAX,
-                        [](CalcStacks &stacks)
-                        { max(stacks); }
-                },
-                {
-                        flexMC::MIN,
-                        [](CalcStacks &stacks)
-                        { min(stacks); }
-                },
-                {
-                        flexMC::ARGMAX,
-                        [](CalcStacks &stacks)
-                        { argmax(stacks); }
-                },
-                {
-                        flexMC::ARGMIN,
-                        [](CalcStacks &stacks)
-                        { argmin(stacks); }
-                },
-                {
-                        flexMC::LEN,
-                        [](CalcStacks &stacks)
-                        { length(stacks); }
-                },
+            {
+                flexMC::SUM,
+                [capture0 = [](const double &left, const double &right) { return left + right; }](
+                    CalcStacks &stacks) { accumulateVector(stacks, capture0, 0.0); }
+            },
+            {
+                flexMC::PROD,
+                [capture0 = [](const double &left, const double &right) { return left * right; }](
+                    CalcStacks &stacks) { accumulateVector(stacks, capture0, 1.0); }
+            },
+            {
+                flexMC::MAX,
+                [](CalcStacks &stacks) { max(stacks); }
+            },
+            {
+                flexMC::MIN,
+                [](CalcStacks &stacks) { min(stacks); }
+            },
+            {
+                flexMC::ARGMAX,
+                [](CalcStacks &stacks) { argmax(stacks); }
+            },
+            {
+                flexMC::ARGMIN,
+                [](CalcStacks &stacks) { argmin(stacks); }
+            },
+            {
+                flexMC::LEN,
+                [](CalcStacks &stacks) { length(stacks); }
+            },
 
         };
 
@@ -246,40 +239,38 @@ namespace flexMC::functionsReal
         }
 
         const StringMap<std::function<void(CalcStacks &, const std::size_t &size)>> functions{
-                {
-                        flexMC::SUM,
-                        [capture0 = [](const double &left, const double &right)
-                        { return left + right; }](CalcStacks &stacks, const std::size_t &size)
-                        { accumulate(stacks, capture0, 0.0, size); }
-                },
-                {
-                        flexMC::PROD,
-                        [capture0 = [](const double &left, const double &right)
-                        { return left * right; }](CalcStacks &stacks, const std::size_t &size)
-                        { accumulate(stacks, capture0, 1.0, size); }
-                },
-                {
-                        flexMC::MAX,
-                        [capture0 = [](const double &left, const double &right)
-                        { return left > right ? true : false; }](CalcStacks &stacks, const std::size_t &size)
-                        { minmax(stacks, capture0, size); }
-                },
-                {
-                        flexMC::MIN,
-                        [capture0 = [](const double &left, const double &right)
-                        { return left < right ? true : false; }](CalcStacks &stacks, const std::size_t &size)
-                        { minmax(stacks, capture0, size); }
-                },
-                {
-                        flexMC::ARGMAX,
-                        [](CalcStacks &stacks, const size_t &size)
-                        { argMaxScalars(stacks, size); }
-                },
-                {
-                        flexMC::ARGMIN,
-                        [](CalcStacks &stacks, const size_t &size)
-                        { argMinScalars(stacks, size); }
-                },
+            {
+                flexMC::SUM,
+                [capture0 = [](const double &left, const double &right) { return left + right; }](CalcStacks &stacks,
+                                                                                                  const std::size_t &size) {
+                    accumulate(stacks, capture0, 0.0, size);
+                }
+            },
+            {
+                flexMC::PROD,
+                [capture0 = [](const double &left, const double &right) { return left * right; }](CalcStacks &stacks,
+                                                                                                  const std::size_t &size) {
+                    accumulate(stacks, capture0, 1.0, size);
+                }
+            },
+            {
+                flexMC::MAX,
+                [capture0 = [](const double &left, const double &right) { return left > right ? true : false; }](
+                    CalcStacks &stacks, const std::size_t &size) { minmax(stacks, capture0, size); }
+            },
+            {
+                flexMC::MIN,
+                [capture0 = [](const double &left, const double &right) { return left < right ? true : false; }](
+                    CalcStacks &stacks, const std::size_t &size) { minmax(stacks, capture0, size); }
+            },
+            {
+                flexMC::ARGMAX,
+                [](CalcStacks &stacks, const size_t &size) { argMaxScalars(stacks, size); }
+            },
+            {
+                flexMC::ARGMIN,
+                [](CalcStacks &stacks, const size_t &size) { argMinScalars(stacks, size); }
+            },
 
         };
 

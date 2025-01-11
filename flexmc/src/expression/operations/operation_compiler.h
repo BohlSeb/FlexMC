@@ -29,19 +29,19 @@ namespace flexMC
         }
 
         void assertNumberOfArgs(
-                const Token &function,
-                const std::size_t &expected,
-                const std::size_t &num_args,
-                const CType &arg_type,
-                MaybeError &report);
+            const Token &function,
+            const std::size_t &expected,
+            const std::size_t &num_args,
+            const CType &arg_type,
+            MaybeError &report);
 
         void assertNumberOfArgs(
-                const Token &function,
-                const std::size_t &min_args,
-                const std::size_t &max_args,
-                const std::size_t &num_args,
-                const CType &arg_type,
-                MaybeError &report);
+            const Token &function,
+            const std::size_t &min_args,
+            const std::size_t &max_args,
+            const std::size_t &num_args,
+            const CType &arg_type,
+            MaybeError &report);
 
     }
 

@@ -16,11 +16,11 @@ namespace flexMC::functionsReal
         if ((arg_type == date) || (arg_type == dateList))
         {
             auto msg = fmt::format(
-                    R"(Function "{}" expects argument type {} or {}, got {})",
-                    token.value,
-                    cType2Str(scalar),
-                    cType2Str(vector),
-                    cType2Str(arg_type)
+                R"(Function "{}" expects argument type {} or {}, got {})",
+                token.value,
+                cType2Str(scalar),
+                cType2Str(vector),
+                cType2Str(arg_type)
             );
             report.setError(msg, token);
             return undefined;
@@ -50,8 +50,7 @@ namespace flexMC::functionsReal
         const auto look_up = reduceArguments::functions.find(key);
         assert(look_up != reduceArguments::functions.end());
         const std::function<void(CalcStacks &, const std::size_t &)> f = look_up->second;
-        return [f, size](CalcStacks &stacks)
-        { return f(stacks, size); };
+        return [f, size](CalcStacks &stacks) { return f(stacks, size); };
     }
 
     void reduceVector::max(CalcStacks &stacks)

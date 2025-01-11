@@ -29,8 +29,7 @@ namespace flexMC
 
     Operation compileNumberOperation(const double &value)
     {
-        return Operation([value](CalcStacks &stacks)
-                         { stacks.scalars().emplace_back(value); });
+        return Operation([value](CalcStacks &stacks) { stacks.scalars().emplace_back(value); });
     }
 
     CType compileVector(const std::size_t &num_args, Operands &stacks, MaybeError &report)
@@ -62,8 +61,7 @@ namespace flexMC
     Operation compileVectorOperation(const std::size_t &size)
     {
         const VectorAppend v{size};
-        return Operation([v](CalcStacks &stacks)
-                         { v(stacks); });
+        return Operation([v](CalcStacks &stacks) { v(stacks); });
     }
 
     void VectorAppend::operator()(CalcStacks &stacks) const

@@ -317,9 +317,9 @@ namespace flexMC
             }
 
             std::string msg = fmt::format(
-                    R"(Expected a variable, value, function name or a prefix operator, got "{}" ({}))",
-                    next.value,
-                    next.type2String()
+                R"(Expected a variable, value, function name or a prefix operator, got "{}" ({}))",
+                next.value,
+                next.type2String()
             );
             report.setError(msg, next);
             return State::error;
@@ -404,9 +404,9 @@ namespace flexMC
             }
 
             std::string msg = fmt::format(
-                    R"(Expected an operator, got "{}" of type {})",
-                    next.value,
-                    next.type2String()
+                R"(Expected an operator, got "{}" of type {})",
+                next.value,
+                next.type2String()
             );
 
             report.setError(msg, next.start, next.size);

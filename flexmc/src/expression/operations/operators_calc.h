@@ -34,11 +34,11 @@ namespace flexMC::operatorsCalc
     namespace binary
     {
         const std::vector<std::string> symbols{
-                flexMC::PLUS,
-                flexMC::MINUS,
-                flexMC::MUL,
-                flexMC::DIV,
-                flexMC::POW,
+            flexMC::PLUS,
+            flexMC::MINUS,
+            flexMC::MUL,
+            flexMC::DIV,
+            flexMC::POW,
         };
 
         std::string compileArgumentsAndKey(const std::string &symbol, Operands &stacks, MaybeError &report);
@@ -67,11 +67,10 @@ namespace flexMC::operatorsCalc
             const double left = stacks.scalars().back();
             stacks.scalars().pop_back();
             std::transform(
-                    right_begin,
-                    right_end,
-                    right_begin,
-                    [f, left](auto &right_)
-                    { return f(left, right_); }
+                right_begin,
+                right_end,
+                right_begin,
+                [f, left](auto &right_) { return f(left, right_); }
             );
         }
 
@@ -86,11 +85,10 @@ namespace flexMC::operatorsCalc
             const double right = stacks.scalars().back();
             stacks.scalars().pop_back();
             std::transform(
-                    left_begin,
-                    left_end,
-                    left_begin,
-                    [f, right](auto &left_)
-                    { return f(left_, right); }
+                left_begin,
+                left_end,
+                left_begin,
+                [f, right](auto &left_) { return f(left_, right); }
             );
         }
 
@@ -105,12 +103,11 @@ namespace flexMC::operatorsCalc
             const auto right_begin = stacks.vectors().end() - s;
             const auto left_begin = right_begin - s;
             std::transform(
-                    left_begin,
-                    right_begin,
-                    right_begin,
-                    left_begin,
-                    [f](auto &left_, auto &right_)
-                    { return f(left_, right_); }
+                left_begin,
+                right_begin,
+                right_begin,
+                left_begin,
+                [f](auto &left_, auto &right_) { return f(left_, right_); }
             );
             stacks.vectors().erase(right_begin, stacks.vectors().end());
         }
@@ -119,125 +116,105 @@ namespace flexMC::operatorsCalc
         enum CType;
 
         const std::unordered_map<std::string, std::function<void(CalcStacks &)>, SHash, std::equal_to<>> operators = {
-                {
-                        makeKey(flexMC::MINUS, scalar, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left - right; }](CalcStacks &stacks)
-                        { binary::scSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::MINUS, scalar, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left - right; }](CalcStacks &stacks)
-                        { binary::scVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::MINUS, vector, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left - right; }](CalcStacks &stacks)
-                        { binary::vecSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::MINUS, vector, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left - right; }](CalcStacks &stacks)
-                        { binary::vecVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::PLUS, scalar, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left + right; }](CalcStacks &stacks)
-                        { binary::scSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::PLUS, scalar, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left + right; }](CalcStacks &stacks)
-                        { binary::scVec(stacks, capture_0); }
+            {
+                makeKey(flexMC::MINUS, scalar, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left - right; }](
+                    CalcStacks &stacks) { binary::scSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::MINUS, scalar, vector),
+                [capture_0 = [](const double &left, const double &right) { return left - right; }](
+                    CalcStacks &stacks) { binary::scVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::MINUS, vector, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left - right; }](
+                    CalcStacks &stacks) { binary::vecSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::MINUS, vector, vector),
+                [capture_0 = [](const double &left, const double &right) { return left - right; }](
+                    CalcStacks &stacks) { binary::vecVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::PLUS, scalar, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left + right; }](
+                    CalcStacks &stacks) { binary::scSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::PLUS, scalar, vector),
+                [capture_0 = [](const double &left, const double &right) { return left + right; }](
+                    CalcStacks &stacks) { binary::scVec(stacks, capture_0); }
 
-                },
-                {
-                        makeKey(flexMC::PLUS, vector, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left + right; }](CalcStacks &stacks)
-                        { binary::vecSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::PLUS, vector, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left + right; }](CalcStacks &stacks)
-                        { binary::vecVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::MUL, scalar, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left * right; }](CalcStacks &stacks)
-                        { binary::scSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::MUL, scalar, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left * right; }](CalcStacks &stacks)
-                        { binary::scVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::MUL, vector, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left * right; }](CalcStacks &stacks)
-                        { binary::vecSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::MUL, vector, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left * right; }](CalcStacks &stacks)
-                        { binary::vecVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::DIV, scalar, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left / right; }](CalcStacks &stacks)
-                        { binary::scSc(stacks, capture_0); }},
-                {
-                        makeKey(flexMC::DIV, scalar, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left / right; }](CalcStacks &stacks)
-                        { binary::scVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::DIV, vector, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left / right; }](CalcStacks &stacks)
-                        { binary::vecSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::DIV, vector, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return left / right; }](CalcStacks &stacks)
-                        { binary::vecVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::POW, scalar, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return std::pow(left, right); }](CalcStacks &stacks)
-                        { binary::scSc(stacks, capture_0); }},
-                {
-                        makeKey(flexMC::POW, scalar, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return std::pow(left, right); }](CalcStacks &stacks)
-                        { binary::scVec(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::POW, vector, scalar),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return std::pow(left, right); }](CalcStacks &stacks)
-                        { binary::vecSc(stacks, capture_0); }
-                },
-                {
-                        makeKey(flexMC::POW, vector, vector),
-                        [capture_0 = [](const double &left, const double &right)
-                        { return std::pow(left, right); }](CalcStacks &stacks)
-                        { binary::vecVec(stacks, capture_0); }
-                }
+            },
+            {
+                makeKey(flexMC::PLUS, vector, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left + right; }](
+                    CalcStacks &stacks) { binary::vecSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::PLUS, vector, vector),
+                [capture_0 = [](const double &left, const double &right) { return left + right; }](
+                    CalcStacks &stacks) { binary::vecVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::MUL, scalar, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left * right; }](
+                    CalcStacks &stacks) { binary::scSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::MUL, scalar, vector),
+                [capture_0 = [](const double &left, const double &right) { return left * right; }](
+                    CalcStacks &stacks) { binary::scVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::MUL, vector, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left * right; }](
+                    CalcStacks &stacks) { binary::vecSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::MUL, vector, vector),
+                [capture_0 = [](const double &left, const double &right) { return left * right; }](
+                    CalcStacks &stacks) { binary::vecVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::DIV, scalar, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left / right; }](
+                    CalcStacks &stacks) { binary::scSc(stacks, capture_0); }},
+            {
+                makeKey(flexMC::DIV, scalar, vector),
+                [capture_0 = [](const double &left, const double &right) { return left / right; }](
+                    CalcStacks &stacks) { binary::scVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::DIV, vector, scalar),
+                [capture_0 = [](const double &left, const double &right) { return left / right; }](
+                    CalcStacks &stacks) { binary::vecSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::DIV, vector, vector),
+                [capture_0 = [](const double &left, const double &right) { return left / right; }](
+                    CalcStacks &stacks) { binary::vecVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::POW, scalar, scalar),
+                [capture_0 = [](const double &left, const double &right) { return std::pow(left, right); }](
+                    CalcStacks &stacks) { binary::scSc(stacks, capture_0); }},
+            {
+                makeKey(flexMC::POW, scalar, vector),
+                [capture_0 = [](const double &left, const double &right) { return std::pow(left, right); }](
+                    CalcStacks &stacks) { binary::scVec(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::POW, vector, scalar),
+                [capture_0 = [](const double &left, const double &right) { return std::pow(left, right); }](
+                    CalcStacks &stacks) { binary::vecSc(stacks, capture_0); }
+            },
+            {
+                makeKey(flexMC::POW, vector, vector),
+                [capture_0 = [](const double &left, const double &right) { return std::pow(left, right); }](
+                    CalcStacks &stacks) { binary::vecVec(stacks, capture_0); }
+            }
         };
 
     }

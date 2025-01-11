@@ -38,6 +38,6 @@ namespace flexMC
 
     }
 
-    std::pair<MaybeError, LineParseResult> parseStartOfLine(const std::deque<Token>& line_infix);
+    std::pair<MaybeError, LineParseResult> parseStartOfLine(const std::deque<Token> &line_infix);
 
 }

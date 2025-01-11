@@ -14,7 +14,7 @@ namespace flexMC
 
     public:
 
-        void setError(const std::string_view msg, const Token& token);
+        void setError(const std::string_view msg, const Token &token);
 
         void setError(const std::string_view msg, const std::size_t &at, const std::size_t &len);
 
@@ -41,6 +41,8 @@ namespace flexMC
 
     };
 
-    std::string printError(const std::string_view err_prefix, const std::string_view line, const MaybeError &report); // line_no default 0
+    std::string printError(const std::string_view err_prefix,
+                           const std::string_view line,
+                           const MaybeError &report); // line_no default 0
 
 }

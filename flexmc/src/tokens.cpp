@@ -67,7 +67,8 @@ namespace flexMC
         return "Tok(t=" + type2String() + ", v=" + out + ")";
     }
 
-    std::string Tokens::printType(const Token::Type &t) {
+    std::string Tokens::printType(const Token::Type &t)
+    {
         Token tok(t, "", 0);
         return tok.type2String();
     }

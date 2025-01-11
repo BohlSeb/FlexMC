@@ -92,12 +92,11 @@ namespace flexMC
                 if (c_type != getCType<T>())
                 {
                     std::visit(
-                            [name](auto &map)
-                            {
-                                if (map.data.contains(name))
-                                { map.data.erase(name); }
-                            },
-                            maps_.at(c_type));
+                        [name](auto &map) {
+                            if (map.data.contains(name))
+                            { map.data.erase(name); }
+                        },
+                        maps_.at(c_type));
 
                     use(name);
                     types_.erase(name);
@@ -128,7 +127,7 @@ namespace flexMC
             assert((contains(name)) && (cType(name) == c_type));
             use(name);
             return std::get<VMap<T>>
-                    (maps_.at(c_type)).data.at(name);
+                (maps_.at(c_type)).data.at(name);
         }
 
         template<class T>
@@ -161,36 +160,31 @@ namespace flexMC
         Operation compile_(const std::string &, TAlias<T>)
         {
             static_assert(getCType<T>() != CType::undefined, "No template specialisation for the given type T");
-            return Operation([](const CalcStacks &)
-                             {/* must be overwritten by template specialization */});
+            return Operation([](const CalcStacks &) {/* must be overwritten by template specialization */});
         }
 
         Operation compile_(const std::string &name, TAlias<SCALAR>)
         {
             const SCALAR value = get<SCALAR>(name);
-            return Operation([value](CalcStacks &stacks)
-                             { stacks.scalars().emplace_back(value); });
+            return Operation([value](CalcStacks &stacks) { stacks.scalars().emplace_back(value); });
         }
 
         Operation compile_(const std::string &name, TAlias<VECTOR>)
         {
             const VECTOR value = get<VECTOR>(name);
-            return Operation([value](CalcStacks &stacks)
-                             { stacks.pushVector(value); });
+            return Operation([value](CalcStacks &stacks) { stacks.pushVector(value); });
         }
 
         Operation compile_(const std::string &name, TAlias<DATE>)
         {
             const DATE value = get<DATE>(name);
-            return Operation([value](CalcStacks &stacks)
-                             { stacks.dates().emplace_back(value); });
+            return Operation([value](CalcStacks &stacks) { stacks.dates().emplace_back(value); });
         }
 
         Operation compile_(const std::string &name, TAlias<DATE_LIST>)
         {
             const DATE_LIST value = get<DATE_LIST>(name);
-            return Operation([value](CalcStacks &stacks)
-                             { stacks.pushDateList(value); });
+            return Operation([value](CalcStacks &stacks) { stacks.pushDateList(value); });
         }
 
     };

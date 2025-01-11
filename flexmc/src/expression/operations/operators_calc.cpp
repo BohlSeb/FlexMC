@@ -91,10 +91,10 @@ namespace flexMC
             if (left_s != maybe_right_s)
             {
                 auto msg = fmt::format(
-                        R"(Binary operator "{}" got vectors of different lengths: {} and {})",
-                        symbol,
-                        left_s,
-                        maybe_right_s
+                    R"(Binary operator "{}" got vectors of different lengths: {} and {})",
+                    symbol,
+                    left_s,
+                    maybe_right_s
                 );
                 report.setMessage(msg);
                 return "";
@@ -122,9 +122,9 @@ namespace flexMC
     }
 
     std::string operatorsCalc::binary::makeKey(
-            const std::string &symbol,
-            const CType &left_t,
-            const CType &right_t)
+        const std::string &symbol,
+        const CType &left_t,
+        const CType &right_t)
     {
         return symbol + cType2Str(left_t) + cType2Str(right_t);
     }

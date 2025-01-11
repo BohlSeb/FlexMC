@@ -21,17 +21,14 @@ namespace flexMC
         using
         enum Token::Type;
 
-        auto IS_NOT_SPACE = [](const Token &t)
-        { return ((t.type != wsp) && (t.type != tab)); };
+        auto IS_NOT_SPACE = [](const Token &t) { return ((t.type != wsp) && (t.type != tab)); };
 
-        auto UNDEFINED = [](const Token &t)
-        { return t.type == undefined; };
+        auto UNDEFINED = [](const Token &t) { return t.type == undefined; };
 
         std::size_t countFrontSpaces(const std::deque<Token> &line)
         {
             auto end = std::ranges::find_if(line, IS_NOT_SPACE);
-            return std::accumulate(line.begin(), end, 0, [](std::size_t acc, const Token &t)
-            {
+            return std::accumulate(line.begin(), end, 0, [](std::size_t acc, const Token &t) {
                 return acc + (t.type == wsp ? 1 : 4);
             });
         }
@@ -40,8 +37,9 @@ namespace flexMC
         {
             return std::ranges::find_if(
                 begin, end,
-                [token](const statement::Option &op)
-                { return op.check_type ? op.type == token.type : op.value == token.value; }
+                [token](const statement::Option &op) {
+                    return op.check_type ? op.type == token.type : op.value == token.value;
+                }
             );
         }
 
@@ -207,16 +205,15 @@ namespace flexMC
         // start_of_line is [..., "PAY" or "PAY_AT", "("] at this point
         // The "(" will be removed from start_of_line
 
-        auto it_assign = std::ranges::find_if(rest_of_line, [](const Token &t)
-        { return t.value == ASSIGN; });
+        auto it_assign = std::ranges::find_if(rest_of_line, [](const Token &t) { return t.value == ASSIGN; });
         if (it_assign == rest_of_line.end())
         {
             report.setError(paymentError(1), 0, 1);
             return {};
         }
 
-        auto it_r_paren = std::ranges::find_last_if(rest_of_line.begin(), it_assign, [](const Token &t)
-        { return t.value == R_PAREN; }).begin();
+        auto it_r_paren = std::ranges::find_last_if(rest_of_line.begin(), it_assign,
+                                                    [](const Token &t) { return t.value == R_PAREN; }).begin();
         if (it_r_paren == it_assign)
         {
             report.setError(paymentError(2), it_assign->start, it_assign->size);
