@@ -48,7 +48,7 @@ namespace flexMC
                     auto msg = fmt::format(R"(Unmatched parenthesis "(" or bracket "[", got "{}" ({}))",
                                            tok.value,
                                            tok.type2String());
-                    report.setError(msg, tok.start, tok.size);
+                    report.setError(msg, tok);
                     return State::error;
                 }
                 postfix.push_back(op);
@@ -80,7 +80,7 @@ namespace flexMC
             }
             if (!error_msg.str().empty())
             {
-                report.setError(error_msg.str(), tok.start, tok.size);
+                report.setError(error_msg.str(), tok);
                 return State::error;
             }
             return State::have_operand;
@@ -95,7 +95,7 @@ namespace flexMC
             msg += R"( or badly placed comma ",")";
             if (operators.empty())
             {
-                report.setError(msg, tok.start, tok.size);
+                report.setError(msg, tok);
                 return State::error;
             }
             Token::Type operator_t = operators.back().type;
@@ -105,7 +105,7 @@ namespace flexMC
                 operators.pop_back();
                 if (operators.empty())
                 {
-                    report.setError(msg, tok.start, tok.size);
+                    report.setError(msg, tok);
                     return State::error;
                 }
                 operator_t = operators.back().type;
@@ -122,7 +122,7 @@ namespace flexMC
             auto msg = R"_(Unmatched parenthesis ")")_";
             if (operators.empty())
             {
-                report.setError(msg, tok.start, tok.size);
+                report.setError(msg, tok);
                 return State::error;
             }
             Token::Type operator_t = operators.back().type;
@@ -131,14 +131,14 @@ namespace flexMC
                 if (operator_t == Token::Type::lbracket)
                 {
                     report.setError(R"_(While parsing parenthesis ")": Unexpected bracket encountered)_",
-                                    operators.back().start, 1);
+                                    operators.back());
                     return State::error;
                 }
                 postfix.push_back(operators.back());
                 operators.pop_back();
                 if (operators.empty())
                 {
-                    report.setError(msg, tok.start, tok.size);
+                    report.setError(msg, tok);
                     return State::error;
                 }
                 operator_t = operators.back().type;
@@ -165,7 +165,7 @@ namespace flexMC
             auto msg = R"(Unmatched bracket "]")";
             if (operators.empty())
             {
-                report.setError(msg, tok.start, tok.size);
+                report.setError(msg, tok);
                 return State::error;
             }
             Token::Type operator_t = operators.back().type;
@@ -174,14 +174,14 @@ namespace flexMC
                 if (operator_t == Token::Type::lparen)
                 {
                     report.setError(R"(While parsing bracket "]": Unexpected parenthesis encountered)",
-                                    operators.back().start, 1);
+                                    operators.back());
                     return State::error;
                 }
                 postfix.push_back(operators.back());
                 operators.pop_back();
                 if (operators.empty())
                 {
-                    report.setError(msg, tok.start, tok.size);
+                    report.setError(msg, tok);
                     return State::error;
                 }
                 operator_t = operators.back().type;
@@ -189,7 +189,7 @@ namespace flexMC
             if (operators.back().context.num_args > 0)
             {
                 report.setError("Multiple arguments not allowed for <Vector> subscripting",
-                                operators.back().start, 1);
+                                operators.back());
                 return State::error;
 
             }
@@ -240,7 +240,7 @@ namespace flexMC
             }
             if (!found)
             {
-                report.setError(R"(Expected opening parenthesis "(" after function)", function.start, function.size);
+                report.setError(R"(Expected opening parenthesis "(" after function)", function);
                 return State::error;
             }
             return State::have_operand;
@@ -261,17 +261,14 @@ namespace flexMC
 
             if (t == undefined)
             {
-                report.setError("Does not start with a valid language token", next.start, next.size);
+                report.setError("Does not start with a valid language token", next);
                 return State::error;
             }
 
             if (t == eof)
             {
-                report.setError(
-                        "Expected a variable, value, function name or a prefix operator, got end of line",
-                        next.start,
-                        0
-                );
+                report.setError("Expected a variable, value, function name or a prefix operator, got end of line",
+                                next);
                 return State::error;
             }
 
@@ -324,7 +321,7 @@ namespace flexMC
                     next.value,
                     next.type2String()
             );
-            report.setError(msg, next.start, next.size);
+            report.setError(msg, next);
             return State::error;
         }
 
@@ -343,7 +340,7 @@ namespace flexMC
 
             if (t == undefined)
             {
-                report.setError("Does not start with a valid language token", next.start, next.size);
+                report.setError("Does not start with a valid language token", next);
                 return State::error;
             }
 

@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <ranges>
 
 #include "operand.h"
 #include "operation_compiler.h"
@@ -52,7 +51,7 @@ namespace flexMC
             }
             else
             {
-                report.setError("Variable is undefined", tok.start, tok.size);
+                report.setError("Variable is undefined", tok);
             }
         }
 

@@ -7,10 +7,9 @@ namespace flexMC
 {
 
     // Keywords
-    const std::string PAY = "PAY";
-    const std::string STOP = "STOP";
+    const std::string TERMINATE = "TERMINATE";
     const std::string IF = "IF";
-    const std::string THEN = "THEN";
+    const std::string CONTINUOUS = "CONTINUOUS";
     const std::string ELSE = "ELSE";
     const std::string ASSIGN = ":=";
     const std::string PLUS_ASSIGN = "+=";
@@ -18,6 +17,10 @@ namespace flexMC
     const std::string MUL_ASSIGN = "*=";
     const std::string DIV_ASSIGN = "/=";
     const std::string POW_ASSIGN = "**=";
+
+    // Payment functions (internal assign and save functions)
+    const std::string PAY = "PAY";
+    const std::string PAY_AT = "PAY_AT";
 
     // Real functions taking a scalar or vector
     const std::string EXP = "EXP";
@@ -53,10 +56,10 @@ namespace flexMC
     const std::string SMOOTH_LT = "<<";
     const std::string SMOOTH_GT = ">>";
     const std::string COMMA = ",";
-    const std::string P_LEFT = "(";
-    const std::string P_RIGHT = ")";
-    const std::string B_LEFT = "[";
-    const std::string B_RIGHT = "]";
+    const std::string L_PAREN = "(";
+    const std::string R_PAREN = ")";
+    const std::string L_BRACKET = "[";
+    const std::string R_BRACKET = "]";
 
     // Internal function call and list append operators
     const std::string CALL_ = "CALL_";
@@ -72,15 +75,16 @@ namespace flexMC
             R"(^\s{4})",
     };
 
-    const std::array<std::string, 35> R_GROUPS_2 = {
+    const std::array<std::string, 36> R_GROUPS_2 = {
             R"(^IF)",
-            R"(^THEN)",
+            R"(^CONTINUOUS)",
             R"(^ELSE)",
             R"(^AND)",
             R"(^OR)",
             R"(^NOT)",
+            R"(^PAY_AT)",
             R"(^PAY)",
-            R"(^STOP)",
+            R"(^TERMINATE)",
             R"(^EXP)",
             R"(^LOG)",
             R"(^ABS)",

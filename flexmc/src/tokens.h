@@ -44,25 +44,25 @@ namespace flexMC
         };
 
         Token(Type t, const std::string &val, const std::size_t &at) :
-                type(t),
-                value(val),
-                start(at),
-                size(val.length())
+            type(t),
+            value(val),
+            start(at),
+            size(val.length())
         {}
 
         Token(Type t, const std::string &val, const std::size_t &at, const ParsingContext &con) :
-                type(t),
-                value(val),
-                start(at),
-                size(val.length()),
-                context(con)
+            type(t),
+            value(val),
+            start(at),
+            size(val.length()),
+            context(con)
         {}
 
         Token(Type t, const std::string &val, const std::size_t &at, const std::size_t &length) :
-                type(t),
-                value(val),
-                start(at),
-                size(length)
+            type(t),
+            value(val),
+            start(at),
+            size(length)
         {}
 
         [[nodiscard]] std::string toString() const;
@@ -90,59 +90,63 @@ namespace flexMC
 
         Token makeIndex(const std::size_t &at);
 
-        Token makeOperator(const Token::Type t, const std::string &val, const std::size_t &at);
+        Token makeOperator(const Token::Type &t, const std::string &val, const std::size_t &at);
+
+        std::string printType(const Token::Type &t);
 
         const std::unordered_map<std::string, Token::Type, SHash, std::equal_to<>> TYPES = {
 
-                {IF,           Token::Type::keyW},
-                {THEN,         Token::Type::keyW},
-                {ELSE,         Token::Type::keyW},
-                {PAY,          Token::Type::keyW},
-                {STOP,         Token::Type::keyW},
-                {ASSIGN,       Token::Type::keyW},
-                {PLUS_ASSIGN,  Token::Type::keyW},
-                {MINUS_ASSIGN, Token::Type::keyW},
-                {MUL_ASSIGN,   Token::Type::keyW},
-                {DIV_ASSIGN,   Token::Type::keyW},
-                {POW_ASSIGN,   Token::Type::keyW},
+            {IF,           Token::Type::keyW},
+            {CONTINUOUS,   Token::Type::keyW},
+            {ELSE,         Token::Type::keyW},
+            {TERMINATE,    Token::Type::keyW},
+            {ASSIGN,       Token::Type::keyW},
+            {PLUS_ASSIGN,  Token::Type::keyW},
+            {MINUS_ASSIGN, Token::Type::keyW},
+            {MUL_ASSIGN,   Token::Type::keyW},
+            {DIV_ASSIGN,   Token::Type::keyW},
+            {POW_ASSIGN,   Token::Type::keyW},
 
-                {EXP,          Token::Type::fun},
-                {LOG,          Token::Type::fun},
-                {ABS,          Token::Type::fun},
-                {SQRT,         Token::Type::fun},
-                {SQUARE,       Token::Type::fun},
-                {MIN,          Token::Type::fun},
-                {MAX,          Token::Type::fun},
-                {SUM,          Token::Type::fun},
-                {PROD,         Token::Type::fun},
-                {ARGMIN,       Token::Type::fun},
-                {ARGMAX,       Token::Type::fun},
-                {LEN,          Token::Type::fun},
+            {PAY,          Token::Type::fun},
+            {PAY_AT,       Token::Type::fun},
 
-                {PLUS,         Token::Type::op},
-                {MINUS,        Token::Type::op},
-                {MUL,          Token::Type::op},
-                {DIV,          Token::Type::op},
-                {POW,          Token::Type::op},
-                {LT,           Token::Type::op},
-                {GT,           Token::Type::op},
-                {LE,           Token::Type::op},
-                {GE,           Token::Type::op},
-                {NOT,          Token::Type::op},
-                {AND,          Token::Type::op},
-                {OR,           Token::Type::op},
-                {SMOOTH_LT,    Token::Type::op},
-                {SMOOTH_GT,    Token::Type::op},
-                {COMMA,        Token::Type::op},
+            {EXP,          Token::Type::fun},
+            {LOG,          Token::Type::fun},
+            {ABS,          Token::Type::fun},
+            {SQRT,         Token::Type::fun},
+            {SQUARE,       Token::Type::fun},
+            {MIN,          Token::Type::fun},
+            {MAX,          Token::Type::fun},
+            {SUM,          Token::Type::fun},
+            {PROD,         Token::Type::fun},
+            {ARGMIN,       Token::Type::fun},
+            {ARGMAX,       Token::Type::fun},
+            {LEN,          Token::Type::fun},
 
-                {P_LEFT,       Token::Type::lparen},
-                {P_RIGHT,      Token::Type::rparen},
-                {B_LEFT,       Token::Type::lbracket},
-                {B_RIGHT,      Token::Type::rbracket},
+            {PLUS,         Token::Type::op},
+            {MINUS,        Token::Type::op},
+            {MUL,          Token::Type::op},
+            {DIV,          Token::Type::op},
+            {POW,          Token::Type::op},
+            {LT,           Token::Type::op},
+            {GT,        Token::Type::op},
+            {LE,        Token::Type::op},
+            {GE,        Token::Type::op},
+            {NOT,       Token::Type::op},
+            {AND,       Token::Type::op},
+            {OR,        Token::Type::op},
+            {SMOOTH_LT, Token::Type::op},
+            {SMOOTH_GT, Token::Type::op},
+            {COMMA,     Token::Type::op},
 
-                {"\t",         Token::Type::tab},
-                {"    ",       Token::Type::tab},
-                {" ",          Token::Type::wsp},
+            {L_PAREN,   Token::Type::lparen},
+            {R_PAREN,   Token::Type::rparen},
+            {L_BRACKET, Token::Type::lbracket},
+            {R_BRACKET, Token::Type::rbracket},
+
+            {"\t",      Token::Type::tab},
+            {"    ",    Token::Type::tab},
+            {" ",       Token::Type::wsp},
         };
     }
 }

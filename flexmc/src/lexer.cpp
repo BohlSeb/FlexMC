@@ -35,13 +35,20 @@ namespace flexMC
         std::size_t line_no = token.size;
         std::deque<Token> out({token});
 
-        while ((previous != Token::Type::eof) && (previous != Token::Type::undefined) && (line_no <= MAX_LINE_LEN))
+        using
+        enum Token::Type;
+
+        while ((previous != eof) && (previous != undefined) && (line_no <= MAX_LINE_LEN))
         {
             auto [next, suffix_] = nextTok(suffix, line_no);
             previous = next.type;
             line_no += next.size;
             out.push_back(next);
             suffix = suffix_;
+        }
+        if (out.back().type != eof)
+        {
+            out.emplace_back(eof, "", line_no);
         }
         return out;
     }
@@ -76,7 +83,7 @@ namespace flexMC
         {
             return std::make_pair(Tokens::makeContextualized(match_.str(), line_no), match_.suffix());
         }
-        return std::make_pair(Token(undefined, suffix.data(), line_no), suffix.data());
+        return std::make_pair(Token(undefined, suffix.data(), line_no, 0), suffix.data());
     }
 
 }
