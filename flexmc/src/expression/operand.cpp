@@ -1,6 +1,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <algorithm>
+#include <iterator>
 
 #include "operand.h"
 #include "calc_types.h"
