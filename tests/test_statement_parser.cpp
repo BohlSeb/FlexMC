@@ -17,12 +17,12 @@ TEST(StatementParser, StartOfLineStripper)
     };
 
     std::vector<TestCase> valid_cases = {
-        {3, "myDate myVar := x"},
-        {2, "myDate PAY() := x"},
-        {2, "myDate PAY () := x"},
-        {2, "myDate PAY_AT() := x"},
-        {2, "myDate PAY_AT () := x"},
-        {3, "myDate myVar += x"},
+        {3, "myDate myVar := EXP(0)"},
+        {2, "myDate PAY() := (EXP(LOG(1)))"},
+        {2, "myDate PAY () := 1 + 3 + myVar / 3"},
+        {2, "myDate PAY_AT() := (1 + 3 + myVar / 3)"},
+        {2, "myDate PAY_AT () := MAX(myVariables)"},
+        {3, "myDate myVar += MIN((1 + 3 + myVar / 3), (1 + 3 + myVar / 3))"},
         {3, "myDate myVar -= x"},
         {3, "myDate myVar *= x"},
         {3, "myDate myVar /= x"},
