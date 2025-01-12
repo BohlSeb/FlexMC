@@ -8,15 +8,12 @@
 // https://rules.sonarsource.com/cpp/tag/since-c++14/RSPEC-6045/
 
 
-namespace flexMC
-{
+namespace flexMC {
 
-    struct SHash
-    {
+    struct SHash {
         using is_transparent [[maybe_unused]] = void;
 
-        std::size_t operator()(const std::string_view s_view) const
-        { return std::hash<std::string_view>{}(s_view); }
+        std::size_t operator()(const std::string_view s_view) const { return std::hash<std::string_view>{}(s_view); }
     };
 
     template<class T>

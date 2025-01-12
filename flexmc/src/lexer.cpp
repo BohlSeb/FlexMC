@@ -5,20 +5,16 @@
 #include "lexer.h"
 
 
-namespace flexMC
-{
+namespace flexMC {
 
-    Lexer::Lexer()
-    {
+    Lexer::Lexer() {
         std::string all_groups_1 = "(";
-        for (const auto &s: R_GROUPS_1)
-        {
+        for (const auto &s: R_GROUPS_1) {
             all_groups_1 += s + ")|(";
         }
 
         std::string all_groups_2 = "(";
-        for (const auto &s: R_GROUPS_2)
-        {
+        for (const auto &s: R_GROUPS_2) {
             all_groups_2 += s + ")|(";
         }
 
@@ -28,9 +24,8 @@ namespace flexMC
         num_ = std::regex(R_NUM);
     }
 
-    std::deque<Token> Lexer::tokenize(const std::string_view line)
-    {
-        auto [token, suffix] = nextTok(line, 0);
+    std::deque<Token> Lexer::tokenize(const std::string_view line) {
+        auto [token, current_suffix] = nextTok(line, 0);
         Token::Type previous = token.type;
         std::size_t line_no = token.size;
         std::deque<Token> out({token});
@@ -38,49 +33,41 @@ namespace flexMC
         using
         enum Token::Type;
 
-        while ((previous != eof) && (previous != undefined) && (line_no <= MAX_LINE_LEN))
-        {
-            auto [next, suffix_] = nextTok(suffix, line_no);
+        while ((previous != eof) && (previous != undefined) && (line_no <= MAX_LINE_LEN)) {
+            auto [next, suffix] = nextTok(current_suffix, line_no);
             previous = next.type;
             line_no += next.size;
             out.push_back(next);
-            suffix = suffix_;
+            current_suffix = suffix;
         }
-        if (out.back().type != eof)
-        {
+        if (out.back().type != eof) {
             out.emplace_back(eof, "", line_no);
         }
         return out;
     }
 
-    std::pair<Token, std::string> Lexer::nextTok(const std::string_view suffix, const std::size_t &line_no)
-    {
+    std::pair<Token, std::string> Lexer::nextTok(const std::string_view suffix, const std::size_t &line_no) {
         using
         enum Token::Type;
 
-        if (suffix.empty())
-        {
+        if (suffix.empty()) {
             return std::make_pair(Token(eof, "", line_no), "");
         }
-        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, id_))
-        {
+        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, id_)) {
             auto t = Token(id, match_.str(), line_no);
             return std::make_pair(t, match_.suffix());
         }
 
-        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, num_))
-        {
+        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, num_)) {
             auto t = Token(num, match_.str(), line_no);
             return std::make_pair(t, match_.suffix());
         }
 
-        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, groups_1_))
-        {
+        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, groups_1_)) {
             return std::make_pair(Tokens::makeContextualized(match_.str(), line_no), match_.suffix());
         }
 
-        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, groups_2_))
-        {
+        if (std::regex_search(suffix.cbegin(), suffix.cend(), match_, groups_2_)) {
             return std::make_pair(Tokens::makeContextualized(match_.str(), line_no), match_.suffix());
         }
         return std::make_pair(Token(undefined, suffix.data(), line_no, 0), suffix.data());

@@ -6,11 +6,9 @@
 
 #include "tokens.h"
 
-namespace flexMC
-{
+namespace flexMC {
 
-    class MaybeError
-    {
+    class MaybeError {
 
     public:
 
@@ -18,18 +16,15 @@ namespace flexMC
 
         void setError(const std::string_view msg, const std::size_t &at, const std::size_t &len);
 
-        bool isError() const
-        { return !err_msg_.empty(); }
+        bool isError() const { return !err_msg_.empty(); }
 
         void setMessage(const std::string_view msg);
 
         void setPosition(const std::size_t &at, const std::size_t &len);
 
-        std::pair<size_t, size_t> position() const
-        { return std::make_pair(err_at_, err_len_); }
+        std::pair<size_t, size_t> position() const { return std::make_pair(err_at_, err_len_); }
 
-        std::string msg() const
-        { return err_msg_; }
+        std::string msg() const { return err_msg_; }
 
     private:
 

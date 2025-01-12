@@ -14,14 +14,12 @@
 #include "expression_stacks.h"
 
 
-namespace flexMC::operatorsCalc
-{
+namespace flexMC::operatorsCalc {
 
 
     bool isBinarySymbol(const std::string &symbol);
 
-    namespace unary
-    {
+    namespace unary {
 
         CType compileArgument(const std::string &symbol, const Operands &stacks, MaybeError &report);
 
@@ -31,8 +29,7 @@ namespace flexMC::operatorsCalc
 
     }
 
-    namespace binary
-    {
+    namespace binary {
         const std::vector<std::string> symbols{
             flexMC::PLUS,
             flexMC::MINUS,
@@ -48,8 +45,7 @@ namespace flexMC::operatorsCalc
         std::string makeKey(const std::string &symbol, const CType &left_t, const CType &right_t);
 
         template<class binary_operator>
-        void scSc(CalcStacks &stacks, const binary_operator f)
-        {
+        void scSc(CalcStacks &stacks, const binary_operator f) {
             const double right = stacks.scalars().back();
             stacks.scalars().pop_back();
             const double left = stacks.scalars().back();
@@ -57,8 +53,7 @@ namespace flexMC::operatorsCalc
         }
 
         template<class binary_operator>
-        void scVec(CalcStacks &stacks, const binary_operator f)
-        {
+        void scVec(CalcStacks &stacks, const binary_operator f) {
             assert(stacks.vectorSizes().size() > 0);
             const std::size_t s = stacks.vectorSizes().back();
             assert(stacks.vectors().size() >= s);
@@ -75,8 +70,7 @@ namespace flexMC::operatorsCalc
         }
 
         template<class binary_operator>
-        void vecSc(CalcStacks &stacks, const binary_operator f)
-        {
+        void vecSc(CalcStacks &stacks, const binary_operator f) {
             assert(stacks.vectorSizes().size() > 0);
             const std::size_t s = stacks.vectorSizes().back();
             assert(stacks.vectors().size() >= s);
@@ -93,8 +87,7 @@ namespace flexMC::operatorsCalc
         }
 
         template<class binary_operator>
-        void vecVec(CalcStacks &stacks, binary_operator f)
-        {
+        void vecVec(CalcStacks &stacks, binary_operator f) {
             assert(stacks.vectorSizes().size() > 1);
             const std::size_t s = stacks.vectorSizes().back();
             stacks.vectorSizes().pop_back();

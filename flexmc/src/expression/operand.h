@@ -10,8 +10,7 @@
 
 // Todo: Keep precision in mind
 
-namespace flexMC
-{
+namespace flexMC {
 
     double compileNumber(const Token &token, Operands &stacks, MaybeError &report);
 
@@ -21,13 +20,11 @@ namespace flexMC
 
     Operation compileVectorOperation(const std::size_t &size);
 
-    class VectorAppend
-    {
+    class VectorAppend {
 
     public:
 
-        explicit VectorAppend(const std::size_t &size) : size_(size)
-        {}
+        explicit VectorAppend(const std::size_t &size) : size_(size) {}
 
         void operator()(CalcStacks &stacks) const;
 

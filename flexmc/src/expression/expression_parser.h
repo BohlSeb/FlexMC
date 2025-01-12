@@ -7,8 +7,7 @@
 #include "language_error.h"
 
 
-namespace flexMC
-{
+namespace flexMC {
 
     std::pair<MaybeError, std::vector<Token>> infixToPostfix(const std::deque<Token> &infix);
 

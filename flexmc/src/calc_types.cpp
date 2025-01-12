@@ -1,24 +1,21 @@
 #include "calc_types.h"
 
-namespace flexMC
-{
+namespace flexMC {
 
-    std::string cType2Str(const CType &type)
-    {
+    std::string cType2Str(const CType &type) {
         using
         enum CType;
-        switch (type)
-        {
+        switch (type) {
             case scalar:
-                return "Scalar";
+                return "SCALAR";
             case vector:
-                return "Vector";
+                return "LIST_OF_SCALAR";
             case date:
-                return "Date";
-            case dateList:
-                return "DateList";
+                return "DATE";
+            case date_list:
+                return "LIST_OF_DATES";
             case undefined:
-                return "undefined";
+                return "UNDEFINED";
             default:
                 return "";
         }

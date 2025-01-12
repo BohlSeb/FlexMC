@@ -5,16 +5,13 @@
 #include "language_error.h"
 #include "expression_stacks.h"
 
-namespace flexMC
-{
+namespace flexMC {
 
-    namespace functionCompiler
-    {
+    namespace functionCompiler {
 
         Operation compile(const std::size_t &num_args, Operands &stacks, MaybeError &report);
 
-        namespace detail
-        {
+        namespace detail {
 
             Operation compileScalar(const Token &token,
                                     const std::size_t &num_args,
@@ -45,8 +42,7 @@ namespace flexMC
 
     }
 
-    namespace operatorCompiler
-    {
+    namespace operatorCompiler {
         Operation compile(const Token &token, Operands &stacks, MaybeError &report);
     }
 

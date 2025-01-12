@@ -3,8 +3,7 @@
 #include <string>
 #include <array>
 
-namespace flexMC
-{
+namespace flexMC {
 
     // Keywords
     const std::string TERMINATE = "TERMINATE";

@@ -5,8 +5,8 @@
 #include "expression_compiler.h"
 
 
-TEST(StaticVStorage, SetGetUnused)
-{
+TEST(StaticVStorage, SetGetUnused) {
+
     using namespace flexMC;
 
     using
@@ -38,15 +38,14 @@ TEST(StaticVStorage, SetGetUnused)
     ASSERT_EQ(scalar, storage.cType(s_name));
     ASSERT_EQ(vector, storage.cType(v_name));
     ASSERT_EQ(date, storage.cType(d_name));
-    ASSERT_EQ(dateList, storage.cType(d_l_name));
+    ASSERT_EQ(date_list, storage.cType(d_l_name));
 
     ASSERT_EQ(6, storage.unused().size());
 
     const std::vector<std::string> names({s_name, v_name, d_name, d_l_name, d_l_name, d_name, v_name, s_name});
-    const std::vector<CType> expected_types({scalar, vector, date, dateList, dateList, date, vector, scalar});
+    const std::vector<CType> expected_types({scalar, vector, date, date_list, date_list, date, vector, scalar});
 
-    for (const auto [name, exp]: std::ranges::zip_view(names, expected_types))
-    {
+    for (const auto [name, exp]: std::ranges::zip_view(names, expected_types)) {
 
         Operands operands;
         const auto [status, maybe_operation] = StaticVCompiler::tryCompile(name, operands, storage);
@@ -58,8 +57,7 @@ TEST(StaticVStorage, SetGetUnused)
         Expression expression;
         expression.push_back(maybe_operation.value());
         expression(calc_stacks);
-        switch (return_type)
-        {
+        switch (return_type) {
             case scalar:
                 ASSERT_EQ(s, calc_stacks.scalars().back());
                 calc_stacks.scalars().pop_back();
@@ -72,7 +70,7 @@ TEST(StaticVStorage, SetGetUnused)
                 ASSERT_EQ(d, calc_stacks.dates().back());
                 calc_stacks.dates().pop_back();
                 break;
-            case dateList:
+            case date_list:
                 ASSERT_EQ(d_l, calc_stacks.dateListResult());
                 calc_stacks.popDateListResult();
                 break;

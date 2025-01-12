@@ -5,25 +5,20 @@
 #include "language_error.h"
 
 
-namespace flexMC
-{
+namespace flexMC {
 
-    struct LineParseResult
-    {
+    struct LineParseResult {
         const std::deque<Token> statement_begin;
         const std::deque<Token> expression_infix;
 
-        LineParseResult() : statement_begin({}), expression_infix({})
-        {}
+        LineParseResult() : statement_begin({}), expression_infix({}) {}
 
         LineParseResult(const std::deque<Token> &line_start,
                         const std::deque<Token> &expr_infix)
-            : statement_begin(line_start), expression_infix(expr_infix)
-        {}
+            : statement_begin(line_start), expression_infix(expr_infix) {}
     };
 
-    namespace lineParseUtils
-    {
+    namespace lineParseUtils {
 
         // Can use auto in function declaration in C++20 according to the accepted answer in the link below.
         // It's an abbreviation for function template.

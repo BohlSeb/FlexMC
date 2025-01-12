@@ -12,31 +12,24 @@
 #include "expression_stacks.h"
 #include "utils.h"
 
-namespace flexMC
-{
+namespace flexMC {
 
     class StaticVCompiler;
 
-    class StaticVStorage
-    {
+    class StaticVStorage {
 
     public:
 
-        bool contains(const std::string_view name) const
-        { return types_.contains(name); }
+        bool contains(const std::string_view name) const { return types_.contains(name); }
 
-        CType cType(const std::string &name) const
-        { return types_.at(name); }
+        CType cType(const std::string &name) const { return types_.at(name); }
 
-        bool containsUnused() const
-        { return unused_.begin() != unused_.end(); }
+        bool containsUnused() const { return unused_.begin() != unused_.end(); }
 
-        StringMap<CType> unused() const
-        { return unused_; }
+        StringMap<CType> unused() const { return unused_; }
 
         template<class T>
-        void insert(const std::string &name, const T &value)
-        {
+        void insert(const std::string &name, const T &value) {
             constexpr CType c_type = getCType<T>();
             eraseOtherTypeIf<T>(name);
             types_[name] = c_type;
@@ -50,8 +43,7 @@ namespace flexMC
         friend class StaticVCompiler;
 
         template<class T>
-        struct VMap
-        {
+        struct VMap {
             StringMap<T> data;
         };
 
@@ -63,8 +55,7 @@ namespace flexMC
 
         StringMap<CType> unused_;
 
-        CTypeMap<VMapT> initialize() const
-        {
+        CTypeMap<VMapT> initialize() const {
             VMap<SCALAR> scalars;
             VMap<VECTOR> vectors;
             VMap<DATE> dates;
@@ -79,22 +70,18 @@ namespace flexMC
             maps[scalar] = scalars_v;
             maps[vector] = vectors_v;
             maps[date] = dates_v;
-            maps[dateList] = date_lists_v;
+            maps[date_list] = date_lists_v;
             return maps;
         }
 
         template<class T>
-        void eraseOtherTypeIf(const std::string &name)
-        {
-            if (types_.contains(name))
-            {
+        void eraseOtherTypeIf(const std::string &name) {
+            if (types_.contains(name)) {
                 const CType c_type = types_.at(name);
-                if (c_type != getCType<T>())
-                {
+                if (c_type != getCType<T>()) {
                     std::visit(
                         [name](auto &map) {
-                            if (map.data.contains(name))
-                            { map.data.erase(name); }
+                            if (map.data.contains(name)) { map.data.erase(name); }
                         },
                         maps_.at(c_type));
 
@@ -104,16 +91,13 @@ namespace flexMC
             }
         }
 
-        void use(const std::string &name)
-        {
-            if (unused_.contains(name))
-            {
+        void use(const std::string &name) {
+            if (unused_.contains(name)) {
                 unused_.erase(name);
             }
         }
 
-        void compileSingleType(Operands &stacks, const std::string &name, const CType &c_type)
-        {
+        void compileSingleType(Operands &stacks, const std::string &name, const CType &c_type) {
             // std::get actual value not checked
             assert((contains(name)) && (cType(name) == c_type));
             use(name);
@@ -121,8 +105,7 @@ namespace flexMC
         };
 
         template<class T>
-        T &get(const std::string &name)
-        {
+        T &get(const std::string &name) {
             constexpr CType c_type = getCType<T>();
             assert((contains(name)) && (cType(name) == c_type));
             use(name);
@@ -131,10 +114,9 @@ namespace flexMC
         }
 
         template<class T>
-        void compileArrayType(Operands &stacks, const std::string &name)
-        {
+        void compileArrayType(Operands &stacks, const std::string &name) {
             constexpr CType c_type = getCType<T>();
-            static_assert((c_type == CType::vector) || (c_type == CType::dateList));
+            static_assert((c_type == CType::vector) || (c_type == CType::date_list));
             const size_t s = get<T>(name).size();
             stacks.pushArray(c_type, s);
         };
@@ -144,75 +126,63 @@ namespace flexMC
         // Answer 2 by Johannes Schaub
 
         template<class T>
-        struct TAlias
-        {
+        struct TAlias {
             using type = T;
         };
 
         template<class T>
-        Operation compile(const std::string &name)
-        {
+        Operation compile(const std::string &name) {
             return compile_(name, TAlias<T>());
         }
 
         // SonarLint "this function should be declared const"
         template<class T>
-        Operation compile_(const std::string &, TAlias<T>)
-        {
+        Operation compile_(const std::string &, TAlias<T>) {
             static_assert(getCType<T>() != CType::undefined, "No template specialisation for the given type T");
             return Operation([](const CalcStacks &) {/* must be overwritten by template specialization */});
         }
 
-        Operation compile_(const std::string &name, TAlias<SCALAR>)
-        {
+        Operation compile_(const std::string &name, TAlias<SCALAR>) {
             const SCALAR value = get<SCALAR>(name);
             return Operation([value](CalcStacks &stacks) { stacks.scalars().emplace_back(value); });
         }
 
-        Operation compile_(const std::string &name, TAlias<VECTOR>)
-        {
+        Operation compile_(const std::string &name, TAlias<VECTOR>) {
             const VECTOR value = get<VECTOR>(name);
             return Operation([value](CalcStacks &stacks) { stacks.pushVector(value); });
         }
 
-        Operation compile_(const std::string &name, TAlias<DATE>)
-        {
+        Operation compile_(const std::string &name, TAlias<DATE>) {
             const DATE value = get<DATE>(name);
             return Operation([value](CalcStacks &stacks) { stacks.dates().emplace_back(value); });
         }
 
-        Operation compile_(const std::string &name, TAlias<DATE_LIST>)
-        {
+        Operation compile_(const std::string &name, TAlias<DATE_LIST>) {
             const DATE_LIST value = get<DATE_LIST>(name);
             return Operation([value](CalcStacks &stacks) { stacks.pushDateList(value); });
         }
 
     };
 
-    class StaticVCompiler
-    {
+    class StaticVCompiler {
 
     public:
 
-        enum class Status
-        {
+        enum class Status {
             found,
             not_found
         };
 
         static std::pair<Status, std::optional<Operation>>
-        tryCompile(const std::string &name, Operands &stacks, StaticVStorage &storage)
-        {
+        tryCompile(const std::string &name, Operands &stacks, StaticVStorage &storage) {
             using
             enum CType;
             using
             enum Status;
-            if (storage.contains(name))
-            {
+            if (storage.contains(name)) {
                 const CType c_type = storage.cType(name);
                 assert(c_type != undefined);
-                switch (c_type)
-                {
+                switch (c_type) {
                     case scalar:
                         storage.compileSingleType(stacks, name, c_type);
                         return {found, storage.compile<SCALAR>(name)};
@@ -222,7 +192,7 @@ namespace flexMC
                     case date:
                         storage.compileSingleType(stacks, name, c_type);
                         return {found, storage.compile<DATE>(name)};
-                    case dateList:
+                    case date_list:
                         storage.compileArrayType<DATE_LIST>(stacks, name);
                         return {found, storage.compile<DATE_LIST>(name)};
                     default:

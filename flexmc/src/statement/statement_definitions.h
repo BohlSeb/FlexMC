@@ -7,14 +7,12 @@
 #include "tokens.h"
 
 
-namespace flexMC::statement
-{
+namespace flexMC::statement {
 
     using
     enum Token::Type;
 
-    struct Option
-    {
+    struct Option {
 
         const std::string value;
         const Token::Type type;
@@ -27,14 +25,12 @@ namespace flexMC::statement
             value(std::move(token_value)),
             type(token_type),
             check_type(check_with_type),
-            options(next_options)
-        {};
+            options(next_options) {};
 
         Option(std::string token_value, Token::Type token_type, bool check_with_type) :
             value(std::move(token_value)),
             type(token_type),
-            check_type(check_with_type)
-        {};
+            check_type(check_with_type) {};
 
     };
 

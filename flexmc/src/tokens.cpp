@@ -1,15 +1,12 @@
 #include "tokens.h"
 
 
-namespace flexMC
-{
+namespace flexMC {
 
     // this is stupid but apparently not straight forward
     // https://stackoverflow.com/questions/3342726/c-print-out-enum-value-as-text
-    std::string Token::type2String() const
-    {
-        switch (type)
-        {
+    std::string Token::type2String() const {
+        switch (type) {
             using
             enum flexMC::Token::Type;
             case eof:
@@ -24,7 +21,7 @@ namespace flexMC
                 return "operator";
             case num:
                 return "number";
-            case keyW:
+            case keyword:
                 return "keyword";
             case id:
                 return "variable name";
@@ -49,13 +46,11 @@ namespace flexMC
         }
     }
 
-    std::string Token::toString() const
-    {
+    std::string Token::toString() const {
         using
         enum flexMC::Token::Type;
         std::string out;
-        switch (type)
-        {
+        switch (type) {
             case wsp:
             case tab:
             case eof:
@@ -67,21 +62,17 @@ namespace flexMC
         return "Tok(t=" + type2String() + ", v=" + out + ")";
     }
 
-    std::string Tokens::printType(const Token::Type &t)
-    {
+    std::string Tokens::printType(const Token::Type &t) {
         Token tok(t, "", 0);
         return tok.type2String();
     }
 
-    Token::Type Tokens::getType(const std::string &symbol)
-    {
+    Token::Type Tokens::getType(const std::string &symbol) {
         auto it = Tokens::TYPES.find(symbol);
-        if (it == Tokens::TYPES.end())
-        {
+        if (it == Tokens::TYPES.end()) {
             return Token::Type::undefined;
         }
-        else
-        {
+        else {
             return it->second;
         }
     }
@@ -89,35 +80,30 @@ namespace flexMC
     // currently using python operator precedence
     // https://docs.python.org/3/reference/expressions.html
 
-    Token Tokens::makeCall(const std::size_t &num_args, const std::size_t &at)
-    {
+    Token Tokens::makeCall(const std::size_t &num_args, const std::size_t &at) {
         auto call = Token(Token::Type::call_, CALL_, at);
         call.context.num_args = num_args;
         call.context.precedence = 10;
         return call;
     }
 
-    Token Tokens::makeAppend(const std::size_t &num_args, const std::size_t &at)
-    {
+    Token Tokens::makeAppend(const std::size_t &num_args, const std::size_t &at) {
         auto call = Token(Token::Type::append_, APPEND_, at);
         call.context.num_args = num_args;
         call.context.precedence = 10;
         return call;
     }
 
-    Token Tokens::makeIndex(const std::size_t &at)
-    {
+    Token Tokens::makeIndex(const std::size_t &at) {
         auto call = Token(Token::Type::index_, INDEX_, at);
         call.context.num_args = 1;
         call.context.precedence = 10;
         return call;
     }
 
-    Token Tokens::makeOperator(const Token::Type &t, const std::string &val, const std::size_t &at)
-    {
+    Token Tokens::makeOperator(const Token::Type &t, const std::string &val, const std::size_t &at) {
         ParsingContext context;
-        if (val == POW)
-        {
+        if (val == POW) {
             context.precedence = 9;
             context.left_associative = false;
             context.maybe_infix = true;
@@ -125,15 +111,13 @@ namespace flexMC
             return {t, val, at, context};
         }
         // leave precedence gap to above for unary +/-
-        if ((val == MUL) || (val == DIV))
-        {
+        if ((val == MUL) || (val == DIV)) {
             context.precedence = 7;
             context.maybe_infix = true;
             context.is_infix = true;
             return {t, val, at, context};
         }
-        if ((val == PLUS) || (val == MINUS))
-        {
+        if ((val == PLUS) || (val == MINUS)) {
             context.precedence = 6;
             context.maybe_infix = true;
             context.maybe_prefix = true;
@@ -144,40 +128,35 @@ namespace flexMC
             (val == LE) ||
             (val == GE) ||
             (val == SMOOTH_LT) ||
-            (val == SMOOTH_GT))
-        {
+            (val == SMOOTH_GT)) {
             context.precedence = 5;
             context.left_associative = false;
             context.maybe_infix = true;
             context.is_infix = true;
             return {t, val, at, context};
         }
-        if (val == NOT)
-        {
+        if (val == NOT) {
             context.precedence = 4;
             context.left_associative = false;
             context.maybe_infix = true;
             context.is_infix = true;
             return {t, val, at, context};
         }
-        if (val == AND)
-        {
+        if (val == AND) {
             context.precedence = 3;
             context.left_associative = false;
             context.maybe_infix = true;
             context.is_infix = true;
             return {t, val, at, context};
         }
-        if (val == OR)
-        {
+        if (val == OR) {
             context.precedence = 2;
             context.left_associative = false;
             context.maybe_infix = true;
             context.is_infix = true;
             return {t, val, at, context};
         }
-        if (val == COMMA)
-        {
+        if (val == COMMA) {
             context.maybe_infix = true;
             context.is_infix = true;
             return {t, val, at, context};
@@ -185,48 +164,39 @@ namespace flexMC
         return {Token::Type::undefined, val, at};
     }
 
-    Token Tokens::makeContextualized(const std::string &val, const std::size_t &at)
-    {
+    Token Tokens::makeContextualized(const std::string &val, const std::size_t &at) {
         using
         enum Token::Type;
         Token::Type t = getType(val);
-        if (t == id || t == keyW || t == fun || t == num)
-        {
+        if (t == id || t == keyword || t == fun || t == num) {
             return {t, val, at};
         }
-        if (t == wsp)
-        {
+        if (t == wsp) {
             return {t, " ", at};
         }
-        if (t == op)
-        {
+        if (t == op) {
             return makeOperator(t, val, at);
         }
-        if (t == lparen)
-        {
+        if (t == lparen) {
             ParsingContext context;
             context.precedence = 0;
             context.maybe_infix = true;
             context.maybe_prefix = true;
             return {t, val, at, context};
         }
-        if (t == lbracket)
-        {
+        if (t == lbracket) {
             ParsingContext context;
             context.precedence = 0;
             context.maybe_infix = true;
             return {t, val, at, context};
         }
-        if (t == tab)
-        {
+        if (t == tab) {
             return {t, "    ", at};
         }
-        if (t == eof)
-        {
+        if (t == eof) {
             return {t, "", at};
         }
-        if ((t == rparen) || (t == rbracket))
-        {
+        if ((t == rparen) || (t == rbracket)) {
             return {t, val, at};
         }
         return {undefined, val, at};
