@@ -3,8 +3,7 @@
 #include <string>
 #include <array>
 
-namespace flexMC
-{
+namespace flexMC {
 
     // Keywords
     const std::string TERMINATE = "TERMINATE";
@@ -71,47 +70,47 @@ namespace flexMC
     const std::string R_NUM = R"(^(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)";
 
     const std::array<std::string, 2> R_GROUPS_1 = {
-            R"(^\*\*(=?))",
-            R"(^\s{4})",
+        R"(^\*\*(=?))",
+        R"(^\s{4})",
     };
 
     const std::array<std::string, 36> R_GROUPS_2 = {
-            R"(^IF)",
-            R"(^CONTINUOUS)",
-            R"(^ELSE)",
-            R"(^AND)",
-            R"(^OR)",
-            R"(^NOT)",
-            R"(^PAY_AT)",
-            R"(^PAY)",
-            R"(^TERMINATE)",
-            R"(^EXP)",
-            R"(^LOG)",
-            R"(^ABS)",
-            R"(^SQRT)",
-            R"(^SQUARE)",
-            R"(^MIN)",
-            R"(^MAX)",
-            R"(^SUM)",
-            R"(^PROD)",
-            R"(^ARGMIN)",
-            R"(^ARGMAX)",
-            R"(^LEN)",
-            R"(^APPEND)",
-            R"(^:=)",
-            R"(^\+(=?))",
-            R"(^\-(=?))",
-            R"(^\*(=?))",
-            R"(^\/(=?))",
-            R"(^\<[\<=]?)",
-            R"(^\>[\>=]?)",
-            R"(^\,)",
-            R"(^\()",
-            R"(^\))",
-            R"(^\[)",
-            R"(^\])",
-            R"(^\t)",
-            R"(^\s)",
+        R"(^IF)",
+        R"(^CONTINUOUS)",
+        R"(^ELSE)",
+        R"(^AND)",
+        R"(^OR)",
+        R"(^NOT)",
+        R"(^PAY_AT)",
+        R"(^PAY)",
+        R"(^TERMINATE)",
+        R"(^EXP)",
+        R"(^LOG)",
+        R"(^ABS)",
+        R"(^SQRT)",
+        R"(^SQUARE)",
+        R"(^MIN)",
+        R"(^MAX)",
+        R"(^SUM)",
+        R"(^PROD)",
+        R"(^ARGMIN)",
+        R"(^ARGMAX)",
+        R"(^LEN)",
+        R"(^APPEND)",
+        R"(^:=)",
+        R"(^\+(=?))",
+        R"(^\-(=?))",
+        R"(^\*(=?))",
+        R"(^\/(=?))",
+        R"(^\<[\<=]?)",
+        R"(^\>[\>=]?)",
+        R"(^\,)",
+        R"(^\()",
+        R"(^\))",
+        R"(^\[)",
+        R"(^\])",
+        R"(^\t)",
+        R"(^\s)",
     };
 
     const std::size_t MAX_LINE_LEN = 1000;

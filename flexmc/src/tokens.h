@@ -6,11 +6,9 @@
 #include "utils.h"
 
 
-namespace flexMC
-{
+namespace flexMC {
 
-    struct ParsingContext
-    {
+    struct ParsingContext {
         std::size_t precedence = 0;
         bool maybe_prefix = false;
         bool maybe_infix = false;
@@ -20,18 +18,16 @@ namespace flexMC
         bool left_associative = true;
     };
 
-    struct Token
-    {
+    struct Token {
 
-        enum class Type
-        {
+        enum class Type {
             eof,
             wsp,
             tab,
             op,
             fun,
             num,
-            keyW,
+            keyword,
             id,
             lparen,
             rparen,
@@ -47,23 +43,20 @@ namespace flexMC
             type(t),
             value(val),
             start(at),
-            size(val.length())
-        {}
+            size(val.length()) {}
 
         Token(Type t, const std::string &val, const std::size_t &at, const ParsingContext &con) :
             type(t),
             value(val),
             start(at),
             size(val.length()),
-            context(con)
-        {}
+            context(con) {}
 
         Token(Type t, const std::string &val, const std::size_t &at, const std::size_t &length) :
             type(t),
             value(val),
             start(at),
-            size(length)
-        {}
+            size(length) {}
 
         [[nodiscard]] std::string toString() const;
 
@@ -77,8 +70,7 @@ namespace flexMC
     };
 
 
-    namespace Tokens
-    {
+    namespace Tokens {
 
         Token::Type getType(const std::string &symbol);
 
@@ -96,16 +88,16 @@ namespace flexMC
 
         const std::unordered_map<std::string, Token::Type, SHash, std::equal_to<>> TYPES = {
 
-            {IF,           Token::Type::keyW},
-            {CONTINUOUS,   Token::Type::keyW},
-            {ELSE,         Token::Type::keyW},
-            {TERMINATE,    Token::Type::keyW},
-            {ASSIGN,       Token::Type::keyW},
-            {PLUS_ASSIGN,  Token::Type::keyW},
-            {MINUS_ASSIGN, Token::Type::keyW},
-            {MUL_ASSIGN,   Token::Type::keyW},
-            {DIV_ASSIGN,   Token::Type::keyW},
-            {POW_ASSIGN,   Token::Type::keyW},
+            {IF,           Token::Type::keyword},
+            {CONTINUOUS,   Token::Type::keyword},
+            {ELSE,         Token::Type::keyword},
+            {TERMINATE,    Token::Type::keyword},
+            {ASSIGN,       Token::Type::keyword},
+            {PLUS_ASSIGN,  Token::Type::keyword},
+            {MINUS_ASSIGN, Token::Type::keyword},
+            {MUL_ASSIGN,   Token::Type::keyword},
+            {DIV_ASSIGN,   Token::Type::keyword},
+            {POW_ASSIGN,   Token::Type::keyword},
 
             {PAY,          Token::Type::fun},
             {PAY_AT,       Token::Type::fun},
@@ -129,24 +121,24 @@ namespace flexMC
             {DIV,          Token::Type::op},
             {POW,          Token::Type::op},
             {LT,           Token::Type::op},
-            {GT,        Token::Type::op},
-            {LE,        Token::Type::op},
-            {GE,        Token::Type::op},
-            {NOT,       Token::Type::op},
-            {AND,       Token::Type::op},
-            {OR,        Token::Type::op},
-            {SMOOTH_LT, Token::Type::op},
-            {SMOOTH_GT, Token::Type::op},
-            {COMMA,     Token::Type::op},
+            {GT,           Token::Type::op},
+            {LE,           Token::Type::op},
+            {GE,           Token::Type::op},
+            {NOT,          Token::Type::op},
+            {AND,          Token::Type::op},
+            {OR,           Token::Type::op},
+            {SMOOTH_LT,    Token::Type::op},
+            {SMOOTH_GT,    Token::Type::op},
+            {COMMA,        Token::Type::op},
 
-            {L_PAREN,   Token::Type::lparen},
-            {R_PAREN,   Token::Type::rparen},
-            {L_BRACKET, Token::Type::lbracket},
-            {R_BRACKET, Token::Type::rbracket},
+            {L_PAREN,      Token::Type::lparen},
+            {R_PAREN,      Token::Type::rparen},
+            {L_BRACKET,    Token::Type::lbracket},
+            {R_BRACKET,    Token::Type::rbracket},
 
-            {"\t",      Token::Type::tab},
-            {"    ",    Token::Type::tab},
-            {" ",       Token::Type::wsp},
+            {"\t",         Token::Type::tab},
+            {"    ",       Token::Type::tab},
+            {" ",          Token::Type::wsp},
         };
     }
 }

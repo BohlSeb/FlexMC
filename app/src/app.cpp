@@ -13,8 +13,7 @@
 using namespace flexMC;
 
 
-int main()
-{
+int main() {
 
     // report version
     std::cout << "Version: " << APP_VERSION_MAJOR << "."
@@ -36,28 +35,25 @@ int main()
 
     std::vector<int> vec = {4, 2, 4, 5, 2, 1, 1};
 
-    auto assign_l = [](int x)
-    { return x == 5; };
+    auto assign_l = [](int x) { return x == 5; };
 
-    auto paren_l = [](int x)
-    { return x >= 4; };
+    auto paren_l = [](int x) { return x >= 4; };
 
 
     auto it_5 = std::ranges::find_if(vec.begin(), vec.end(), assign_l);
     auto it_test = std::ranges::find_last_if(vec.begin(), it_5, paren_l).begin();
 
-    if (it_test != it_5)
-    {
+    if (it_test != it_5) {
         std::cout << *it_test << "\n";
-    } else {
+    }
+    else {
         std::cout << "not found\n";
     }
 
     vec.insert(it_5, 7);
     //vec.erase(it_test, it_5);
 
-    for (auto &v: vec)
-    {
+    for (auto &v: vec) {
         std::cout << v << " ";
     }
 

@@ -5,38 +5,32 @@
 
 #include "language_error.h"
 
-namespace flexMC
-{
+namespace flexMC {
 
-    void MaybeError::setError(const std::string_view msg, const Token &token)
-    {
+    void MaybeError::setError(const std::string_view msg, const Token &token) {
         setError(msg, token.start, token.size);
     }
 
-    void MaybeError::setError(const std::string_view msg, const std::size_t &at, const std::size_t &len)
-    {
+    void MaybeError::setError(const std::string_view msg, const std::size_t &at, const std::size_t &len) {
         setMessage(msg);
         setPosition(at, len);
     }
 
 
-    void MaybeError::setMessage(const std::string_view msg)
-    {
+    void MaybeError::setMessage(const std::string_view msg) {
         assert(!isError());
         err_msg_ = msg;
     }
 
 
-    void MaybeError::setPosition(const std::size_t &at, const std::size_t &len)
-    {
+    void MaybeError::setPosition(const std::size_t &at, const std::size_t &len) {
         assert(isError());
         err_at_ = at;
         err_len_ = len;
     }
 
 
-    std::string printError(std::string_view err_prefix, std::string_view line, const MaybeError &report)
-    {
+    std::string printError(std::string_view err_prefix, std::string_view line, const MaybeError &report) {
         assert(report.isError());
         std::stringstream out;
         auto [start, size] = report.position();

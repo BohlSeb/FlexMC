@@ -7,11 +7,9 @@
 
 #include "tokens.h"
 
-namespace flexMC
-{
+namespace flexMC {
 
-    class Lexer
-    {
+    class Lexer {
 
     public:
 

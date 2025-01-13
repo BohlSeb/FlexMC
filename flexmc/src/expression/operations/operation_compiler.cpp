@@ -7,25 +7,21 @@
 #include "operators_calc.h"
 #include "operation_compiler.h"
 
-namespace flexMC
-{
-    Operation functionCompiler::compile(const std::size_t &num_args, Operands &stacks, MaybeError &report)
-    {
+namespace flexMC {
+    Operation functionCompiler::compile(const std::size_t &num_args, Operands &stacks, MaybeError &report) {
         assert(stacks.fSize() > 0);
         const Token fun = stacks.funcsBack();
 
         using namespace functionsReal;
-        const auto is_scalar = std::ranges::find(symbols_scalar, fun.value) != symbols_scalar.cend();
-        const auto is_reduce = std::ranges::find(symbols_reduce, fun.value) != symbols_reduce.cend();
+        const auto is_scalar = std::ranges::find(SYMBOLS_SCALAR, fun.value) != SYMBOLS_SCALAR.cend();
+        const auto is_reduce = std::ranges::find(SYMBOLS_REDUCE, fun.value) != SYMBOLS_REDUCE.cend();
         assert(is_scalar || is_reduce);
 
         stacks.popFunc();
-        if (is_scalar)
-        {
+        if (is_scalar) {
             return functionCompiler::detail::compileScalar(fun, num_args, stacks, report);
         }
-        if (is_reduce)
-        {
+        if (is_reduce) {
             return functionCompiler::detail::compileReduce(fun, num_args, stacks, report);
         }
         return Operation(std::function<void(CalcStacks &)>{});
@@ -35,18 +31,15 @@ namespace flexMC
     functionCompiler::detail::compileScalar(const Token &function,
                                             const std::size_t &num_args,
                                             const Operands &stacks,
-                                            MaybeError &report)
-    {
+                                            MaybeError &report) {
         assert(stacks.tSize() >= num_args);
         const CType arg_type = stacks.tSize() > 0 ? stacks.typesBack() : CType::scalar;
         assertNumberOfArgs(function, 1, num_args, arg_type, report);
-        if (report.isError())
-        {
+        if (report.isError()) {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
         const CType return_type = functionsReal::compileArgType(function, arg_type, report);
-        if (report.isError())
-        {
+        if (report.isError()) {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
         const std::string key = functionsReal::scalar::makeKey(function.value, return_type);
@@ -58,34 +51,27 @@ namespace flexMC
     functionCompiler::detail::compileReduce(const Token &function,
                                             const std::size_t &num_args,
                                             Operands &stacks,
-                                            MaybeError &report)
-    {
+                                            MaybeError &report) {
         using
         enum CType;
         assert(stacks.tSize() >= num_args);
         const CType dummy_arg_type = stacks.tSize() > 0 ? stacks.typesBack() : scalar;
         assertNumberOfArgs(function, 1, 0, num_args, dummy_arg_type, report);
-        if (report.isError())
-        {
+        if (report.isError()) {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
         const CType arg_type = functionsReal::compileArgType(function, stacks.typesBack(), report);
-        if (report.isError())
-        {
+        if (report.isError()) {
             return Operation(std::function<void(CalcStacks &)>({}));
         }
         stacks.popType();
-        if (arg_type == scalar)
-        {
+        if (arg_type == scalar) {
             assertNumberOfArgs(function, 2, 0, num_args, arg_type, report);
-            if (report.isError())
-            {
+            if (report.isError()) {
                 return Operation(std::function<void(CalcStacks &)>({}));
             }
-            for (size_t i{2}; i <= num_args; ++i)
-            {
-                if (stacks.typesBack() != scalar)
-                {
+            for (size_t i{2}; i <= num_args; ++i) {
+                if (stacks.typesBack() != scalar) {
                     std::string msg = fmt::format(R"(Function "{}" cannot take both <Vector> and <Scalar> arguments)",
                                                   function.value);
                     report.setMessage(msg);
@@ -94,17 +80,14 @@ namespace flexMC
                 stacks.popType();
             }
         }
-        else
-        {
+        else {
             assertNumberOfArgs(function, 1, num_args, arg_type, report);
-            if (report.isError())
-            {
+            if (report.isError()) {
                 return Operation(std::function<void(CalcStacks &)>({}));
             }
         }
         stacks.pushType(scalar);
-        if (arg_type == scalar)
-        {
+        if (arg_type == scalar) {
             return Operation(functionsReal::reduceArguments::get(function.value, num_args));
         }
         return Operation(functionsReal::reduceVector::get(function.value));
@@ -114,10 +97,8 @@ namespace flexMC
                                               const std::size_t &expected,
                                               const std::size_t &num_args,
                                               const CType &arg_type,
-                                              MaybeError &report)
-    {
-        if (expected != num_args)
-        {
+                                              MaybeError &report) {
+        if (expected != num_args) {
             auto msg = fmt::format(R"(Function "{}" with argument type <{}> takes exactly {} argument(s), got {})",
                                    function.value, cType2Str(arg_type), expected, num_args);
             report.setError(msg, function);
@@ -129,23 +110,19 @@ namespace flexMC
                                               const std::size_t &max_args,
                                               const std::size_t &num_args,
                                               const CType &arg_type,
-                                              MaybeError &report)
-    {
-        if ((num_args < min_args) || ((max_args > 0) && (num_args > max_args)))
-        {
+                                              MaybeError &report) {
+        if ((num_args < min_args) || ((max_args > 0) && (num_args > max_args))) {
             std::string msg;
-            if (max_args > 0)
-            {
+            if (max_args > 0) {
                 msg = fmt::format(
-                        R"(Function "{}" with argument type <{}> takes between {} and {} argument(s), got {})",
-                        function.value, cType2Str(arg_type), min_args, max_args, num_args
+                    R"(Function "{}" with argument type <{}> takes between {} and {} argument(s), got {})",
+                    function.value, cType2Str(arg_type), min_args, max_args, num_args
                 );
             }
-            else
-            {
+            else {
                 msg = fmt::format(
-                        R"(Function "{}" with argument type <{}> takes at least {} argument(s), got {})",
-                        function.value, cType2Str(arg_type), min_args, num_args
+                    R"(Function "{}" with argument type <{}> takes at least {} argument(s), got {})",
+                    function.value, cType2Str(arg_type), min_args, num_args
                 );
             }
             report.setError(msg, function);
@@ -153,31 +130,25 @@ namespace flexMC
 
     }
 
-    Operation operatorCompiler::compile(const Token &token, Operands &stacks, MaybeError &report)
-    {
-        if (token.context.is_infix && operatorsCalc::isBinarySymbol(token.value))
-        {
+    Operation operatorCompiler::compile(const Token &token, Operands &stacks, MaybeError &report) {
+        if (token.context.is_infix && operatorsCalc::isBinarySymbol(token.value)) {
             const std::string key = operatorsCalc::binary::compileArgumentsAndKey(token.value, stacks, report);
-            if (report.isError())
-            {
+            if (report.isError()) {
                 report.setPosition(token.start, token.size);
                 return Operation(std::function<void(CalcStacks &)>({}));
             }
             const std::function<void(CalcStacks &)> call_back = operatorsCalc::binary::get(key);
             return Operation(call_back);
         }
-        if (token.context.is_prefix && operatorsCalc::isBinarySymbol(token.value))
-        {
+        if (token.context.is_prefix && operatorsCalc::isBinarySymbol(token.value)) {
             // reports error if symbol != MINUS, expression compiler ignores PLUS before
             const CType t = operatorsCalc::unary::compileArgument(token.value, stacks, report);
-            if (report.isError())
-            {
+            if (report.isError()) {
                 report.setPosition(token.start, token.size);
                 return Operation(std::function<void(CalcStacks &)>({}));
             }
             assert(t == CType::scalar || t == CType::vector);
-            if (t == CType::scalar)
-            {
+            if (t == CType::scalar) {
                 return Operation(std::function<void(CalcStacks &)>(operatorsCalc::unary::scMinus));
             }
             return Operation(std::function<void(CalcStacks &)>(operatorsCalc::unary::vecMinus));

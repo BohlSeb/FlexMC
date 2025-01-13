@@ -10,16 +10,13 @@
 #include "expression_stacks.h"
 
 
-namespace flexMC
-{
+namespace flexMC {
 
-    class Expression
-    {
+    class Expression {
 
     public:
 
-        void push_back(const Operation &operation)
-        { items_.push_back(operation); }
+        void push_back(const Operation &operation) { items_.push_back(operation); }
 
         void operator()(CalcStacks &stacks) const;
 
@@ -29,12 +26,10 @@ namespace flexMC
 
     };
 
-    struct CompileReport
-    {
+    struct CompileReport {
         CompileReport(const CType &ret_t,
                       const std::size_t &max_s,
-                      const std::size_t &max_v) : ret_type(ret_t), max_scalar(max_s), max_vector(max_v)
-        {}
+                      const std::size_t &max_v) : ret_type(ret_t), max_scalar(max_s), max_vector(max_v) {}
 
         const CType ret_type;
 
