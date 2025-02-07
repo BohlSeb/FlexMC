@@ -13,9 +13,9 @@ set(SOURCES
         expression/operations/operation_compiler.cpp
         expression/operations/functions_real.cpp
         expression/operations/operators_calc.cpp
-        statement/statement_definitions.h
-        statement/statement_parser.h
-        statement/statement_parser.cpp
+        parser/statement_definitions.h
+        parser/line_parser.h
+        parser/line_parser.cpp
 )
 
 add_library(flexmc STATIC ${SOURCES})

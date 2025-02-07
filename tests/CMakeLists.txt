@@ -16,7 +16,7 @@ set(TEST_SOURCES
         test_expression_parser.cpp
         test_expression_compiler.cpp
         test_unit_static_variable_storage.cpp
-        test_statement_parser.cpp
+        test_line_parser.cpp
 )
 
 add_executable(tests ${TEST_SOURCES})
