@@ -21,7 +21,7 @@ namespace flexMC {
 
         std::size_t countFrontSpaces(const std::deque<Token> &line) {
             const auto end = std::ranges::find_if(line, IS_NOT_SPACE);
-            return std::accumulate(line.begin(), end, 0, [](const std::size_t &acc, const Token &t) {
+            return std::accumulate(line.begin(), end, std::size_t{0}, [](const std::size_t &acc, const Token &t) {
                 return acc + (t.type == wsp ? 1 : 4);
             });
         }
