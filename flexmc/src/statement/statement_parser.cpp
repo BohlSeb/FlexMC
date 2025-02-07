@@ -4,8 +4,6 @@
 #include <ranges>
 #include <algorithm>
 #include <numeric>
-#include <functional>
-#include <iostream>
 
 #include "statement_definitions.h"
 #include "expression_parser.h"
@@ -13,9 +11,7 @@
 
 
 namespace flexMC {
-
     namespace {
-
         using
         enum Token::Type;
 
@@ -24,8 +20,8 @@ namespace flexMC {
         auto UNDEFINED = [](const Token &t) { return t.type == undefined; };
 
         std::size_t countFrontSpaces(const std::deque<Token> &line) {
-            auto end = std::ranges::find_if(line, IS_NOT_SPACE);
-            return std::accumulate(line.begin(), end, 0, [](std::size_t acc, const Token &t) {
+            const auto end = std::ranges::find_if(line, IS_NOT_SPACE);
+            return std::accumulate(line.begin(), end, 0, [](const std::size_t &acc, const Token &t) {
                 return acc + (t.type == wsp ? 1 : 4);
             });
         }
@@ -42,12 +38,13 @@ namespace flexMC {
         std::string printOptions(auto begin, const auto &end, const std::string &context) {
             std::vector<std::string> options_out;
             for (const auto &option: std::ranges::subrange(begin, end)) {
-                options_out.emplace_back(option.check_type ? fmt::format("<{}>", Tokens::printType(option.type))
-                                                           : fmt::format(R"_("{}")_", option.value));
+                options_out.emplace_back(option.check_type
+                                             ? fmt::format("<{}>", Tokens::printType(option.type))
+                                             : fmt::format(R"_("{}")_", option.value));
             }
-            return fmt::format("{}, admissible <type> or \"value\" options are: [{}]",
-                               context,
-                               fmt::join(options_out, ", "));
+            return format("{}, admissible <type> or \"value\" options are: [{}]",
+                          context,
+                          fmt::join(options_out, ", "));
         }
 
         void setOptionContextError(MaybeError &report,
@@ -86,26 +83,36 @@ namespace flexMC {
             report.setError(printOptions(options_begin, options_end, context.str()), token);
         }
 
-        bool isPayLine(const std::deque<Token> &start_of_line) {
-            if (start_of_line.size() < 2) {
-                return false;
-            }
-            auto it_end = start_of_line.rbegin();
-            if (it_end->value != L_PAREN) {
-                return false;
-            }
-            ++it_end;
-            if ((it_end->value != PAY) && (it_end->value != PAY_AT)) {
-                return false;
-            }
-            return true;
+        bool testLineType(const std::deque<Token> &line, const std::string &value) {
+            return std::ranges::find_if(line, [value](const auto &t) { return t.value == value; }) != line.end();
         }
 
-
+        LineType lineType(const std::deque<Token> &start_of_line) {
+            // Review options to make stuff like this more concise
+            if (testLineType(start_of_line, PAY)) {
+                return LineType::pay;
+            }
+            if (testLineType(start_of_line, PAY_AT)) {
+                return LineType::pay_at;
+            }
+            if (testLineType(start_of_line, IF)) {
+                return LineType::if_;
+            }
+            if (testLineType(start_of_line, ELSE)) {
+                return LineType::else_;
+            }
+            if (testLineType(start_of_line, TERMINATE)) {
+                return LineType::terminate;
+            }
+            if (testLineType(start_of_line, ASSIGN)) {
+                return LineType::assign;
+            }
+            return LineType::eval;
+        }
     }
 
 
-    std::tuple<MaybeError, std::deque<Token>, std::deque<Token>> lineParseUtils::splitLine(
+    std::tuple<MaybeError, std::deque<Token>, std::deque<Token> > lineParseUtils::splitLine(
         const std::size_t &spaces, auto line) {
         MaybeError report;
         auto c_beg = statement::OPTIONS.begin();
@@ -115,8 +122,8 @@ namespace flexMC {
         std::deque<Token> statement_begin;
 
         if (spaces == 4) {
-            auto indent = Token(Token::Type::tab, "    ", 0);
-            auto indent_it = findStatementOption(c_beg, c_end, indent);
+            const auto indent = Token(tab, "    ", 0);
+            const auto indent_it = findStatementOption(c_beg, c_end, indent);
             if (indent_it == c_end) {
                 setOptionContextError(report, 4, indent, c_beg, c_end);
                 return {report, {}, {}};
@@ -132,13 +139,11 @@ namespace flexMC {
                 setOptionContextError(report, 1, line.front(), c_beg, c_end);
                 break;
             }
-            auto option_it = findStatementOption(c_beg, c_end, next);
-            if (option_it != c_end) {
+            if (const auto option_it = findStatementOption(c_beg, c_end, next); option_it != c_end) {
                 c_beg = option_it->options.begin();
                 c_end = option_it->options.end();
                 statement_begin.push_back(next);
                 expression_infix.pop_front();
-                continue;
             }
             else {
                 setOptionContextError(report, 5, next, c_beg, c_end);
@@ -169,26 +174,27 @@ namespace flexMC {
             case 2:
                 return R"_(Missing closing parenthesis ")" before ":=" in "PAY or "PAY_AT" statement)_";
             case 3:
-                return R"_(Unexpected token between closing parenthesis \")\" and \":=\" in \"PAY\" or \"PAY_AT\" statement)_";
+                return
+                    R"_(Unexpected token between closing parenthesis \")\" and \":=\" in \"PAY\" or \"PAY_AT\" statement)_";
             default:
                 return "Internal Error";
         }
     }
 
     std::deque<Token> lineParseUtils::makePaymentExpression(MaybeError &report,
-                                                            std::deque<Token> &start_of_line,
-                                                            const std::deque<Token> &rest_of_line) {
+                                                            std::deque<Token> &line_start,
+                                                            const std::deque<Token> &line_rest) {
         // start_of_line is [..., "PAY" or "PAY_AT", "("] at this point
         // The "(" will be removed from start_of_line
 
-        auto it_assign = std::ranges::find_if(rest_of_line, [](const Token &t) { return t.value == ASSIGN; });
-        if (it_assign == rest_of_line.end()) {
+        const auto it_assign = std::ranges::find_if(line_rest, [](const Token &t) { return t.value == ASSIGN; });
+        if (it_assign == line_rest.end()) {
             report.setError(paymentError(1), 0, 1);
             return {};
         }
 
-        auto it_r_paren = std::ranges::find_last_if(rest_of_line.begin(), it_assign,
-                                                    [](const Token &t) { return t.value == R_PAREN; }).begin();
+        const auto it_r_paren = std::ranges::find_last_if(line_rest.begin(), it_assign,
+                                                          [](const Token &t) { return t.value == R_PAREN; }).begin();
         if (it_r_paren == it_assign) {
             report.setError(paymentError(2), it_assign->start, it_assign->size);
             return {};
@@ -199,61 +205,60 @@ namespace flexMC {
             return {};
         }
 
-        const auto [expression_report, _] = infixToPostfix(std::deque<Token>(it_assign + 1, rest_of_line.end()));
-        if (expression_report.isError()) {
+        if (const auto [expression_report, _] = infixToPostfix(std::deque(it_assign + 1, line_rest.end()));
+            expression_report.isError()) {
             report = expression_report;
             return {};
         }
 
         // OK
         // Have to create a new deque since Token is not copyable (has const qualified members)
-        std::deque<Token> new_rest_of_line(rest_of_line.begin(), it_r_paren);
-        new_rest_of_line.emplace_back(Token::Type::op, COMMA, it_r_paren->start);
-        for (auto it = it_assign + 1; it != rest_of_line.end(); ++it) {
-            new_rest_of_line.push_back(*it);
+        std::deque l_rest_n(line_rest.begin(), it_r_paren);
+        l_rest_n.emplace_back(op, COMMA, it_r_paren->start);
+        for (auto it = it_assign + 1; it != line_rest.end(); ++it) {
+            l_rest_n.push_back(*it);
         }
-        assert(new_rest_of_line.back().type == eof);
-        auto at = new_rest_of_line.back().start;
-        new_rest_of_line.pop_back();
-        new_rest_of_line.emplace_back(Token::Type::rparen, R_PAREN, at);
-        new_rest_of_line.emplace_back(Token::Type::eof, "", at);  // + 1 ?
-        new_rest_of_line.push_front(start_of_line.back());
-        start_of_line.pop_back(); // Removing the "("
-        new_rest_of_line.push_front(start_of_line.back()); // Copying "PAY" or "PAY_AT"
-        return new_rest_of_line;
+        assert(l_rest_n.back().type == eof);
+        const auto at = l_rest_n.back().start;
+        l_rest_n.pop_back();
+        l_rest_n.emplace_back(rparen, R_PAREN, at);
+        l_rest_n.emplace_back(eof, "", at); // + 1 ?
+        l_rest_n.push_front(line_start.back());
+        line_start.pop_back(); // Removing the "("
+        l_rest_n.push_front(line_start.back()); // Copying "PAY" or "PAY_AT"
+        return l_rest_n;
     };
 
 
-    std::pair<MaybeError, LineParseResult> parseStartOfLine(const std::deque<Token> &line) {
-        auto undefined = std::ranges::find_if(line, UNDEFINED);
-        if (std::ranges::find_if(line, UNDEFINED) != line.end()) {
+    std::pair<MaybeError, LineParseResult> parseStartOfLine(const std::deque<Token> &line_infix) {
+        if (const auto undef = std::ranges::find_if(line_infix, UNDEFINED); undef != line_infix.end()) {
             MaybeError report;
-            setOptionContextError(report, 2, *undefined, statement::OPTIONS.begin(), statement::OPTIONS.end());
+            setOptionContextError(report, 2, *undef, statement::OPTIONS.begin(), statement::OPTIONS.end());
             return {report, {}};
         }
-        const std::size_t spaces = countFrontSpaces(line);
+        const std::size_t spaces = countFrontSpaces(line_infix);
         if ((spaces != 0) && (spaces != 4)) {
             MaybeError report;
-            auto tok = Token(Token::Type::id, std::string(spaces, ' '), 0);
+            auto tok = Token(id, std::string(spaces, ' '), 0);
             setOptionContextError(report, 3, tok, statement::OPTIONS.begin(), statement::OPTIONS.end());
             return {report, {}};
         }
-        auto spaces_filtered = line | std::ranges::views::filter(IS_NOT_SPACE);
+        auto spaces_filtered = line_infix | std::ranges::views::filter(IS_NOT_SPACE);
 
         auto [split_rep, statement_begin, expression] = lineParseUtils::splitLine(spaces,
-                                                                                  std::move(spaces_filtered));
+            std::move(spaces_filtered));
         if (split_rep.isError()) {
             return {split_rep, {}};
         }
         MaybeError report;
-        if (isPayLine(statement_begin)) {
+        const LineType t = lineType(statement_begin);
+        if ((t == LineType::pay) || (t == LineType::pay_at)) {
             std::deque<Token> pay_expr = lineParseUtils::makePaymentExpression(report, statement_begin, expression);
             if (report.isError()) {
                 return {report, {}};
             }
-            return {report, LineParseResult(statement_begin, pay_expr)};
+            return {report, LineParseResult(statement_begin, pay_expr, t)};
         }
-        return {report, LineParseResult(statement_begin, expression)};
+        return {report, LineParseResult(statement_begin, expression, t)};
     }
-
 }

@@ -8,7 +8,6 @@
 using namespace flexMC;
 
 TEST(StatementParser, StartOfLineStripper) {
-
     struct TestCase {
         const int n_tokens;
         const std::string infix;
@@ -80,7 +79,6 @@ TEST(StatementParser, StartOfLineStripper) {
         const auto [parse_report, _] = parseStartOfLine(tokens);
         EXPECT_TRUE(parse_report.isError()) << "Expected error for bad case: " << infix;
     }
-
 }
 
 TEST(StatementParser, MakePaymentExpressionValid) {
@@ -221,39 +219,38 @@ TEST(StatementParser, UnexpectedTokenBetweenParenAndAssignment) {
 }
 
 TEST(StatementParser, LineParser) {
-
     struct TestCase {
         const std::string line;
         const int length_statement_begin;
     };
 
     std::vector<TestCase> valid_cases = {
-        {"myVariableDate myVar1 += myVar2",                                        3},
-        {"myVariableDate PAY(enum_1, enum_2) := myDoubleVar",                      2},
+        {"myVariableDate myVar1 += myVar2", 3},
+        {"myVariableDate PAY(enum_1, enum_2) := myDoubleVar", 2},
         {"myVariableDate PAY_AT (dateVar, enum_1, enum_2, enum_3) := myDoubleVar", 2},
-        {"myVariableDate IF myExpression",                                         2},
-        {"myVariableDate IF MAX(1, 2, 3) > 2",                                     2},
-        {"CONTINUOUS IF myExpression",                                             2},
-        {"CONTINUOUS IF MAX(1, 2, 3) > 2",                                         2},
-        {"CONTINUOUS myVar1 += myVar2",                                            3},
-        {"    myVar1 **= myVar2",                                                  3},
-        {"    PAY(enum_1, enum_2) := myDoubleVar",                                 2},
-        {"    PAY_AT (dateVar, enum_1, enum_2, enum_3) := myDoubleVar",            2},
-        {"    TERMINATE",                                                          2},
+        {"myVariableDate IF myExpression", 2},
+        {"myVariableDate IF MAX(1, 2, 3) > 2", 2},
+        {"CONTINUOUS IF myExpression", 2},
+        {"CONTINUOUS IF MAX(1, 2, 3) > 2", 2},
+        {"CONTINUOUS myVar1 += myVar2", 3},
+        {"    myVar1 **= myVar2", 3},
+        {"    PAY(enum_1, enum_2) := myDoubleVar", 2},
+        {"    PAY_AT (dateVar, enum_1, enum_2, enum_3) := myDoubleVar", 2},
+        {"    TERMINATE", 2},
     };
 
-    std::vector<std::vector<std::string>> expression_infix_expected = {
+    std::vector<std::vector<std::string> > expression_infix_expected = {
         {"myVar2"},
-        {"PAY",    "(", "enum_1",  ",", "enum_2", ",", "myDoubleVar", ")"},
-        {"PAY_AT", "(", "dateVar", ",", "enum_1", ",", "enum_2",      ",", "enum_3", ",", "myDoubleVar", ")"},
+        {"PAY", "(", "enum_1", ",", "enum_2", ",", "myDoubleVar", ")"},
+        {"PAY_AT", "(", "dateVar", ",", "enum_1", ",", "enum_2", ",", "enum_3", ",", "myDoubleVar", ")"},
         {"myExpression"},
-        {"MAX",    "(", "1",       ",", "2",      ",", "3",           ")", ">",      "2"},
+        {"MAX", "(", "1", ",", "2", ",", "3", ")", ">", "2"},
         {"myExpression"},
-        {"MAX",    "(", "1",       ",", "2",      ",", "3",           ")", ">",      "2"},
+        {"MAX", "(", "1", ",", "2", ",", "3", ")", ">", "2"},
         {"myVar2"},
         {"myVar2"},
-        {"PAY",    "(", "enum_1",  ",", "enum_2", ",", "myDoubleVar", ")"},
-        {"PAY_AT", "(", "dateVar", ",", "enum_1", ",", "enum_2",      ",", "enum_3", ",", "myDoubleVar", ")"},
+        {"PAY", "(", "enum_1", ",", "enum_2", ",", "myDoubleVar", ")"},
+        {"PAY_AT", "(", "dateVar", ",", "enum_1", ",", "enum_2", ",", "enum_3", ",", "myDoubleVar", ")"},
         {}
     };
 
@@ -279,5 +276,4 @@ TEST(StatementParser, LineParser) {
             EXPECT_EQ(res.value, exp) << "Expression value mismatch for line: " << v_case.line;
         }
     }
-
 }
