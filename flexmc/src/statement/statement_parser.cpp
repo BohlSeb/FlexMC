@@ -42,7 +42,7 @@ namespace flexMC {
                                              ? fmt::format("<{}>", Tokens::printType(option.type))
                                              : fmt::format(R"_("{}")_", option.value));
             }
-            return format("{}, admissible <type> or \"value\" options are: [{}]",
+            return fmt::format("{}, admissible <type> or \"value\" options are: [{}]",
                           context,
                           fmt::join(options_out, ", "));
         }
