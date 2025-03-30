@@ -9,6 +9,10 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+configure_file(test_files/scope_check_bad.txt test_files/scope_check_bad.txt COPYONLY)
+configure_file(test_files/scope_check_good.txt test_files/scope_check_good.txt COPYONLY)
+
+
 enable_testing()
 
 set(TEST_SOURCES
@@ -16,7 +20,8 @@ set(TEST_SOURCES
         test_expression_parser.cpp
         test_expression_compiler.cpp
         test_unit_static_variable_storage.cpp
-        test_statement_parser.cpp
+        test_line_parser.cpp
+        test_scope_checker.cpp
 )
 
 add_executable(tests ${TEST_SOURCES})

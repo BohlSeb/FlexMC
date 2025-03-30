@@ -8,9 +8,8 @@
 #include <utility>
 
 #include "calc_types.h"
-#include "language_error.h"
 #include "expression_stacks.h"
-#include "utils.h"
+#include "map_key.h"
 
 namespace flexMC {
 

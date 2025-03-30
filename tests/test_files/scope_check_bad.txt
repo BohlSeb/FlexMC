@@ -1,0 +1,66 @@
+
+myDate myVar := expression
+myDate IF expression2
+    PAY := expression3
+    TERMINATE
+    PAY := expression4
+finalDate myVar2 := expression5
+===
+
+myDate myVar := expression
+myDate IF expression2
+    PAY := expression3
+TERMINATE
+    PAY := expression4
+finalDate myVar2 := expression5
+===
+
+myDate myVar := expression
+    IF expression2
+        PAY := expression3
+ELSE
+    PAY := expression4
+        PAY := expression5
+finalDate myVar2 := expression6
+===
+
+myDate myVar := expression
+myDate IF expression2
+    PAY := expression3
+    IF expression4
+        PAY := expression5
+    ELSE
+        PAY := expression6
+    ELSE
+        PAY := expression7
+finalDate myVar2 := expression8
+===
+
+myDate myVar := expression
+myDate IF expression0
+myDate IF expression2
+    PAY := expression3
+finalDate myVar2 := expression8
+===
+
+myDate myVar := expression
+myDate IF expression2
+    IF expression2
+    IF expression2
+===
+
+myDate myVar := expression
+myDate IF expression2
+    x := 3
+    ELSE
+        x := 4
+===
+
+myDate myVar := expression
+myDate IF expression2
+        PAY := expression3
+finalDate myVar2 := expression14
+===
+
+    myDate myVar := expression
+    myDate myVar := expression

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "utils.h"
+#include "map_key.h"
 #include "terminals.h"
 #include "calc_types.h"
 #include "language_error.h"

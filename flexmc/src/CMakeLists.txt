@@ -1,6 +1,5 @@
 set(SOURCES
         terminals.h
-        utils.h
         tokens.cpp
         lexer.cpp
         calc_types.cpp
@@ -13,9 +12,14 @@ set(SOURCES
         expression/operations/operation_compiler.cpp
         expression/operations/functions_real.cpp
         expression/operations/operators_calc.cpp
-        statement/statement_definitions.h
-        statement/statement_parser.h
-        statement/statement_parser.cpp
+        parser/line_options.h
+        parser/line_parser.h
+        parser/line_parser.cpp
+        parser/block_parser.h
+        parser/block_parser.cpp
+        utils/map_key.h
+        utils/i_file.h
+        utils/i_file.cpp
 )
 
 add_library(flexmc STATIC ${SOURCES})
