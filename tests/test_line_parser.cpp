@@ -43,6 +43,9 @@ TEST(LineParser, StartOfLineStripper) {
         {2, "    PAY_AT () := x "},
         {2, "    PAY_AT() := x "},
         {2, "    TERMINATE "},
+        {4, "        myVar := "},
+        {2, "    IF xxx"},
+        {2, "    ELSE"},
     };
 
     std::vector<std::string> bad_cases = {
@@ -53,7 +56,9 @@ TEST(LineParser, StartOfLineStripper) {
         "myDate CONTINUOUS",
         "BAD_SYMBOL myVar *= ",
         "myVar BAD_SYMBOL *= ",
-        "        myVar := ",
+        "          myVar := ",
+        "        IF x ",
+        "        ELSE",
         "TERMINATE",
         "IF xxx",
         "",
@@ -70,6 +75,10 @@ TEST(LineParser, StartOfLineStripper) {
     for (const auto &c: valid_cases) {
         std::deque<Token> tokens = lexer.tokenize(c.infix);
         const auto [parse_report, parse_result] = parseStartOfLine(tokens);
+        if (parse_report.isError()) {
+            std::cout << printError("Parser", c.infix, parse_report) << "\n";
+            break;
+        }
         EXPECT_FALSE(parse_report.isError()) << "Expected no error for valid case: " << c.infix;
         EXPECT_EQ(parse_result.line_begin.size(), c.n_tokens) << "Token size mismatch for valid case: " << c.infix;
     }
@@ -78,6 +87,7 @@ TEST(LineParser, StartOfLineStripper) {
         std::deque<Token> tokens = lexer.tokenize(infix);
         const auto [parse_report, _] = parseStartOfLine(tokens);
         EXPECT_TRUE(parse_report.isError()) << "Expected error for bad case: " << infix;
+        std::cout << printError("Parser", infix, parse_report) << "\n";
     }
 }
 

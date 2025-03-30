@@ -1,0 +1,91 @@
+
+myDate myVar := expression
+myDate IF expression2
+    PAY(x, y) := expression3
+ELSE
+    PAY() := expression4
+    TERMINATE
+finalDate myVar2 := expression5
+===
+
+myDate myVar := expression
+myDate IF expression2
+    PAY() := expression3
+    IF expression4
+        PAY() := expression5
+    IF expression4
+        PAY() := expression5
+    ELSE
+        PAY() := expression6
+finalDate IF expression7
+    PAY() := expression8
+finalDate myVar2 := expression10
+===
+
+myDate myVar := expression
+myDate IF expression2
+    PAY() := expression3
+    IF expression4
+        PAY() := expression5
+ELSE
+    IF expression7
+        PAY() := expression8
+    ELSE
+        PAY() := expression9
+    TERMINATE
+finalDate myVar2 := expression10
+===
+
+myDate myVar := expression
+myDate IF expression4
+    PAY() := expression5
+myDate IF expression2
+    PAY() := expression3
+    IF expression4
+        PAY() := expression5
+    ELSE
+        PAY() := expression6
+    TERMINATE
+finalDate myVar2 := expression7
+===
+
+myDate myVar := expression
+myDate IF expression2
+    IF expression4
+        PAY() := expression5
+    ELSE
+        PAY() := expression6
+ELSE
+    PAY() := expression7
+    IF expression8
+        PAY() := expression9
+finalDate myVar2 := expression10
+===
+
+myDate myVar := expression
+myDate IF expression2
+    PAY() := expression3
+    IF expression4
+        PAY() := expression5
+    ELSE
+        PAY() := expression6
+    TERMINATE
+    PAY() := expression7
+finalDate myVar2 := expression8
+===
+
+myDate myVar := expression
+myDate IF expression2
+    x *= expression3
+    IF expression4
+        PAY() := expression5
+    ELSE
+        PAY() := expression6
+    TERMINATE
+ELSE
+    PAY() := expression8
+    IF expression9
+        PAY() := expression10
+    ELSE
+        PAY() := expression11
+finalDate myVar2 := expression12

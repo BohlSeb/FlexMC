@@ -22,6 +22,7 @@ target_include_directories(flexmc PRIVATE
         src/expression
         src/expression/operations
         src/parser
+        src/utils
 )
 
 target_include_directories(flexmc INTERFACE
@@ -29,4 +30,5 @@ target_include_directories(flexmc INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/src/expression
         ${CMAKE_CURRENT_SOURCE_DIR}/src/expression/operations
         ${CMAKE_CURRENT_SOURCE_DIR}/src/parser
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
 )

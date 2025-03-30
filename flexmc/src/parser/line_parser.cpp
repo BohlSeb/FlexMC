@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <numeric>
 
-#include "statement_definitions.h"
+#include "line_options.h"
 #include "expression_parser.h"
 #include "line_parser.h"
 
@@ -29,7 +29,7 @@ namespace flexMC {
         auto findStatementOption(const auto &begin, const auto &end, const Token &token) {
             return std::ranges::find_if(
                 begin, end,
-                [token](const statement::Option &op) {
+                [token](const lineOptions::Option &op) {
                     return op.check_type ? op.type == token.type : op.value == token.value;
                 }
             );
@@ -43,8 +43,8 @@ namespace flexMC {
                                              : fmt::format(R"_("{}")_", option.value));
             }
             return fmt::format("{}, admissible <type> or \"value\" options are: [{}]",
-                          context,
-                          fmt::join(options_out, ", "));
+                               context,
+                               fmt::join(options_out, ", "));
         }
 
         void setOptionContextError(MaybeError &report,
@@ -68,7 +68,7 @@ namespace flexMC {
                     context << fmt::format("Unrecognizable token \"{}\"", token.value);
                     break;
                 case 3:
-                    context << "Bad spaces/tabs encountered, expected 0 or 4 spaces";
+                    context << "Bad spaces/tabs encountered, expected 0, 4 or 8 spaces";
                     break;
                 case 4:
                     context << "Unexpected indentation";
@@ -115,22 +115,18 @@ namespace flexMC {
     std::tuple<MaybeError, std::deque<Token>, std::deque<Token> > lineParseUtils::splitLine(
         const std::size_t &spaces, auto line) {
         MaybeError report;
-        auto c_beg = statement::OPTIONS.begin();
-        auto c_end = statement::OPTIONS.end();
+        auto c_beg = lineOptions::OPTIONS.begin();
+        auto c_end = lineOptions::OPTIONS.end();
 
         std::deque<Token> expression_infix(line.begin(), line.end());
         std::deque<Token> statement_begin;
-
+        
+        if (spaces == 8) {
+            expression_infix.emplace_front(tab, "    ", 4);
+            expression_infix.emplace_front(tab, "    ", 0);
+        }
         if (spaces == 4) {
-            const auto indent = Token(tab, "    ", 0);
-            const auto indent_it = findStatementOption(c_beg, c_end, indent);
-            if (indent_it == c_end) {
-                setOptionContextError(report, 4, indent, c_beg, c_end);
-                return {report, {}, {}};
-            }
-            statement_begin.push_back(indent);
-            c_beg = indent_it->options.begin();
-            c_end = indent_it->options.end();
+            expression_infix.emplace_front(tab, "    ", 0);
         }
 
         while ((!report.isError()) && (c_beg != c_end)) {
@@ -233,14 +229,14 @@ namespace flexMC {
     std::pair<MaybeError, LineParseResult> parseStartOfLine(const std::deque<Token> &line_infix) {
         if (const auto undef = std::ranges::find_if(line_infix, UNDEFINED); undef != line_infix.end()) {
             MaybeError report;
-            setOptionContextError(report, 2, *undef, statement::OPTIONS.begin(), statement::OPTIONS.end());
+            setOptionContextError(report, 2, *undef, lineOptions::OPTIONS.begin(), lineOptions::OPTIONS.end());
             return {report, {}};
         }
         const std::size_t spaces = countFrontSpaces(line_infix);
-        if ((spaces != 0) && (spaces != 4)) {
+        if ((spaces != 0) && (spaces != 4) && (spaces != 8)) {
             MaybeError report;
             auto tok = Token(id, std::string(spaces, ' '), 0);
-            setOptionContextError(report, 3, tok, statement::OPTIONS.begin(), statement::OPTIONS.end());
+            setOptionContextError(report, 3, tok, lineOptions::OPTIONS.begin(), lineOptions::OPTIONS.end());
             return {report, {}};
         }
         auto spaces_filtered = line_infix | std::ranges::views::filter(IS_NOT_SPACE);
@@ -252,13 +248,14 @@ namespace flexMC {
         }
         MaybeError report;
         const LineType t = lineType(statement_begin);
+        const std::size_t scope = spaces / 4;
         if ((t == LineType::pay) || (t == LineType::pay_at)) {
             std::deque<Token> pay_expr = lineParseUtils::makePaymentExpression(report, statement_begin, expression);
             if (report.isError()) {
                 return {report, {}};
             }
-            return {report, LineParseResult(statement_begin, pay_expr, t)};
+            return {report, LineParseResult(statement_begin, pay_expr, t, scope)};
         }
-        return {report, LineParseResult(statement_begin, expression, t)};
+        return {report, LineParseResult(statement_begin, expression, t, scope)};
     }
 }

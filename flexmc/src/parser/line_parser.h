@@ -21,14 +21,17 @@ namespace flexMC {
         const std::deque<Token> line_begin;
         const std::deque<Token> expression_infix;
         const LineType line_type;
+        const std::size_t scope;
 
-        LineParseResult() : line_begin({}), expression_infix({}), line_type(LineType::undefined) {
+        LineParseResult() : line_begin({}), expression_infix({}), line_type(LineType::undefined),
+                            scope(std::size_t{0}) {
         }
 
         LineParseResult(const std::deque<Token> &line_start,
                         const std::deque<Token> &expr_infix,
-                        const LineType &l_type)
-            : line_begin(line_start), expression_infix(expr_infix), line_type(l_type) {
+                        const LineType &l_type,
+                        const std::size_t &l_scope)
+            : line_begin(line_start), expression_infix(expr_infix), line_type(l_type), scope(l_scope) {
         }
     };
 
